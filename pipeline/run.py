@@ -39,9 +39,16 @@ def main(argv=None) -> int:
     parser.add_argument("--from-cache", action="store_true", help="ağ ve LLM çağrısı yapma, .work kullan")
     parser.add_argument("--out", help="sayı JSON'u için farklı yol (dizin güncellenmez)")
     parser.add_argument("--report", action="store_true", help="Markdown raporu da üret")
+    parser.add_argument("--report-week", action="store_true",
+                        help="son günlük sayıları birleştirip haftalık raporu üret (tarama yapmaz)")
+    parser.add_argument("--weeks", type=int, default=7, help="haftalık raporda birleştirilecek sayı sayısı")
     args = parser.parse_args(argv)
 
     config.ensure_dirs()
+    if args.report_week:
+        path = report_mod.write_weekly(args.weeks)
+        log(f"haftalık rapor: {path}")
+        return 0
     issue_date = date.fromisoformat(args.date) if args.date else config.issue_date_for(args.cadence)
     days = args.window or config.CADENCE_DAYS[args.cadence]
     start, end = config.window(issue_date, days)

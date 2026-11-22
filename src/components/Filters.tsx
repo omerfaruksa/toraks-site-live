@@ -11,6 +11,11 @@ export interface BranchOption {
   name: string
   count: number
 }
+export interface DesignOption {
+  key: string
+  label: string
+  count: number
+}
 
 interface Props {
   query: string
@@ -31,6 +36,9 @@ interface Props {
   branches: string[]
   onBranches: (v: string[]) => void
   branchOptions: BranchOption[]
+  design: string
+  onDesign: (v: string) => void
+  designOptions: DesignOption[]
   section: string
   onSection: (v: string) => void
   sectionOptions: SectionOption[]
@@ -48,7 +56,8 @@ export default function Filters(p: Props) {
     (p.scope ? 1 : 0) +
     (p.multiOnly ? 1 : 0) +
     (p.intlOnly ? 1 : 0) +
-    (p.branches.length > 0 ? 1 : 0)
+    (p.branches.length > 0 ? 1 : 0) +
+    (p.design ? 1 : 0)
 
   const toggleBranch = (name: string) =>
     p.onBranches(p.branches.includes(name) ? p.branches.filter((b) => b !== name) : [...p.branches, name])
@@ -143,6 +152,30 @@ export default function Filters(p: Props) {
               </div>
             </div>
 
+            <div className="filter-line">
+              <span className="filter-label">Tasarım</span>
+              <div className="chips" role="group" aria-label="Çalışma tasarımı">
+                <button
+                  type="button"
+                  className={`chip ${p.design === '' ? 'is-active' : ''}`}
+                  onClick={() => p.onDesign('')}
+                  aria-pressed={p.design === ''}
+                >
+                  Tümü
+                </button>
+                {p.designOptions.map((d) => (
+                  <button
+                    key={d.key}
+                    type="button"
+                    className={`chip ${p.design === d.key ? 'is-active' : ''}`}
+                    onClick={() => p.onDesign(p.design === d.key ? '' : d.key)}
+                    aria-pressed={p.design === d.key}
+                  >
+                    {d.label} {d.count}
+                  </button>
+                ))}
+              </div>
+            </div>
             <div className="filter-line">
               <span className="filter-label">Kapsam</span>
               <div className="chips" role="group" aria-label="Çalışma kapsamı">

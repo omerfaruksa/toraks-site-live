@@ -27,7 +27,7 @@ sabit varsayılan tarihler ve elle yazılmış kaynak metinleri.
 1. **Tek kaynak, iki çıktı.** Hat önce sayı JSON'unu üretir; Markdown rapor aynı JSON'dan yazılır
    (`report.py`). Böylece sitede görünen ile raporda yazan çelişemez.
 2. **Tek giriş noktası.** `run.py` aşamaları (`scan`, `classify`, `cards`, `external`, `issue`,
-   `report`) yönetir; `run_weekly.sh` yalnızca kadansı sabitler.
+   `report`) yönetir; `run_daily.sh` kadansı, `run_weekly_report.sh` haftalık raporu sabitler.
 3. **Model yalnızca dil işi yapar.** Grup kuralları, eşikler ve süzgeçler Python'da (`rules.py`).
    Model çıktısı şemayla sınırlanır; kural ihlali kodda düzeltilir.
 4. **Tek yazma.** Sayı bellekte kurulur, `tmp` + `rename` ile bir kez yazılır. Kısmi sayı kalmaz.
@@ -63,6 +63,6 @@ sabit varsayılan tarihler ve elle yazılmış kaynak metinleri.
 ## 5. Açık konular
 
 - Zamanlanmış görev bu hattı çağıracak şekilde yeniden yazılmalı; görev yalnızca
-  `bash pipeline/run_weekly.sh` çalıştırıp yayın adımını tetiklemeli, kendi betiklerini taşımamalı.
+  `bash pipeline/run_daily.sh` çalıştırıp yayın adımını tetiklemeli, kendi betiklerini taşımamalı.
 - TR Dizin erişimi (HTTP 401) ve RSS'siz F grubu dergiler için kaynak eklenmesi gerekiyor.
 - Klinik araştırma süzgeci başlık metnine dayanıyor; ileride `conditionsModule` alanı da okunabilir.

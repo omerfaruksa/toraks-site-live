@@ -10,7 +10,7 @@ import External from './components/External'
 import Highlight from './components/Highlight'
 import SectionGroup from './components/SectionGroup'
 import { DESIGN_ORDER, TAG_ORDER, issueIndex, loadIssue, shortDate } from './data'
-import type { Design, Indirect, Issue, Scope, Study } from './types'
+import type { Indirect, Issue, Scope, Study } from './types'
 import { matchesTokens, searchText, tokenize } from './search'
 
 /** Tarihe göre yeniden eskiye; tarihi olmayan kayıtlar sona düşer, kendi aralarında sıra korunur. */
@@ -42,6 +42,7 @@ function readFilters() {
     multiOnly: p.get('cok') === '1',
     intlOnly: p.get('ulus') === '1',
     branches: (p.get('brans') ?? '').split(',').map((b) => b.trim()).filter(Boolean),
+    design: p.get('tasarim') ?? '',
     section: p.get('bolum') ?? '',
   }
 }
@@ -85,6 +86,13 @@ function matchesQuery(s: Filterable, tokens: string[]) {
   return matchesTokens(text, tokens)
 }
 
+const CADENCE_LABEL: Record<string, string> = {
+  daily: 'Günlük güncelleme',
+  weekly: 'Haftalık tarama',
+  biweekly: 'İki haftalık tarama',
+  monthly: 'Aylık tarama',
+}
+
 export default function App() {
   const [detailsOpen, setDetailsOpen] = useState<boolean>(readDetails)
   const [date, setDate] = useState(() => {
@@ -104,6 +112,7 @@ export default function App() {
   const [multiOnly, setMultiOnly] = useState(initialFilters.multiOnly)
   const [intlOnly, setIntlOnly] = useState(initialFilters.intlOnly)
   const [branches, setBranches] = useState<string[]>(initialFilters.branches)
+  const [design, setDesign] = useState(initialFilters.design)
   const [section, setSection] = useState(initialFilters.section)
 
   useEffect(() => {
@@ -138,9 +147,10 @@ export default function App() {
     put('cok', multiOnly ? '1' : '')
     put('ulus', intlOnly ? '1' : '')
     put('brans', branches.join(','))
+    put('tasarim', design)
     put('bolum', section)
     window.history.replaceState({}, '', url)
-  }, [date, detailsOpen, query, tag, interest, turkeyOnly, scope, multiOnly, intlOnly, branches, section])
+  }, [date, detailsOpen, query, tag, interest, turkeyOnly, scope, multiOnly, intlOnly, branches, design, section])
 
   // Geri/ileri tuşları ve paylaşılan bağlantılar filtreleri geri yükler.
   useEffect(() => {
@@ -154,6 +164,7 @@ export default function App() {
       setMultiOnly(f.multiOnly)
       setIntlOnly(f.intlOnly)
       setBranches(f.branches)
+      setDesign(f.design)
       setSection(f.section)
       setDetailsOpen(readDetails())
     }
@@ -174,6 +185,7 @@ export default function App() {
     setMultiOnly(false)
     setIntlOnly(false)
     setBranches([])
+    setDesign('')
     setSection('')
     window.scrollTo({ top: 0 })
   }, [date])
@@ -183,7 +195,8 @@ export default function App() {
   const tokens = useMemo(() => tokenize(deferredQuery), [deferredQuery])
   const filtered = useMemo(() => {
     if (!issue) return { direct: [] as Study[], indirect: [] as Indirect[] }
-    const keep = (s: Filterable) => {
+    const keep = (s: Filterable & { design?: string }) => {
+      if (design && s.design !== design) return false
       if (tag && !(s.tags ?? []).includes(tag)) return false
       if (turkeyOnly && !s.turkey) return false
       if (scope && s.scope !== scope) return false
@@ -196,7 +209,7 @@ export default function App() {
       direct: byDateDesc(issue.direct.filter(keep)),
       indirect: byDateDesc(issue.indirect.filter(keep)),
     }
-  }, [issue, tag, tokens, turkeyOnly, scope, multiOnly, intlOnly, branches])
+  }, [issue, tag, tokens, turkeyOnly, scope, multiOnly, intlOnly, branches, design])
 
   const tagOptions = useMemo(() => {
     if (!issue) return []
@@ -217,6 +230,17 @@ export default function App() {
     return [...counts.entries()]
       .map(([name, count]) => ({ name, count }))
       .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name, 'tr'))
+  }, [issue])
+
+  const designOptions = useMemo(() => {
+    if (!issue) return []
+    const counts = new Map<string, number>()
+    for (const s of issue.direct) counts.set(s.design, (counts.get(s.design) ?? 0) + 1)
+    return DESIGN_ORDER.filter((d) => counts.has(d.key)).map((d) => ({
+      key: d.key,
+      label: d.label,
+      count: counts.get(d.key) ?? 0,
+    }))
   }, [issue])
 
   if (!issue) {
@@ -251,13 +275,8 @@ export default function App() {
   }
 
   const showDirect = interest !== 'indirect'
-  const showIndirect = interest !== 'direct'
-
-  const designGroups = DESIGN_ORDER.map((d) => ({
-    ...d,
-    items: filtered.direct.filter((s) => s.design === (d.key as Design)),
-  })).filter((g) => g.items.length > 0)
-
+  // Tasarım süzgeci yalnızca doğrudan kartlara uygulanır; seçiliyken dolaylı liste gizlenir.
+  const showIndirect = interest !== 'direct' && !design
 
   const sectionOptions: SectionOption[] = [
     ...(issue.external && issue.external.length > 0
@@ -308,7 +327,7 @@ export default function App() {
               <div className="section-head">
                 <h3>Kaynaklar</h3>
                 <p className="section-note">
-                  {issue.cadence === 'weekly' ? 'Haftalık tarama' : 'Tarama'} · Dönem:{' '}
+                  {CADENCE_LABEL[issue.cadence ?? ''] ?? 'Tarama'} · Dönem:{' '}
                   {shortDate(issue.windowStart)} – {shortDate(issue.windowEnd)} ·{' '}
                   {issue.stats.journalsScanned} dergi tarandı · {issue.stats.journalsWithRecords} dergide
                   kayıt bulundu.
@@ -342,12 +361,15 @@ export default function App() {
         onIntlOnly={setIntlOnly}
         branches={branches}
         onBranches={setBranches}
+        design={design}
+        onDesign={setDesign}
+        designOptions={designOptions}
         branchOptions={branchOptions}
         section={section}
         onSection={openSection}
         sectionOptions={sectionOptions}
         result={
-          query || tag || scope || multiOnly || intlOnly || turkeyOnly || branches.length > 0 || interest !== 'all'
+          query || tag || scope || multiOnly || intlOnly || turkeyOnly || branches.length > 0 || design || interest !== 'all'
             ? { direct: filtered.direct.length, indirect: filtered.indirect.length }
             : null
         }
@@ -357,16 +379,10 @@ export default function App() {
       <div className="shell">
         <main className="content">
           <section id="dogrudan" className="section section--bare">
-            {!showDirect ? null : designGroups.length === 0 ? (
+            {!showDirect ? null : filtered.direct.length === 0 ? (
               <p className="empty">Bu filtreye uyan doğrudan makale yok.</p>
             ) : (
-              designGroups.map((g) => (
-                <div className="design-group" key={g.key} aria-label={g.label}>
-                  {byDateDesc(g.items).map((s) => (
-                    <StudyCard key={s.pmid} study={s} tokens={tokens} />
-                  ))}
-                </div>
-              ))
+              filtered.direct.map((s) => <StudyCard key={s.pmid} study={s} tokens={tokens} />)
             )}
 
             {showDirect && issue.unavailable && issue.unavailable.length > 0 && (

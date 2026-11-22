@@ -25,9 +25,11 @@ MODEL_DEEP = os.environ.get("MODEL_DEEP", "gpt-6-sol")
 LLM_CONC = int(os.environ.get("CONC", "6"))
 HTTP_WORKERS = int(os.environ.get("HTTP_WORKERS", "6"))
 
-# Haftalık tarama: sayı cumartesi tarihli, pencere son 7 gün.
-CADENCE_DAYS = {"weekly": 7, "biweekly": 14, "monthly": 30}
-DEFAULT_CADENCE = os.environ.get("CADENCE", "weekly")
+# Günlük kadans: sayı her gün üretilir, pencere yine son 7 gündür (yuvarlanan
+# hafta). Böylece ana sayfa her gün tazelenir, kapsam proje talimatındaki gibi
+# kalır; tekrar eden kayıtlar LLM belleğinden (cls_memo/cards_memo) okunur.
+CADENCE_DAYS = {"daily": 7, "weekly": 7, "biweekly": 14, "monthly": 30}
+DEFAULT_CADENCE = os.environ.get("CADENCE", "daily")
 CACHE_TTL = int(os.environ.get("CACHE_TTL", str(6 * 3600)))
 
 AYLAR = ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz",
@@ -44,8 +46,8 @@ def window(issue_date: date, days: int) -> tuple[str, str]:
 
 
 def issue_date_for(cadence: str = DEFAULT_CADENCE, today: date | None = None) -> date:
-    """Sayı tarihi: çalıştırma günü. Haftalık görev cumartesi koştuğu için tarihler
-    kendiliğinden cumartesiye düşer; geriye dönük tarih üretilmez."""
+    """Sayı tarihi: çalıştırma günü. Günlük görev her gün, haftalık rapor görevi
+    cumartesi koştuğu için tarihler kendiliğinden yerine oturur."""
     return today or date.today()
 
 

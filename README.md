@@ -62,8 +62,9 @@ Yeni bir sayı eklemek için dosyayı `content/issues/` altına koyup `content/i
 ## Haftalık üretim
 
 ```bash
-bash pipeline/run_weekly.sh                 # cumartesi sayısı, son 7 gün
-bash pipeline/run_weekly.sh --date 2026-11-28
+bash pipeline/run_daily.sh                  # günlük sayı, yuvarlanan son 7 gün
+bash pipeline/run_daily.sh --date 2026-11-28
+bash pipeline/run_weekly_report.sh          # son 7 günlük sayıyı birleştiren haftalık rapor
 python3 pipeline/run.py --stages issue --report   # yalnızca montaj + rapor
 pnpm test:pipeline                          # kural testleri
 ```

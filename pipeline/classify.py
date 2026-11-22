@@ -43,20 +43,38 @@ def _candidates(records: list[dict], first: dict[str, dict]) -> list[dict]:
     return out
 
 
+MEMO = WORK / "cls_memo.json"
+
+
+def _load_memo() -> dict[str, dict]:
+    if MEMO.exists():
+        try:
+            return json.loads(MEMO.read_text(encoding="utf-8"))
+        except json.JSONDecodeError:
+            return {}
+    return {}
+
+
 def run(records: list[dict]) -> dict:
     WORK.mkdir(parents=True, exist_ok=True)
+    memo = _load_memo()
+    # Günlük kadans aynı kayıtları yedi kez görmemek için önceki kararlar saklanır.
+    todo = [r for r in records if r["pmid"] not in memo]
+    reused = len(records) - len(todo)
+    if reused:
+        print(f"  bellekten: {reused}/{len(records)} kayıt")
 
-    first_items = [{"id": r["pmid"], "payload": _payload(r)} for r in records]
+    first_items = [{"id": r["pmid"], "payload": _payload(r)} for r in todo]
     first_rows = llm.run_worker("triage", first_items, "classify_pass1.jsonl", MODEL_FAST)
     first = {r["id"]: r for r in first_rows if not r.get("error")}
     print(f"  birinci geçiş: {len(first)}/{len(records)}")
 
-    second_items = _candidates(records, first)
+    second_items = _candidates(todo, first)
     second_rows = llm.run_worker("triage", second_items, "classify_pass2.jsonl", MODEL_DEEP)
     second = {r["id"]: r for r in second_rows if not r.get("error")}
     print(f"  ikinci geçiş: {len(second)}/{len(second_items)}")
 
-    final = {}
+    final = {r["pmid"]: memo[r["pmid"]] for r in records if r["pmid"] in memo}
     for pmid, hit in first.items():
         final[pmid] = {
             "interest": hit.get("interest") or "konu_disi",
@@ -84,6 +102,8 @@ def run(records: list[dict]) -> dict:
         }
 
     (WORK / "final_cls.json").write_text(json.dumps(final, ensure_ascii=False, indent=0), encoding="utf-8")
+    memo.update(final)
+    MEMO.write_text(json.dumps(memo, ensure_ascii=False, indent=0), encoding="utf-8")
     counts = {}
     for value in final.values():
         key = (value["interest"], value["cardiac"])

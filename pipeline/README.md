@@ -7,8 +7,9 @@ aynı veriden üretildiği için iki ayrı çıktı birbiriyle çelişmez.
 ## Çalıştırma
 
 ```bash
-bash pipeline/run_weekly.sh                       # bugünün sayısı, son 7 gün
-bash pipeline/run_weekly.sh --date 2026-11-28     # belirli sayı
+bash pipeline/run_daily.sh                        # bugünün sayısı, son 7 gün
+bash pipeline/run_daily.sh --date 2026-11-28      # belirli sayı
+bash pipeline/run_weekly_report.sh                # son 7 sayıyı birleştiren haftalık rapor
 python3 pipeline/run.py --stages issue --report   # yalnızca montaj + rapor
 python3 pipeline/run.py --from-cache --out /tmp/x.json   # ağ ve LLM çağrısı yapmadan deneme
 python3 pipeline/run.py --cadence monthly --window 30    # ilk/30 günlük çalıştırma

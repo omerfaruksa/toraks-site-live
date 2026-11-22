@@ -46,6 +46,7 @@ def verify(rows: list[dict], records: dict[str, dict]) -> list[dict]:
             continue
         missing = rules.numbers_missing(row["card"], rec.get("abstract") or "")
         row["numberMismatches"] = missing
+        row["mismatches"] = []
         checked += 1
         if missing:
             flagged += 1
@@ -54,14 +55,35 @@ def verify(rows: list[dict], records: dict[str, dict]) -> list[dict]:
     return rows
 
 
+MEMO = WORK / "cards_memo.json"
+
+
+def _load_memo() -> dict[str, dict]:
+    if MEMO.exists():
+        try:
+            return json.loads(MEMO.read_text(encoding="utf-8"))
+        except json.JSONDecodeError:
+            return {}
+    return {}
+
+
 def run(records: list[dict], cls: dict) -> dict[str, dict]:
     WORK.mkdir(parents=True, exist_ok=True)
+    memo = _load_memo()
     items = targets(records, cls)
-    rows = llm.run_worker("cards", items, "cards.jsonl", MODEL_DEEP)
+    # Günlük kadansta aynı kart yedi kez yazılmasın: önceki kartlar yeniden kullanılır.
+    todo = [i for i in items if i["id"] not in memo]
+    reused = [memo[i["id"]] for i in items if i["id"] in memo]
+    if reused:
+        print(f"  bellekten: {len(reused)}/{len(items)} kart")
+    fresh = llm.run_worker("cards", todo, "cards.jsonl", MODEL_DEEP) if todo else []
+    rows = reused + fresh
     by_pmid = {r["pmid"]: r for r in records}
     rows = verify(rows, by_pmid)
     (WORK / "cards.jsonl").write_text(
         "\n".join(json.dumps(r, ensure_ascii=False) for r in rows) + "\n", encoding="utf-8")
     cards = {r["id"]: r for r in rows if not r.get("error") and r.get("card")}
+    memo.update({r["id"]: r for r in rows if not r.get("error") and r.get("card")})
+    MEMO.write_text(json.dumps(memo, ensure_ascii=False), encoding="utf-8")
     print(f"  kart: {len(cards)}/{len(items)}")
     return cards
