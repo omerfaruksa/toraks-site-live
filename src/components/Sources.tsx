@@ -1,9 +1,8 @@
-import { useMemo, useState } from 'react'
-import type { Issue } from '../types'
+import { useDeferredValue, useMemo, useState } from 'react'
+import type { Coverage, Issue } from '../types'
+import { fold, matchesTokens, searchText, tokenize } from '../search'
 
 type StatusFilter = '' | 'hit' | 'zero' | 'missing'
-
-const norm = (s: string) => s.toLocaleLowerCase('tr')
 
 const STATUS_OPTIONS: { key: StatusFilter; label: string }[] = [
   { key: '', label: 'Tümü' },
@@ -12,34 +11,41 @@ const STATUS_OPTIONS: { key: StatusFilter; label: string }[] = [
   { key: 'missing', label: "PubMed'de yok" },
 ]
 
+/** "PubMed'de yok" etiketi veri dosyasında serbest metin; eşleşme katlanmış metinden yapılır. */
+const isMissing = (c: Coverage) => fold(c.status ?? '').includes('pubmed') && fold(c.status ?? '').includes('yok')
+
+/** Sayı alanı eksik ya da sayı değilse kayıt "var" sayılmaz. */
+const hasRecords = (c: Coverage) => Number(c.count7) > 0
+
 export default function Sources({ issue }: { issue: Issue }) {
   const { sources, journals, coverage } = issue
-  const withRecords = journals.filter((j) => j.count > 0)
+  const withRecords = useMemo(() => journals.filter((j) => j.count > 0), [journals])
   const [query, setQuery] = useState('')
   const [status, setStatus] = useState<StatusFilter>('')
+  const deferredQuery = useDeferredValue(query)
 
-  const needle = norm(query.trim())
-  const active = needle !== '' || status !== ''
+  const tokens = useMemo(() => tokenize(deferredQuery), [deferredQuery])
+  const active = tokens.length > 0 || status !== ''
 
   const coverageRows = useMemo(() => {
     if (!coverage) return []
     return coverage.filter((c) => {
-      if (status === 'hit' && c.count7 <= 0) return false
-      if (status === 'zero' && c.count7 > 0) return false
-      if (status === 'missing' && c.status !== "PubMed'de yok") return false
-      if (!needle) return true
-      const hay = norm([c.journal, c.group, c.source, c.status, c.lastEntry].join(' '))
-      return hay.includes(needle)
+      if (status === 'hit' && !hasRecords(c)) return false
+      if (status === 'zero' && hasRecords(c)) return false
+      if (status === 'missing' && !isMissing(c)) return false
+      if (tokens.length === 0) return true
+      const text = searchText(c, [c.journal, c.group, c.source, c.status, c.lastEntry, c.issn])
+      return matchesTokens(text, tokens)
     })
-  }, [coverage, needle, status])
+  }, [coverage, tokens, status])
 
   const journalRows = useMemo(() => {
     // Liste yalnızca bu sayıda kaydı olan dergileri içerir; "kayıt yok" / "PubMed'de yok"
     // durumunda sonuç kümesi boşalır.
     if (status === 'zero' || status === 'missing') return []
-    if (!needle) return withRecords
-    return withRecords.filter((j) => norm([j.name, j.group].join(' ')).includes(needle))
-  }, [withRecords, needle, status])
+    if (tokens.length === 0) return withRecords
+    return withRecords.filter((j) => matchesTokens(searchText(j, [j.name, j.group]), tokens))
+  }, [withRecords, tokens, status])
 
   // "Bu sayıda kayıt yok" / "PubMed'de yok" süzgeçlerinde kayıt listesi tanımı gereği boş kalır;
   // bu durumda liste yerine yalnızca kapsama tablosu sayılır.
@@ -48,6 +54,7 @@ export default function Sources({ issue }: { issue: Issue }) {
   const countParts: string[] = []
   if (!hideJournalList) countParts.push(`${journalRows.length} / ${withRecords.length} kayıtlı dergi`)
   if (coverage) countParts.push(`${coverageRows.length} / ${coverage.length} kapsama satırı`)
+  if (countParts.length === 0) countParts.push('Kapsama verisi yok')
 
   const clear = () => {
     setQuery('')
@@ -114,7 +121,7 @@ export default function Sources({ issue }: { issue: Issue }) {
             </button>
           ))}
         </div>
-        <p className="table-count">
+        <p className="table-count" role="status" aria-live="polite">
           {countParts.join(' · ')}
           {active && (
             <button type="button" className="linkish" onClick={clear}>

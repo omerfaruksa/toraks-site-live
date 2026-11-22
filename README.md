@@ -19,6 +19,8 @@ Ana sayfada içindekiler yalnızca okuma bölümlerini listeler (Doğrudan makal
 
 Filtre çubuğu varsayılan olarak kompakt: yalnızca arama kutusu ve "Filtreler" düğmesi görünür; düğme açılınca ilgi sınıfı, "Türkiye'den", konu etiketi, çalışma kapsamı (tek merkezli / çok merkezli / multidisipliner / uluslararası), ortak branş ve bölüm seçicisi tek panelde toplanır. Etkin filtre sayısı düğmede rozet olarak görünür; panel kapalıyken eşleşme sayısı ve "Filtreyi temizle" satırı kalır. Tüm listeler (doğrudan kartlar, dolaylı kayıtlar, başlık listeleri, PubMed dışı kayıtlar) tarihe göre yeniden eskiye sıralanır. Kapsam ve branş etiketleri PubMed kurum satırları ile kart metninden türetilir; kaynakta bulunmayan bilgi etiketlenmez.
 
+Arama, Türkçe ve İngilizce başlıkların karışık olduğu metinde harf eşleşmesini kaçırmamak için katlanmış metin üzerinde çalışır: büyük/küçük harf, Türkçe I/ı/İ/i ayrımı ve aksanlar (ö→o, ğ→g, ü→u, ş→s, ç→c, ı→i) eşitlenir; "gogus" araması "Göğüs" kaydını bulur. Sorgu boşlukla terimlere bölünür ve tüm terimlerin geçmesi gerekir (VE mantığı). Kayıtların aranabilir metni nesne başına bir kez hesaplanıp önbelleğe alınır, sorgu ise `useDeferredValue` ile ertelenir; böylece yazarken liste süzme maliyeti kayıt sayısıyla doğrusal artsa da tuş başına yeniden metin kurma yükü oluşmaz. Birim testleri: `pnpm test:search`.
+
 ## Teknoloji
 
 Vite + React + TypeScript ile yazılmış statik bir site. Sunucu, veritabanı veya oturum yönetimi yok; içerik JSON dosyalarında durur ve derleme sırasında sayfaya gömülür. Sayı dosyaları tembel yüklenir, bu yüzden arşiv büyüdükçe ana paket ağırlaşmaz.

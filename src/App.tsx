@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useDeferredValue, useEffect, useMemo, useState } from 'react'
 import Header from './components/Header'
 import Hero from './components/Hero'
 import Filters, { type BranchOption, type SectionOption } from './components/Filters'
@@ -11,8 +11,7 @@ import External from './components/External'
 import SectionGroup from './components/SectionGroup'
 import { DESIGN_ORDER, TAG_ORDER, issueIndex, loadIssue, shortDate } from './data'
 import type { Design, Indirect, Issue, Scope, Study } from './types'
-
-const norm = (s: string) => s.toLocaleLowerCase('tr')
+import { matchesTokens, searchText, tokenize } from './search'
 
 /** Tarihe göre yeniden eskiye; tarihi olmayan kayıtlar sona düşer, kendi aralarında sıra korunur. */
 function byDateDesc<T extends { entryDate?: string; date?: string }>(items: T[]): T[] {
@@ -45,18 +44,24 @@ interface Filterable {
   turkey?: boolean
 }
 
-function matchesQuery(s: Filterable, q: string) {
-  if (!q) return true
-  const hay = norm(
-    [s.titleTr, s.titleOrig, s.title, s.journal, s.summary, s.oneLiner, s.pmid, s.doi, (s.tags ?? []).join(' '),
-     s.authors, (s.institutions ?? []).join(' '), (s.disciplines ?? []).join(' ')]
-      .filter(Boolean)
-      .join(' '),
-  )
-  return norm(q)
-    .split(/\s+/)
-    .filter(Boolean)
-    .every((token) => hay.includes(token))
+/** Kaydın aranabilir metni; nesne başına bir kez hesaplanır (bkz. search.ts). */
+function matchesQuery(s: Filterable, tokens: string[]) {
+  if (tokens.length === 0) return true
+  const text = searchText(s, [
+    s.titleTr,
+    s.titleOrig,
+    s.title,
+    s.journal,
+    s.summary,
+    s.oneLiner,
+    s.pmid,
+    s.doi,
+    s.tags ?? [],
+    s.authors,
+    s.institutions ?? [],
+    s.disciplines ?? [],
+  ])
+  return matchesTokens(text, tokens)
 }
 
 export default function App() {
@@ -117,6 +122,9 @@ export default function App() {
     window.scrollTo({ top: 0 })
   }, [date])
 
+  // Girdi alanı beklemeden yazılabilsin: süzme, ertelenmiş sorgu ile yapılır.
+  const deferredQuery = useDeferredValue(query)
+  const tokens = useMemo(() => tokenize(deferredQuery), [deferredQuery])
   const filtered = useMemo(() => {
     if (!issue) return { direct: [] as Study[], indirect: [] as Indirect[] }
     const keep = (s: Filterable) => {
@@ -126,13 +134,13 @@ export default function App() {
       if (multiOnly && !s.multidisciplinary) return false
       if (intlOnly && !s.international) return false
       if (branches.length > 0 && !branches.some((b) => (s.disciplines ?? []).includes(b))) return false
-      return matchesQuery(s, query)
+      return matchesQuery(s, tokens)
     }
     return {
       direct: byDateDesc(issue.direct.filter(keep)),
       indirect: byDateDesc(issue.indirect.filter(keep)),
     }
-  }, [issue, tag, query, turkeyOnly, scope, multiOnly, intlOnly, branches])
+  }, [issue, tag, tokens, turkeyOnly, scope, multiOnly, intlOnly, branches])
 
   const tagOptions = useMemo(() => {
     if (!issue) return []
