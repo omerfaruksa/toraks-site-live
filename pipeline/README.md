@@ -41,6 +41,7 @@ Ara dosyalar `pipeline/.work/` altında tutulur ve sürüm kontrolüne girmez. A
 - Makine okunur akışı doğrulanamayan dergiler: MMCTS, Shanghai Chest, Respiratory Case Reports, İzmir Göğüs Hastanesi Dergisi, Güncel Göğüs Hastalıkları. Bunlarda Crossref kaydı varsa oradan, yoksa yalnızca PubMed kayıtları değerlendirilir.
 - Crossref/RSS kayıtlarında özet metni çoğunlukla bulunmaz; bu kayıtlar başlık düzeyinde listelenir, çalışma kartı yazılmaz.
 - Europe PMC ön baskı taraması servis kesintilerinde boş dönebilir.
+- `build_issue.py` dolaylı kayıtlara PubMed giriş tarihini (`entryDate`) yazar; arayüzdeki tarih sıralaması bu alana dayanır.
 - İlk sınıflandırma modeli (gpt-6-luna) düşük maliyetlidir; ikinci geçiş yalnızca Doğrudan/Dolaylı adaylarına uygulanır. Bu nedenle konu dışı listesinde tek tük hatalı sınıflandırma kalabilir.
 
 ## Kapsam ve branş etiketleri
