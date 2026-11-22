@@ -816,7 +816,12 @@ summary:focus-visible {
   display: grid;
   grid-template-columns: 1fr;
   gap: 22px;
+  min-width: 0;
 }
+.sources-col,
+.sources-wide { min-width: 0; }
+.sources .plain li,
+.sources .muted-text { overflow-wrap: anywhere; }
 .mini-title {
   margin: 0 0 6px;
   font-size: 0.6875rem;
@@ -944,6 +949,10 @@ summary:focus-visible {
   .wordmark-mark { width: 22px; height: 22px; }
   .wordmark-title { font-size: 0.875rem; }
   .header-tools { gap: 6px; }
+  .table-search { flex: 1 1 100%; }
+  .table-tools .chips-inline { flex-wrap: wrap; overflow-x: visible; row-gap: 6px; }
+  .table-tools .table-count { font-size: 0.78125rem; }
+  .table-search input { font-size: 0.8125rem; }
 }
 
 /* ---------- print ---------- */
@@ -998,15 +1007,6 @@ summary:focus-visible {
 }
 .tr-badge-sm { font-size: 0.625rem; padding: 0 6px; margin-left: 6px; vertical-align: 1px; }
 .chip-tr.is-active { font-weight: 700; }
-.turkey-block {
-  padding: 16px 0 8px 14px;
-  margin-top: 18px;
-  border-left: 2px solid var(--accent);
-  background: linear-gradient(to right, var(--accent-wash), transparent 65%);
-  border-radius: 2px;
-}
-.turkey-block .design-title { font-size: 0.8125rem; }
-.turkey-block .section-note { margin-bottom: 6px; }
 .indirect-authors {
   margin: 4px 0 0;
   font-size: 0.75rem;
@@ -1017,7 +1017,6 @@ summary:focus-visible {
 @media (max-width: 560px) {
   .card-people p { grid-template-columns: 1fr; gap: 1px; }
   .people-key { padding-top: 0; }
-  .turkey-block { padding-left: 10px; }
 }
 
 /* ---------- PubMed dışı kaynaklar ---------- */
@@ -1138,6 +1137,47 @@ summary:focus-visible {
   font-size: 1.0625rem;
   margin: 0 0 4px;
 }
+.table-tools {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  margin-top: 6px;
+  padding-top: 14px;
+  border-top: 1px dashed var(--rule);
+}
+.table-search {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex: 1 1 16rem;
+  min-width: 0;
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-radius: 9px;
+  padding: 0 10px;
+  color: var(--muted);
+}
+.table-search input {
+  font: inherit;
+  font-size: 0.875rem;
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  padding: 7px 0;
+  width: 100%;
+  min-width: 0;
+}
+.table-search input:focus { outline: none; }
+.table-search:focus-within { border-color: var(--accent); }
+.chips-inline { margin-top: 0; }
+.table-count {
+  flex: 1 1 100%;
+  margin: 0;
+  font-size: 0.8125rem;
+  color: var(--muted);
+}
+
 .details-foot { margin: 14px 0 0; text-align: right; }
 .details-foot .linkish { padding-left: 0; }
 

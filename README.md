@@ -8,15 +8,14 @@ Bir sayı şu bölümlerden oluşur:
 
 1. **Genel bakış** — dönem, taranan kayıt sayısı, Doğrudan / Dolaylı / Konu dışı dağılımı, klinik araştırma sayısı.
 2. **Doğrudan makaleler** — çalışma kartları; tasarım türüne (RCT → meta-analiz → kohort → olgu-kontrol → olgu serisi → klinik dışı) göre gruplanır ve her grup içinde en yeni giriş en üstte olacak şekilde tarihe göre sıralanır. Her kartta yazarlar ve kurumlar bulunur.
-3. **Türkiye'den** — yazar veya kurum bilgisinde Türkiye'deki bir kurum geçen doğrudan makaleler; tasarım gruplarında tekrarlanmaz. Filtre çubuğunda ayrı bir çipi vardır.
-4. **PubMed dışı kaynaklar** — Crossref DOI kayıtları ve dergi RSS akışlarından gelen, PubMed taramasına girmeyen kayıtlar; başlık düzeyinde, Türkçe başlıkla listelenir.
-5. **Klinik araştırmalar** — ClinicalTrials.gov kayıtları, tablo halinde.
-6. **Dolaylı makaleler** — başlık, dergi, PMID/DOI ve tek cümlelik ana sonuç.
-7. **Video ve olgu başlıkları** — yalnızca başlık düzeyinde.
-8. **Konu dışı başlıklar** ve **Kardiyak içerik (kapsam dışı)** — tek satır.
-9. **Kaynaklar ve detaylar** — ana sayfada künyedeki "Kaynaklar ve detaylar" düğmesine basınca sayfa içinde açılan panel: tarama özeti, sayılar, taranan ve erişilemeyen kaynaklar, kayıt bulunmayan dergiler ve dergi kapsama tablosu (bu sayı, son 30 gün, son giriş tarihi, kaynak, durum). Panelin altındaki "Kapat" düğmesi ya da künyedeki düğme ile kapanır; adres çubuğu `sayfa=kaynaklar` parametresiyle panelin durumunu korur, böylece eski bağlantılar panel açık şekilde çalışır.
+3. **PubMed dışı kaynaklar** — Crossref DOI kayıtları ve dergi RSS akışlarından gelen, PubMed taramasına girmeyen kayıtlar; başlık düzeyinde, Türkçe başlıkla listelenir.
+4. **Klinik araştırmalar** — ClinicalTrials.gov kayıtları, tablo halinde.
+5. **Dolaylı makaleler** — başlık, dergi, PMID/DOI ve tek cümlelik ana sonuç.
+6. **Video ve olgu başlıkları** — yalnızca başlık düzeyinde.
+7. **Konu dışı başlıklar** ve **Kardiyak içerik (kapsam dışı)** — tek satır.
+8. **Kaynaklar ve detaylar** — ana sayfada künyedeki "Kaynaklar ve detaylar" düğmesine basınca sayfa içinde açılan panel: tarama özeti, sayılar, taranan ve erişilemeyen kaynaklar, kayıt bulunmayan dergiler ve dergi kapsama tablosu (bu sayı, son 30 gün, son giriş tarihi, kaynak, durum). Panelin altındaki "Kapat" düğmesi ya da künyedeki düğme ile kapanır; adres çubuğu `sayfa=kaynaklar` parametresiyle panelin durumunu korur, böylece eski bağlantılar panel açık şekilde çalışır. Panelin içinde dergi listeleri ve kapsama tablosu için arama kutusu ile durum çipleri (Tümü / Bu sayıda kayıt var / Bu sayıda kayıt yok / PubMed'de yok) bulunur; eşleşme sayısı ve "Filtreyi temizle" satırı hemen altında görünür, filtre etkinken iki katlanır liste kendiliğinden açılır. "Bu sayıda kayıt yok" ve "PubMed'de yok" süzgeçlerinde kayıt listesi tanımı gereği boş kaldığı için gizlenir, yalnızca kapsama tablosu sayılır.
 
-Ana sayfada içindekiler yalnızca okuma bölümlerini listeler (Doğrudan makaleler, Türkiye'den, Dolaylı makaleler). Klinik araştırmalar, PubMed dışı kaynaklar, video ve olgu, kardiyak içerik ve konu dışı listeleri filtre çubuğundaki "Bölüm" seçicisinden açılır; bu bölümler varsayılan olarak kapalıdır.
+Ana sayfada içindekiler yalnızca okuma bölümlerini listeler (Doğrudan makaleler, Dolaylı makaleler). Türkiye'deki bir kurum veya yazarın yer aldığı makaleler ayrı bir ana sayfa bloğu oluşturmaz; kart üzerindeki "Türkiye'den" rozeti ve filtre çubuğundaki çip ile işaretlenir. Klinik araştırmalar, PubMed dışı kaynaklar, video ve olgu, kardiyak içerik ve konu dışı listeleri filtre çubuğundaki "Bölüm" seçicisinden açılır; bu bölümler varsayılan olarak kapalıdır.
 
 Filtre çubuğu varsayılan olarak kompakt: yalnızca arama kutusu ve "Filtreler" düğmesi görünür; düğme açılınca ilgi sınıfı, "Türkiye'den", konu etiketi, çalışma kapsamı (tek merkezli / çok merkezli / multidisipliner / uluslararası), ortak branş ve bölüm seçicisi tek panelde toplanır. Etkin filtre sayısı düğmede rozet olarak görünür; panel kapalıyken eşleşme sayısı ve "Filtreyi temizle" satırı kalır. Tüm listeler (doğrudan kartlar, dolaylı kayıtlar, başlık listeleri, PubMed dışı kayıtlar) tarihe göre yeniden eskiye sıralanır. Kapsam ve branş etiketleri PubMed kurum satırları ile kart metninden türetilir; kaynakta bulunmayan bilgi etiketlenmez.
 

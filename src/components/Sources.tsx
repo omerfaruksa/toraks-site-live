@@ -1,8 +1,58 @@
+import { useMemo, useState } from 'react'
 import type { Issue } from '../types'
 
+type StatusFilter = '' | 'hit' | 'zero' | 'missing'
+
+const norm = (s: string) => s.toLocaleLowerCase('tr')
+
+const STATUS_OPTIONS: { key: StatusFilter; label: string }[] = [
+  { key: '', label: 'Tümü' },
+  { key: 'hit', label: 'Bu sayıda kayıt var' },
+  { key: 'zero', label: 'Bu sayıda kayıt yok' },
+  { key: 'missing', label: "PubMed'de yok" },
+]
+
 export default function Sources({ issue }: { issue: Issue }) {
-  const { sources, journals } = issue
+  const { sources, journals, coverage } = issue
   const withRecords = journals.filter((j) => j.count > 0)
+  const [query, setQuery] = useState('')
+  const [status, setStatus] = useState<StatusFilter>('')
+
+  const needle = norm(query.trim())
+  const active = needle !== '' || status !== ''
+
+  const coverageRows = useMemo(() => {
+    if (!coverage) return []
+    return coverage.filter((c) => {
+      if (status === 'hit' && c.count7 <= 0) return false
+      if (status === 'zero' && c.count7 > 0) return false
+      if (status === 'missing' && c.status !== "PubMed'de yok") return false
+      if (!needle) return true
+      const hay = norm([c.journal, c.group, c.source, c.status, c.lastEntry].join(' '))
+      return hay.includes(needle)
+    })
+  }, [coverage, needle, status])
+
+  const journalRows = useMemo(() => {
+    // Liste yalnızca bu sayıda kaydı olan dergileri içerir; "kayıt yok" / "PubMed'de yok"
+    // durumunda sonuç kümesi boşalır.
+    if (status === 'zero' || status === 'missing') return []
+    if (!needle) return withRecords
+    return withRecords.filter((j) => norm([j.name, j.group].join(' ')).includes(needle))
+  }, [withRecords, needle, status])
+
+  // "Bu sayıda kayıt yok" / "PubMed'de yok" süzgeçlerinde kayıt listesi tanımı gereği boş kalır;
+  // bu durumda liste yerine yalnızca kapsama tablosu sayılır.
+  const hideJournalList = (status === 'zero' || status === 'missing') && journalRows.length === 0
+
+  const countParts: string[] = []
+  if (!hideJournalList) countParts.push(`${journalRows.length} / ${withRecords.length} kayıtlı dergi`)
+  if (coverage) countParts.push(`${coverageRows.length} / ${coverage.length} kapsama satırı`)
+
+  const clear = () => {
+    setQuery('')
+    setStatus('')
+  }
 
   return (
     <div className="sources">
@@ -37,22 +87,65 @@ export default function Sources({ issue }: { issue: Issue }) {
         )}
       </div>
 
-      <details className="sources-wide journal-details">
-        <summary>Dergi bazında kayıt sayıları ({withRecords.length})</summary>
-        <ul className="journal-counts">
-          {withRecords.map((j) => (
-            <li key={j.name}>
-              <span className={`group-mark group-${j.group || 'x'}`}>{j.group || '–'}</span>
-              <span className="jc-name">{j.name}</span>
-              <span className="jc-count">{j.count}</span>
-            </li>
+      <div className="sources-wide table-tools">
+        <div className="table-search">
+          <svg viewBox="0 0 24 24" aria-hidden="true" width="15" height="15">
+            <circle cx="10.5" cy="10.5" r="6" fill="none" stroke="currentColor" strokeWidth="1.7" />
+            <path d="m15 15 4.2 4.2" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
+          </svg>
+          <input
+            type="search"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Dergi, grup, kaynak veya durum ara"
+            aria-label="Dergi listelerinde ve kapsama tablosunda ara"
+          />
+        </div>
+        <div className="chips chips-inline" role="group" aria-label="Kapsama durumu">
+          {STATUS_OPTIONS.map((o) => (
+            <button
+              key={o.key || 'all'}
+              type="button"
+              className={`chip ${status === o.key ? 'is-active' : ''}`}
+              onClick={() => setStatus(o.key)}
+              aria-pressed={status === o.key}
+            >
+              {o.label}
+            </button>
           ))}
-        </ul>
-      </details>
+        </div>
+        <p className="table-count">
+          {countParts.join(' · ')}
+          {active && (
+            <button type="button" className="linkish" onClick={clear}>
+              Filtreyi temizle
+            </button>
+          )}
+        </p>
+      </div>
 
-      {issue.coverage && issue.coverage.length > 0 && (
-        <details className="sources-wide journal-details">
-          <summary>Dergi kapsama tablosu ({issue.coverage.length} dergi)</summary>
+      {!hideJournalList && (
+        <details className="sources-wide journal-details" open={active || undefined}>
+          <summary>Dergi bazında kayıt sayıları ({journalRows.length})</summary>
+          {journalRows.length === 0 ? (
+            <p className="empty">Eşleşen dergi yok.</p>
+          ) : (
+            <ul className="journal-counts">
+              {journalRows.map((j) => (
+                <li key={j.name}>
+                  <span className={`group-mark group-${j.group || 'x'}`}>{j.group || '–'}</span>
+                  <span className="jc-name">{j.name}</span>
+                  <span className="jc-count">{j.count}</span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </details>
+      )}
+
+      {coverage && coverage.length > 0 && (
+        <details className="sources-wide journal-details" open={active || undefined}>
+          <summary>Dergi kapsama tablosu ({coverageRows.length})</summary>
           <div className="coverage-wrap">
             <table className="coverage">
               <thead>
@@ -67,20 +160,28 @@ export default function Sources({ issue }: { issue: Issue }) {
                 </tr>
               </thead>
               <tbody>
-                {issue.coverage.map((c) => (
-                  <tr
-                    key={c.journal}
-                    className={c.count7 > 0 ? 'is-hit' : c.status === "PubMed'de yok" ? 'is-missing' : ''}
-                  >
-                    <td>{c.journal}</td>
-                    <td>{c.group}</td>
-                    <td>{c.count7}</td>
-                    <td>{c.count30}</td>
-                    <td>{c.lastEntry || '—'}</td>
-                    <td>{c.source}</td>
-                    <td className="cov-status">{c.status}</td>
+                {coverageRows.length === 0 ? (
+                  <tr>
+                    <td colSpan={7} className="empty">
+                      Eşleşen dergi yok.
+                    </td>
                   </tr>
-                ))}
+                ) : (
+                  coverageRows.map((c) => (
+                    <tr
+                      key={c.journal}
+                      className={c.count7 > 0 ? 'is-hit' : c.status === "PubMed'de yok" ? 'is-missing' : ''}
+                    >
+                      <td>{c.journal}</td>
+                      <td>{c.group}</td>
+                      <td>{c.count7}</td>
+                      <td>{c.count30}</td>
+                      <td>{c.lastEntry || '—'}</td>
+                      <td>{c.source}</td>
+                      <td className="cov-status">{c.status}</td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </table>
           </div>

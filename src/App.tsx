@@ -189,17 +189,13 @@ export default function App() {
   const showDirect = interest !== 'indirect'
   const showIndirect = interest !== 'direct'
 
-  const turkeyCards = filtered.direct.filter((s) => s.turkey)
-  const otherDirect = filtered.direct.filter((s) => !s.turkey)
-
   const designGroups = DESIGN_ORDER.map((d) => ({
     ...d,
-    items: otherDirect.filter((s) => s.design === (d.key as Design)),
+    items: filtered.direct.filter((s) => s.design === (d.key as Design)),
   })).filter((g) => g.items.length > 0)
 
   const toc: TocItem[] = [
     { id: 'dogrudan', label: 'Doğrudan makaleler', count: filtered.direct.length },
-    ...(turkeyCards.length > 0 ? [{ id: 'turkiye', label: "Türkiye'den", count: turkeyCards.length }] : []),
     { id: 'dolayli', label: 'Dolaylı makaleler', count: filtered.indirect.length },
   ]
 
@@ -309,29 +305,15 @@ export default function App() {
               <h2>Doğrudan makaleler</h2>
               <p className="section-note">
                 Torasik cerrahi uygulaması, tekniği veya sonucu üzerine çalışmalar. Tasarım türüne
-                göre gruplanır; her grup içinde en yeni giriş en üstte yer alır.
+                göre gruplanır; her grup içinde en yeni giriş en üstte yer alır. Türkiye'deki bir
+                kurum veya yazarın yer aldığı çalışmalar kart üzerindeki rozetle işaretlenir ve
+                filtre çubuğundaki "Türkiye'den" çipiyle ayrıca süzülebilir.
               </p>
             </div>
 
-            {showDirect && turkeyCards.length > 0 && (
-              <div className="design-group turkey-block" id="turkiye">
-                <h3 className="design-title">
-                  Türkiye'den
-                  <span className="count">{turkeyCards.length}</span>
-                </h3>
-                <p className="section-note">
-                  Yazar veya kurum bilgisinde Türkiye'deki bir kurum bulunan çalışmalar. Tasarım
-                  gruplarında tekrarlanmaz.
-                </p>
-                {turkeyCards.map((s) => (
-                  <StudyCard key={s.pmid} study={s} />
-                ))}
-              </div>
-            )}
-
-            {!showDirect ? null : designGroups.length === 0 && turkeyCards.length === 0 ? (
+            {!showDirect ? null : designGroups.length === 0 ? (
               <p className="empty">Bu filtreye uyan doğrudan makale yok.</p>
-            ) : designGroups.length === 0 ? null : (
+            ) : (
               designGroups.map((g) => (
                 <div className="design-group" key={g.key}>
                   <h3 className="design-title">
