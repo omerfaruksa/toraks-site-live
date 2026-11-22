@@ -45,7 +45,7 @@ pipeline/               # günlük tarama ve sayı üretimi
 
 | Alan | İçerik |
 | --- | --- |
-| `date`, `windowStart`, `windowEnd`, `periodLabel` | Sayı tarihi ve tarama dönemi |
+| `date`, `cadence`, `windowStart`, `windowEnd`, `periodLabel` | Sayı tarihi, kadans (weekly) ve tarama dönemi |
 | `stats` | Taranan kayıt, Doğrudan, Dolaylı, Konu dışı, klinik araştırma, dergi sayıları |
 | `journals` | Dergi bazında kayıt sayıları (grup harfiyle) |
 | `direct` | Çalışma kartları (başlık, künye, etiketler, özet, tasarım, örneklem, karşılaştırma, sonlanımlar, ana sonuç, takip, veri dönemi, yazarlar, kurumlar, Türkiye işareti, kapsam, branşlar, uluslararası bayrağı) |
@@ -59,14 +59,16 @@ pipeline/               # günlük tarama ve sayı üretimi
 
 Yeni bir sayı eklemek için dosyayı `content/issues/` altına koyup `content/index.json` dizinine bir satır eklemek yeterlidir; site bir sonraki derlemede sayıyı listeler.
 
-## Günlük üretim
+## Haftalık üretim
 
 ```bash
-bash pipeline/run_daily.sh            # bugünün sayısı
-bash pipeline/run_daily.sh 2026-11-23 # belirli bir tarih
+bash pipeline/run_weekly.sh                 # cumartesi sayısı, son 7 gün
+bash pipeline/run_weekly.sh --date 2026-11-28
+python3 pipeline/run.py --stages issue --report   # yalnızca montaj + rapor
+pnpm test:pipeline                          # kural testleri
 ```
 
-Boru hattı sırasıyla: PubMed dergi taraması (58 derginin tüm ISSN'leri + `[edat]`), konu sorgusu, triyaj, ikinci geçiş sınıflandırma, çalışma kartı üretimi ve doğrulaması, ClinicalTrials.gov taraması, Crossref/RSS ile PubMed dışı kaynak toplama ve sınıflandırma, sayı dosyasının yazılması, yazar/kurum zenginleştirme, dış kayıtların eklenmesi, kapsama tablosu ve sayı doğrulaması. Ayrıntı ve tek tek adımlar için `pipeline/README.md`.
+Hat tek giriş noktasından (`pipeline/run.py`) çalışır: PubMed dergi taraması (tüm ISSN'ler + `[edat]`), konu sorgusu, iki geçişli sınıflandırma, çalışma kartı üretimi ve sayı denetimi, ClinicalTrials.gov, Crossref/RSS ile PubMed dışı kaynaklar, tek geçişte atomik sayı montajı ve aynı veriden üretilen haftalık Markdown raporu (`content/reports/`). Ayrıntı, darboğaz tablosu ve doğrulama notları için `pipeline/README.md`.
 
 Dergi listesi `pipeline/dergi_listesi.csv` dosyasındadır; tarama bu listenin tek doğru kaynağı olduğunu varsayar.
 

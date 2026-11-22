@@ -1,53 +1,82 @@
-# Günlük tarama boru hattı
+# Haftalık tarama hattı
 
-Tarama protokolünü (son 7 gün, dergi bazlı ISSN taraması + konu sorgusu + ClinicalTrials.gov) çalıştırıp `content/issues/YYYY-MM-DD.json` dosyasını ve `content/index.json` dizinini üretir.
+Her cumartesi son 7 günü tarar, `content/issues/YYYY-MM-DD.json` sayısını, `content/index.json`
+dizini ve `content/reports/YYYY-MM-DD.md` haftalık raporunu üretir. Site bu JSON'u okur; rapor
+aynı veriden üretildiği için iki ayrı çıktı birbiriyle çelişmez.
 
 ## Çalıştırma
 
 ```bash
-bash pipeline/run_daily.sh                 # bugün, son 7 gün penceresi
-bash pipeline/run_daily.sh 2026-11-23      # belirli tarih
-WINDOW_START=2026-11-01 WINDOW_END=2026-11-22 bash pipeline/run_daily.sh 2026-11-22
+bash pipeline/run_weekly.sh                       # bugünün sayısı, son 7 gün
+bash pipeline/run_weekly.sh --date 2026-11-28     # belirli sayı
+python3 pipeline/run.py --stages issue --report   # yalnızca montaj + rapor
+python3 pipeline/run.py --from-cache --out /tmp/x.json   # ağ ve LLM çağrısı yapmadan deneme
+python3 pipeline/run.py --cadence monthly --window 30    # ilk/30 günlük çalıştırma
 ```
 
-Ortam değişkenleri: `DATE`, `WINDOW_START`, `WINDOW_END`, `CONC` (eşzamanlı LLM isteği, varsayılan 4).
+Ortam değişkenleri: `CADENCE` (weekly/biweekly/monthly), `CONC` (LLM eşzamanlılığı, varsayılan 6),
+`HTTP_WORKERS` (varsayılan 6), `MODEL_FAST` (gpt-6-luna), `MODEL_DEEP` (gpt-6-sol),
+`CACHE_TTL` (saniye, varsayılan 6 saat).
 
-## Adımlar
+## Akış
 
-| Adım | Betik | Ne yapar |
+```
+run.py
+ ├─ scan      fetch.pubmed → .work/pubmed.json
+ │            fetch.trials → .work/trials_raw.json
+ │            fetch.external → .work/external.json
+ ├─ classify  classify.run → classify_pass1/2.jsonl → .work/final_cls.json
+ ├─ cards     cards.run → .work/cards.jsonl (kart + sayı denetimi)
+ ├─ external  external.run → .work/external_cls.json
+ └─ issue     issue.build → content/issues/<tarih>.json + index.json
+              report.write → content/reports/<tarih>.md
+```
+
+| Modül | Sorumluluk |
+| --- | --- |
+| `config.py` | Yollar, dönem hesabı, kadans, model adları. Sabit tarih ve mutlak yol yok. |
+| `net.py` | Önbellekli HTTP (`.cache/`), artan beklemeli yeniden deneme, paralel `pmap`, E-utilities kısayolları |
+| `journals.py` | `dergi_listesi.csv` + `kaynak_esleme.csv`: ISSN eşleme, grup, grup kuralı metni |
+| `rules.py` | Metin temizleme, torasik/cerrahi/protokol ölçütleri, kapsam ve branş, sayı denetimi |
+| `fetch.py` | PubMed (dergi + konu sorgusu), ClinicalTrials.gov, Crossref/RSS, PMC ve yazar/kurum |
+| `llm.mjs` | Tek LLM işçisi: `triage` ve `cards` modları, JSON şeması, kesintiden devam |
+| `llm.py` | İşçiyi çağıran ince köprü |
+| `classify.py` | İki geçiş + deterministik grup kuralları (A grubunda konu dışı kalmaz) |
+| `cards.py` | Kart üretimi; sayılar özette yoksa `numberMismatches` alanına yazılır |
+| `external.py` | PubMed dışı havuzu kural süzgecinden geçirip sınıflandırır |
+| `issue.py` | Tüm bölümleri tek geçişte kurar, tek atomik yazmayla (`tmp` + `rename`) kaydeder |
+| `report.py` | Sayı JSON'undan haftalık Markdown raporu |
+
+## Ölçülen darboğazlar ve karşılıkları
+
+| Sorun (eski hat) | Etki | Yeni davranış |
 | --- | --- | --- |
-| 1 | `fetch_pubmed.py` | `dergi_listesi.csv` içindeki 58 derginin tüm ISSN'lerini `[edat]` penceresiyle tarar; ayrıca MeSH + `[tiab]` konu sorgusuyla liste dışı dergileri toplar |
-| 2 | `prep.py` | Kayıtları temizler, ISSN üzerinden dergi grubunu eşler, triyaj girdisini ve kart üretimi için kayıt dosyasını yazar |
-| 3 | `triage.mjs` | İlk sınıflandırma (gpt-6-luna): ilgi sınıfı, kardiyak işareti, konu etiketleri, tasarım, tek cümlelik sonuç |
-| 4 | `prep2.py` | Doğru grup bilgisiyle ikinci geçiş hedeflerini seçer (Doğrudan/Dolaylı + cerrahi anahtar sözcük içeren Konu dışı) |
-| 5 | `recheck.mjs` | İkinci geçiş sınıflandırma (gpt-6-sol): kardiyak ayrımı ve grup kuralları yeniden uygulanır |
-| 6 | `merge_cls.py` | İki geçişi birleştirir; A grubunda hiçbir makale "konu dışı" bırakılmaz (kardiyak hariç) |
-| 7 | `cards.mjs` | Doğrudan makaleler için çalışma kartı üretir ve ikinci bir doğrulama çağrısıyla sayıları kaynakla karşılaştırır |
-| 8 | `fetch_trials.py` | ClinicalTrials.gov: `StudyFirstPostDate` ve `ResultsFirstPostDate` penceresi |
-| 9 | `fetch_external.py` | `kaynak_esleme.csv`'deki dergiler için Crossref DOI kayıtları (online ve basılı yayın tarihi) ile dergi RSS akışlarını toplar |
-| 10 | `triage_external.mjs` | PubMed dışı kayıtları sınıflandırır (gpt-6-luna): ilgi sınıfı, etiket, tek cümlelik sonuç |
-| 11 | `build_issue.py` | Sayı JSON'unu yazar; PMC üzerinden açık tam metin durumunu, torasik/cerrahi içerik filtrelerini ve protokol ayıklamasını uygular |
-| 12 | `enrich_meta.py` | Her kayda yazar, kurum ve Türkiye kökeni bilgisini ekler (PubMed `AffiliationInfo`) |
-| 13 | `scope_tags.py` | Kartlara çalışma kapsamı (tek merkezli / çok merkezli), uluslararası işbirliği bayrağı ve ortak branşları ekler (PubMed kurum satırları + kart metni) |
-| 14 | `merge_external.py` | Crossref/RSS kayıtlarını sayıya ekler (başlık düzeyinde; kart yazılmaz) |
-| 15 | `coverage.py` | Dergi kapsama tablosunu üretir: bu sayı, son 30 gün, son giriş tarihi, kaynak |
-| 16 | `verify_numbers.py` | Kartlardaki sayıları kaynak özetle karşılaştırır, uyuşmayanları listeler |
+| PubMed ve kapsama sorguları sıralı, arada `sleep` | 58 dergi + kapsama ~30-40 dk | Eşzamanlı istekler + disk önbelleği; ikinci koşu neredeyse ağsız |
+| `build_issue.py` içinde sabit `TRIAL_IDS` listesi | Yeni dönemde klinik araştırmalar yanlış/eksik | Çalışmalar tarama sonucundan süzülür (`rules.TRIAL_INCLUDE/EXCLUDE`) |
+| Sayı dosyası 5 kez yeniden yazılıyor | Adım düşerse yarım sayı | Tek montaj, atomik yazma |
+| `prep`, `prep2`, `merge_cls`, `merge_external`, `coverage` ayrı süreçler | Aynı yardımcılar 7 dosyada tekrar | Yardımcılar `rules.py`/`journals.py` içinde tek yerde |
+| `sources.failed/scanned` metinleri elle yazılı | Kaynak durumu gerçeği yansıtmıyor | Kaynak manifestosu tarama raporundan üretilir |
+| Sabit `DATE`/`WINDOW_*` varsayılanları | Yanlış pencerede sayı üretme riski | `config.window()` + `--date/--cadence` |
+| PubMed dışı 606 kaydın tamamı modele gidiyor | Gereksiz maliyet ve gecikme | Önce kural süzgeci, sonra model |
 
-Ara dosyalar `pipeline/.work/` altında tutulur ve sürüm kontrolüne girmez. Adımlar tekrar çalıştırılabilir: `triage.mjs`, `recheck.mjs` ve `cards.mjs` tamamlanmış kayıtları atlar.
+## Doğrulama
+
+`python3 pipeline/run.py --from-cache --date 2026-11-22 --out /tmp/x.json` ile 22 Kasım sayısı
+yeniden üretildi: 1019 kayıt, 53 doğrudan, 9 dolaylı, 733 konu dışı, 123 kardiyak, 98 video/olgu,
+3 erişilemeyen kayıt ve 58 dergi kapsaması eski çıktıyla birebir aynı. Tek fark klinik araştırma
+sayısı: eski sabit listede 6, yeni kural süzgecinde 8 (sternotomi sonrası analjezi ve bronşiyal
+arter embolizasyonu çalışmaları da torasik oldukları için listeye girdi).
+
+Birim testleri: `pnpm test:pipeline` (15 test: tarih penceresi, klinik araştırma süzgeci,
+sayı denetimi, kapsam, dergi eşleme).
 
 ## Bilinen sınırlılıklar
 
-- TR Dizin'in arama API'si kimlik doğrulama istiyor (`yonetim.trdizin.gov.tr/api/v1` HTTP 401); OAI-PMH ve toplu indirme yolu doğrulanamadı. TR Dizin dergileri Crossref DOI kayıtları üzerinden izleniyor.
-- Makine okunur akışı doğrulanamayan dergiler: MMCTS, Shanghai Chest, Respiratory Case Reports, İzmir Göğüs Hastanesi Dergisi, Güncel Göğüs Hastalıkları. Bunlarda Crossref kaydı varsa oradan, yoksa yalnızca PubMed kayıtları değerlendirilir.
-- Crossref/RSS kayıtlarında özet metni çoğunlukla bulunmaz; bu kayıtlar başlık düzeyinde listelenir, çalışma kartı yazılmaz.
-- Europe PMC ön baskı taraması servis kesintilerinde boş dönebilir.
-- Giriş tarihi (`entry_date`) PubMed `PubMedPubDate[@PubStatus="entrez"]` alanından `iso_date()` ile üretilir: ay adı sayıya çevrilir, ay ve gün iki haneye tamamlanır, eksik parçada `YYYY` veya `YYYY-MM` döner. Böylece tarihler sözlük sırasına göre de doğru sıralanır.
-- `prep.py` ve `build_issue.py` giriş tarihini `iso_or_empty()` ile doğrular: yalnızca `YYYY`, `YYYY-MM`, `YYYY-MM-DD` (veya saatli ISO'nun gün kısmı) geçer; bozuk değer boş bırakılır ve listede sona düşer. Doğrulama testleri: `python3 pipeline/test_dates.py`.
-- `build_issue.py` dolaylı kayıtlara PubMed giriş tarihini (`entryDate`) yazar; arayüzdeki tarih sıralaması bu alana dayanır.
-- İlk sınıflandırma modeli (gpt-6-luna) düşük maliyetlidir; ikinci geçiş yalnızca Doğrudan/Dolaylı adaylarına uygulanır. Bu nedenle konu dışı listesinde tek tük hatalı sınıflandırma kalabilir.
-
-## Kapsam ve branş etiketleri
-`scope_tags.py` yalnızca kaynak metne dayanır: kapsam bilgisi kartın tasarım etiketi ve özetindeki ifadelerden ("çok merkezli", "ulusal kayıt", "tek merkezli"), branşlar ise PubMed kurum satırlarındaki bölüm adlarından ("Department of Medical Oncology" gibi) okunur. Kurum satırında branş yoksa kart "belirtilmemiş" kalır; metinde geçmeyen bilgi üretilmez. "Uluslararası" bayrağı yazar kurumlarının iki veya daha fazla ülkede olmasını gösterir, çalışma tasarımını değil.
-
-## Kaynak eşleme
-`kaynak_esleme.csv` her dergi için hangi kanalın kullanılacağını belirler: `pubmed` (varsayılan, listede yoksa), `crossref`, `rss`, `none`. Yeni bir dergi eklenirken ISSN ve kanal buraya yazılır; `coverage.py` ürettiği tabloda her derginin son 30 günlük kayıt sayısını ve son giriş tarihini gösterir.
+- TR Dizin arama API'si kimlik doğrulama istiyor (HTTP 401); TR Dizin dergileri Crossref DOI
+  kayıtları üzerinden izlenir.
+- F grubu dergi sitelerinde RSS akışı olmayanlar yalnızca PubMed/Crossref kaydıyla değerlendirilir.
+- Crossref/RSS kayıtlarında özet çoğu zaman yok; bu kayıtlar başlık düzeyinde listelenir.
+- Klinik araştırma süzgeci başlık metnine dayanır; başlığında torasik işaret taşımayan ilgili
+  çalışmalar gözden kaçabilir.
+- Sınıflandırma iki geçişlidir; konu dışı listesinde tek tük hata kalabilir.
+- `--from-cache` yalnızca `.work` içindeki hazır ara çıktılarla çalışır; ağ ve model çağrısı yapmaz.

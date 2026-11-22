@@ -132,6 +132,7 @@ export interface IssueStats {
 
 export interface Issue {
   date: string
+  cadence?: string
   windowStart: string
   windowEnd: string
   periodLabel: string

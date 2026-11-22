@@ -1,15 +1,16 @@
 {
  "date": "2026-11-22",
+ "cadence": "weekly",
  "windowStart": "2026-11-15",
  "windowEnd": "2026-11-22",
  "periodLabel": "15–22 Kasım 2026",
- "generatedAt": "2026-11-22T08:32:42+03:00",
+ "generatedAt": "2026-11-22T13:15:43+03:00",
  "stats": {
   "scanned": 1019,
   "direct": 53,
   "indirect": 9,
   "offTopic": 733,
-  "trials": 6,
+  "trials": 8,
   "journalsScanned": 58,
   "journalsWithRecords": 34,
   "externalRecords": 606,
@@ -2545,6 +2546,26 @@
  ],
  "trials": [
   {
+   "nct": "NCT07950865",
+   "title": "Does the Comprehensive Complication Index Add Value to the Clavien-Dindo Classification After Oesophagectomy for Cancer?",
+   "phase": "belirtilmemiş",
+   "status": "Tamamlandı",
+   "dates": "İlk kayıt 2026-11-20",
+   "enrollment": "273",
+   "primary": "Length of hospital stay in days",
+   "sponsor": "Cantonal Hospital of St. Gallen / Switzerland"
+  },
+  {
+   "nct": "NCT07949123",
+   "title": "INSPiRE - INtercostal Single Port Robot Evaluation",
+   "phase": "Uygulanamaz",
+   "status": "Aktif, kayıt almıyor",
+   "dates": "İlk kayıt 2026-11-19",
+   "enrollment": "30",
+   "primary": "Total percentage of major complications",
+   "sponsor": "Regina Elena Cancer Institute / Italy"
+  },
+  {
    "nct": "NCT07944469",
    "title": "Cryoablation Versus Standard Nerve Block for Pain Control After Lung Surgery",
    "phase": "Uygulanamaz",
@@ -2575,6 +2596,16 @@
    "sponsor": "University Hospital, Angers / France"
   },
   {
+   "nct": "NCT07943975",
+   "title": "Thoracic Epidural Analgesia Versus Erector Spinae Plane Block After Median Sternotomy",
+   "phase": "Uygulanamaz",
+   "status": "Tamamlandı",
+   "dates": "İlk kayıt 2026-11-17",
+   "enrollment": "99",
+   "primary": "Pain intensity at rest",
+   "sponsor": "Karadeniz Technical University / Turkey (Türkiye)"
+  },
+  {
    "nct": "NCT07939997",
    "title": "ctDNA Observational Biomarker Validation Study for Evaluation of Esophageal Squamous Cell Carcinoma",
    "phase": "belirtilmemiş",
@@ -2585,24 +2616,14 @@
    "sponsor": "University of Colorado, Denver / United States"
   },
   {
-   "nct": "NCT07949123",
-   "title": "INSPiRE - INtercostal Single Port Robot Evaluation",
+   "nct": "NCT07940413",
+   "title": "Bronchial Artery Embolization and Bronchoscopy in The Management of Hemoptysis in Cavitary Tuberculosis Lung Lesions",
    "phase": "Uygulanamaz",
-   "status": "Aktif, kayıt almıyor",
-   "dates": "İlk kayıt 2026-11-19",
+   "status": "Kayıt açık",
+   "dates": "İlk kayıt 2026-11-16",
    "enrollment": "30",
-   "primary": "Total percentage of major complications",
-   "sponsor": "Regina Elena Cancer Institute / Italy"
-  },
-  {
-   "nct": "NCT07950865",
-   "title": "Does the Comprehensive Complication Index Add Value to the Clavien-Dindo Classification After Oesophagectomy for Cancer?",
-   "phase": "belirtilmemiş",
-   "status": "Tamamlandı",
-   "dates": "İlk kayıt 2026-11-20",
-   "enrollment": "273",
-   "primary": "Length of hospital stay in days",
-   "sponsor": "Cantonal Hospital of St. Gallen / Switzerland"
+   "primary": "Proportion of Participants Achieving Successful Control of Hemoptysis",
+   "sponsor": "Al-Azhar University / Egypt"
   }
  ],
  "indirect": [
@@ -15535,17 +15556,16 @@
  ],
  "sources": {
   "scanned": [
-   "PubMed — dergi bazlı tarama: 58 derginin tüm ISSN'leri (basılı, e-ISSN, eski ISSN) + [edat]",
+   "PubMed — dergi bazlı tarama: 58 derginin 103 ISSN kaydı (basılı, e-ISSN, eski ISSN) + [edat]",
    "PubMed — konu sorgusu (MeSH + [tiab]) ile liste dışı dergiler",
    "ClinicalTrials.gov — StudyFirstPostDate ve ResultsFirstPostDate",
    "Europe PMC — ön baskılar (SRC:PPR)",
-   "Crossref — kaynak_esleme.csv'deki dergiler için DOI kayıtları (online ve basılı yayın tarihi)",
-   "Dergi RSS — Elsevier akışları (Seminars in TCVS, JTCVS Open, JTCVS Techniques, Operative Techniques)",
+   "Crossref — kaynak_esleme.csv dergileri için DOI kayıtları (online ve basılı yayın tarihi)",
+   "Dergi RSS — Elsevier akışları",
    "A grubu dergilerde kardiyak içerik ayrı listelendi"
   ],
   "failed": [
-   "TR Dizin — arama API'si kimlik doğrulama istiyor (yonetim.trdizin.gov.tr HTTP 401); OAI-PMH ve toplu indirme yolu bulunamadı. TR Dizin dergileri Crossref DOI kayıtları üzerinden izleniyor.",
-   "F grubu dergi siteleri (MMCTS, JOVS, VATS, Shanghai Chest, Respiratory Case Reports, Open Journal of Thoracic Surgery) — RSS akışı alınamadı; yalnızca PubMed kayıtları değerlendirildi"
+   "TR Dizin — arama API'si kimlik doğrulama istiyor (HTTP 401); dergiler Crossref DOI kayıtları üzerinden izleniyor."
   ],
   "empty": [
    "JTCVS Open",

@@ -49,10 +49,10 @@ Blueprint onaylandı; bu liste onaylanan kapsamı uygulama sonuçlarına çeviri
 - [x] Yazdırma için sade bir görünüm tanımlıdır.
 
 ## 11. Günlük üretim ve yayın
-- [x] `pipeline/run_daily.sh` tarama protokolünü baştan sona çalıştırıp yeni sayıyı `content/issues/` altına yazar ve `content/index.json` dizinini günceller.
+- [x] `pipeline/run.py` (sarmalayıcı: `run_weekly.sh`) tarama protokolünü baştan sona çalıştırıp yeni sayıyı `content/issues/` altına yazar ve `content/index.json` dizinini günceller.
 - [ ] Zamanlanmış görev her sabah boru hattını çalıştırır, sayıyı commit eder ve yayına alır.
 - [ ] Yeni sayı yayımlandığında kısa bildirim gönderilir.
 
 ## 12. Doğrulama
-- [x] Sayı üretiminden sonra kartlardaki sayılar kaynak özetle karşılaştırılır (`pipeline/verify_numbers.py`); uyuşmayan değerler düzeltilir.
+- [x] Sayı üretiminden sonra kartlardaki sayılar kaynak özetle karşılaştırılır (`pipeline/rules.py` → `numbers_missing`); uyuşmayan değerler düzeltilir.
 - [x] Üretim derlemesi ve tip denetimi hatasız geçer.

@@ -308,7 +308,8 @@ export default function App() {
               <div className="section-head">
                 <h3>Kaynaklar</h3>
                 <p className="section-note">
-                  Dönem: {shortDate(issue.windowStart)} – {shortDate(issue.windowEnd)} ·{' '}
+                  {issue.cadence === 'weekly' ? 'Haftalık tarama' : 'Tarama'} · Dönem:{' '}
+                  {shortDate(issue.windowStart)} – {shortDate(issue.windowEnd)} ·{' '}
                   {issue.stats.journalsScanned} dergi tarandı · {issue.stats.journalsWithRecords} dergide
                   kayıt bulundu.
                 </p>
