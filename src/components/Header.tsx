@@ -27,9 +27,19 @@ interface Props {
   onSelect: (date: string) => void
   theme: 'light' | 'dark'
   onToggleTheme: () => void
+  detailsOpen?: boolean
+  onToggleDetails?: () => void
 }
 
-export default function Header({ issues, currentDate, onSelect, theme, onToggleTheme }: Props) {
+export default function Header({
+  issues,
+  currentDate,
+  onSelect,
+  theme,
+  onToggleTheme,
+  detailsOpen = false,
+  onToggleDetails,
+}: Props) {
   const months = useMemo(() => groupByMonth(issues), [issues])
   return (
     <header className="site-header">
@@ -45,6 +55,17 @@ export default function Header({ issues, currentDate, onSelect, theme, onToggleT
         </a>
 
         <div className="header-tools">
+          {onToggleDetails && (
+            <button
+              type="button"
+              className={`header-link ${detailsOpen ? 'is-open' : ''}`}
+              onClick={onToggleDetails}
+              aria-expanded={detailsOpen}
+              aria-controls="kaynaklar"
+            >
+              Kaynaklar
+            </button>
+          )}
           <label className="issue-picker">
             <span className="issue-picker-label">Sayı</span>
             <select value={currentDate} onChange={(e) => onSelect(e.target.value)} aria-label="Sayı seç">

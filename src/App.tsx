@@ -296,13 +296,10 @@ export default function App() {
         onSelect={setDate}
         theme={theme}
         onToggleTheme={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+        detailsOpen={detailsOpen}
+        onToggleDetails={toggleDetails}
       />
 
-      <div className="shell">
-        <div className="read-col">
-          <Hero issue={issue} open={detailsOpen} onToggle={toggleDetails} />
-        </div>
-      </div>
 
       <div className="shell" hidden={!detailsOpen}>
         <section className="details-panel" id="kaynaklar" aria-label="Kaynaklar ve detaylar">
@@ -358,26 +355,12 @@ export default function App() {
 
       <div className="shell">
         <main className="content">
-          <section id="dogrudan" className="section">
-            <div className="section-head">
-              <h2>Doğrudan makaleler</h2>
-              <p className="section-note">
-                Torasik cerrahi uygulaması, tekniği veya sonucu üzerine çalışmalar. Tasarım türüne
-                göre gruplanır; her grup içinde en yeni giriş en üstte yer alır. Türkiye'deki bir
-                kurum veya yazarın yer aldığı çalışmalar kart üzerindeki rozetle işaretlenir ve
-                filtre çubuğundaki "Türkiye'den" çipiyle ayrıca süzülebilir.
-              </p>
-            </div>
-
+          <section id="dogrudan" className="section section--bare">
             {!showDirect ? null : designGroups.length === 0 ? (
               <p className="empty">Bu filtreye uyan doğrudan makale yok.</p>
             ) : (
               designGroups.map((g) => (
-                <div className="design-group" key={g.key}>
-                  <h3 className="design-title">
-                    {g.label}
-                    <span className="count">{g.items.length}</span>
-                  </h3>
+                <div className="design-group" key={g.key} aria-label={g.label}>
                   {byDateDesc(g.items).map((s) => (
                     <StudyCard key={s.pmid} study={s} tokens={tokens} />
                   ))}
@@ -393,14 +376,7 @@ export default function App() {
             )}
           </section>
 
-          <section id="dolayli" className="section">
-            <div className="section-head">
-              <h2>Dolaylı makaleler</h2>
-              <p className="section-note">
-                Onkoloji, pulmoner tıp, görüntüleme ve biyobelirteç çalışmaları; cerrahi kararı
-                etkileyebilecek olanlar.
-              </p>
-            </div>
+          <section id="dolayli" className="section section--bare">
             {!showIndirect ? null : filtered.indirect.length === 0 ? (
               <p className="empty">Bu filtreye uyan dolaylı makale yok.</p>
             ) : (

@@ -141,6 +141,21 @@ summary:focus-visible {
   text-overflow: ellipsis;
 }
 .header-tools { display: flex; align-items: center; gap: 8px; flex: 0 0 auto; }
+.header-link {
+  font: inherit;
+  font-size: 0.8125rem;
+  color: var(--ink-2);
+  background: transparent;
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  padding: 6px 10px;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-color: var(--rule);
+}
+.header-link:hover { color: var(--accent-ink); border-color: var(--accent); }
+.header-link.is-open { color: var(--accent-ink); border-color: var(--accent); }
 
 .issue-picker {
   display: flex;
@@ -451,6 +466,11 @@ mark {
   scroll-margin-top: calc(var(--header-h) + 16px);
 }
 
+.section.section--bare { padding-top: 22px; }
+.section--bare + .section--bare {
+  margin-top: 34px;
+  border-top: 1px solid var(--rule-soft);
+}
 .section-head { margin-bottom: 18px; }
 .section-head h2 {
   font-family: var(--serif);
@@ -472,23 +492,6 @@ mark {
 
 .design-group { margin-top: 30px; }
 .design-group:first-of-type { margin-top: 8px; }
-
-.design-title {
-  display: flex;
-  align-items: baseline;
-  gap: 8px;
-  font-family: var(--sans);
-  font-size: 0.75rem;
-  letter-spacing: 0.08em;
-  font-weight: 700;
-  color: var(--accent-ink);
-  margin: 0 0 4px;
-}
-.design-title .count {
-  font-weight: 400;
-  color: var(--muted);
-  letter-spacing: 0;
-}
 
 .tag-group { margin-top: 14px; }
 .tag-label {
@@ -900,7 +903,8 @@ mark {
   .wordmark { gap: 8px; }
   .wordmark-mark { width: 22px; height: 22px; }
   .wordmark-title { font-size: 0.875rem; }
-  .header-tools { gap: 6px; }
+  .header-inner { flex-wrap: wrap; height: auto; min-height: var(--header-h); row-gap: 8px; padding-top: 8px; padding-bottom: 8px; }
+  .header-tools { gap: 6px; width: 100%; justify-content: space-between; }
   .table-search { flex: 1 1 100%; }
   .table-tools .chips-inline { flex-wrap: wrap; overflow-x: visible; row-gap: 6px; }
   .table-tools .table-count { font-size: 0.78125rem; }

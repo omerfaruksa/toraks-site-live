@@ -6,16 +6,15 @@ Göğüs cerrahisi literatürünün günlük takibi için okuma odaklı, sade bi
 
 Bir sayı şu bölümlerden oluşur:
 
-1. **Genel bakış** — dönem, taranan kayıt sayısı, Doğrudan / Dolaylı / Konu dışı dağılımı, klinik araştırma sayısı.
-2. **Doğrudan makaleler** — çalışma kartları; tasarım türüne (RCT → meta-analiz → kohort → olgu-kontrol → olgu serisi → klinik dışı) göre gruplanır ve her grup içinde en yeni giriş en üstte olacak şekilde tarihe göre sıralanır. Her kartta yazarlar ve kurumlar bulunur.
-3. **PubMed dışı kaynaklar** — Crossref DOI kayıtları ve dergi RSS akışlarından gelen, PubMed taramasına girmeyen kayıtlar; başlık düzeyinde, Türkçe başlıkla listelenir.
-4. **Klinik araştırmalar** — ClinicalTrials.gov kayıtları, tablo halinde.
-5. **Dolaylı makaleler** — başlık, dergi, PMID/DOI ve tek cümlelik ana sonuç.
-6. **Video ve olgu başlıkları** — yalnızca başlık düzeyinde.
-7. **Konu dışı başlıklar** ve **Kardiyak içerik (kapsam dışı)** — tek satır.
-8. **Kaynaklar ve detaylar** — ana sayfada künyedeki "Kaynaklar ve detaylar" düğmesine basınca sayfa içinde açılan panel: tarama özeti, sayılar, taranan ve erişilemeyen kaynaklar, kayıt bulunmayan dergiler ve dergi kapsama tablosu (bu sayı, son 30 gün, son giriş tarihi, kaynak, durum). Panelin altındaki "Kapat" düğmesi ya da künyedeki düğme ile kapanır; adres çubuğu `sayfa=kaynaklar` parametresiyle panelin durumunu korur, böylece eski bağlantılar panel açık şekilde çalışır. Panelin içinde dergi listeleri ve kapsama tablosu için arama kutusu ile durum çipleri (Tümü / Bu sayıda kayıt var / Bu sayıda kayıt yok / PubMed'de yok) bulunur; sayaç satırı "Kayıtlı dergi 34/34 · Taranan dergi 58/58" biçiminde iki farklı kümeyi ayrı adlandırır, "Filtreyi temizle" düğmesini taşır ve süzgeç ilk kez devreye girdiğinde iki katlanır liste açılır. "Bu sayıda kayıt yok" ve "PubMed'de yok" süzgeçlerinde kayıt listesi tanımı gereği boş kaldığı için gizlenir, yalnızca kapsama tablosu sayılır.
+1. **Çalışma kartları (Doğrudan makaleler)** — tasarım türüne (RCT → meta-analiz → kohort → olgu-kontrol → olgu serisi → klinik dışı) göre gruplanır ve her grup içinde en yeni giriş en üstte olacak şekilde tarihe göre sıralanır. Her kartta yazarlar ve kurumlar bulunur.
+2. **PubMed dışı kaynaklar** — Crossref DOI kayıtları ve dergi RSS akışlarından gelen, PubMed taramasına girmeyen kayıtlar; başlık düzeyinde, Türkçe başlıkla listelenir.
+3. **Klinik araştırmalar** — ClinicalTrials.gov kayıtları, tablo halinde.
+4. **Dolaylı makaleler** — başlık, dergi, PMID/DOI ve tek cümlelik ana sonuç.
+5. **Video ve olgu başlıkları** — yalnızca başlık düzeyinde.
+6. **Konu dışı başlıklar** ve **Kardiyak içerik (kapsam dışı)** — tek satır.
+7. **Kaynaklar ve detaylar** — üst çubuktaki "Kaynaklar" düğmesine basınca sayfa içinde açılan panel: genel bakış (dönem, taranan kayıt, Doğrudan / Dolaylı / Konu dışı dağılımı, klinik araştırma sayısı), tarama özeti, taranan ve erişilemeyen kaynaklar, kayıt bulunmayan dergiler ve dergi kapsama tablosu (bu sayı, son 30 gün, son giriş tarihi, kaynak, durum). Panelin altındaki "Kapat" düğmesi ya da üst çubuktaki düğme ile kapanır; adres çubuğu `sayfa=kaynaklar` parametresiyle panelin durumunu korur, böylece eski bağlantılar panel açık şekilde çalışır. Panelin içinde dergi listeleri ve kapsama tablosu için arama kutusu ile durum çipleri (Tümü / Bu sayıda kayıt var / Bu sayıda kayıt yok / PubMed'de yok) bulunur; sayaç satırı "Kayıtlı dergi 34/34 · Taranan dergi 58/58" biçiminde iki farklı kümeyi ayrı adlandırır, "Filtreyi temizle" düğmesini taşır ve süzgeç ilk kez devreye girdiğinde iki katlanır liste açılır. "Bu sayıda kayıt yok" ve "PubMed'de yok" süzgeçlerinde kayıt listesi tanımı gereği boş kaldığı için gizlenir, yalnızca kapsama tablosu sayılır.
 
-Ana sayfada ayrı bir içindekiler sütunu yoktur; okuma bölümleri doğrudan akışta yer alır. Bölüm seçimi filtre panelindeki "Bölüm" satırından yapılır: klinik araştırmalar, PubMed dışı kaynaklar, video ve olgu, kardiyak içerik ve konu dışı listeler varsayılan olarak kapalıdır, seçilince açılır. Türkiye'deki bir kurum veya yazarın yer aldığı makaleler ayrı bir blok oluşturmaz; kart üzerindeki "Türkiye'den" rozeti ve filtre çubuğundaki çip ile işaretlenir.
+Ana sayfada künye, ayrı bir içindekiler sütunu ve bölüm başlıkları yoktur; sayfa doğrudan üst çubukla başlar ve okuma bölümleri kesintisiz akar. Çalışma kartları ile dolaylı liste arasında yalnızca ince bir ayırıcı çizgi bulunur; kart grubu başlıkları da görünmez, grup sırası ekran okuyucu için `aria-label` ile korunur. Bölüm seçimi filtre panelindeki "Bölüm" satırından yapılır: klinik araştırmalar, PubMed dışı kaynaklar, video ve olgu, kardiyak içerik ve konu dışı listeler varsayılan olarak kapalıdır, seçilince açılır. Türkiye'deki bir kurum veya yazarın yer aldığı makaleler ayrı bir blok oluşturmaz; kart üzerindeki "Türkiye'den" rozeti ve filtre çubuğundaki çip ile işaretlenir. Üst çubuk mobilde iki satıra ayrılır: ilk satırda site adı, ikinci satırda "Kaynaklar", sayı seçici ve tema düğmesi.
 
 Filtre çubuğu varsayılan olarak kompakt: yalnızca arama kutusu ve "Filtreler" düğmesi görünür; düğme açılınca ilgi sınıfı, "Türkiye'den", konu etiketi, çalışma kapsamı (tek merkezli / çok merkezli / multidisipliner / uluslararası), ortak branş ve bölüm seçicisi tek panelde toplanır. Etkin filtre sayısı düğmede rozet olarak görünür; panel kapalıyken eşleşme sayısı ve "Filtreyi temizle" satırı kalır. Tüm listeler (doğrudan kartlar, dolaylı kayıtlar, başlık listeleri, PubMed dışı kayıtlar) tarihe göre yeniden eskiye sıralanır. Kapsam ve branş etiketleri PubMed kurum satırları ile kart metninden türetilir; kaynakta bulunmayan bilgi etiketlenmez.
 
@@ -35,7 +34,7 @@ src/
   App.tsx               # sayfa düzeni, filtreler, bölümler
   data.ts               # sayı dizini ve tembel yükleme
   types.ts              # veri şeması
-  components/           # başlık, künye, filtreler, kart, tablo, kaynaklar
+  components/           # üst çubuk, filtreler, kart, tablo, kaynaklar
   styles.css            # tipografi ve duyarlı yerleşim
 pipeline/               # günlük tarama ve sayı üretimi
 ```
