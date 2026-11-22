@@ -14,19 +14,18 @@ import type { Design, Indirect, Issue, Scope, Study } from './types'
 
 const norm = (s: string) => s.toLocaleLowerCase('tr')
 
+/** Tarihe göre yeniden eskiye; tarihi olmayan kayıtlar sona düşer, kendi aralarında sıra korunur. */
+function byDateDesc<T extends { entryDate?: string; date?: string }>(items: T[]): T[] {
+  return items
+    .map((item, i) => ({ item, i, key: item.entryDate || item.date || '' }))
+    .sort((a, b) => (a.key === b.key ? a.i - b.i : a.key < b.key ? 1 : -1))
+    .map((x) => x.item)
+}
+
 type Page = 'issue' | 'kaynaklar'
 
 function readPage(): Page {
   return new URLSearchParams(window.location.search).get('sayfa') === 'kaynaklar' ? 'kaynaklar' : 'issue'
-}
-
-function primaryTag(s: Study): string {
-  const ordered = [...s.tags].sort((a, b) => {
-    const ia = TAG_ORDER.indexOf(a)
-    const ib = TAG_ORDER.indexOf(b)
-    return (ia === -1 ? 99 : ia) - (ib === -1 ? 99 : ib)
-  })
-  return ordered[0] ?? 'Diğer'
 }
 
 interface Filterable {
@@ -132,8 +131,8 @@ export default function App() {
       return matchesQuery(s, query)
     }
     return {
-      direct: issue.direct.filter(keep),
-      indirect: issue.indirect.filter(keep),
+      direct: byDateDesc(issue.direct.filter(keep)),
+      indirect: byDateDesc(issue.indirect.filter(keep)),
     }
   }, [issue, tag, query, turkeyOnly, scope, multiOnly, intlOnly, branches])
 
@@ -142,7 +141,9 @@ export default function App() {
     const present = new Set<string>()
     issue.direct.forEach((s) => s.tags.forEach((t) => present.add(t)))
     issue.indirect.forEach((s) => s.tags.forEach((t) => present.add(t)))
-    return TAG_ORDER.filter((t) => present.has(t))
+    const ordered = TAG_ORDER.filter((t) => present.has(t))
+    const extra = [...present].filter((t) => !TAG_ORDER.includes(t)).sort((a, b) => a.localeCompare(b, 'tr'))
+    return [...ordered, ...extra]
   }, [issue])
 
   const branchOptions = useMemo<BranchOption[]>(() => {
@@ -309,8 +310,8 @@ export default function App() {
             <div className="section-head">
               <h2>Doğrudan makaleler</h2>
               <p className="section-note">
-                Torasik cerrahi uygulaması, tekniği veya sonucu üzerine çalışmalar. Tasarım türüne,
-                ardından konu etiketine göre sıralanır.
+                Torasik cerrahi uygulaması, tekniği veya sonucu üzerine çalışmalar. Tasarım türüne
+                göre gruplanır; her grup içinde en yeni giriş en üstte yer alır.
               </p>
             </div>
 
@@ -333,33 +334,23 @@ export default function App() {
             {!showDirect ? null : designGroups.length === 0 && turkeyCards.length === 0 ? (
               <p className="empty">Bu filtreye uyan doğrudan makale yok.</p>
             ) : designGroups.length === 0 ? null : (
-              designGroups.map((g) => {
-                const subTags = Array.from(new Set(g.items.map(primaryTag)))
-                return (
-                  <div className="design-group" key={g.key}>
-                    <h3 className="design-title">
-                      {g.label}
-                      <span className="count">{g.items.length}</span>
-                    </h3>
-                    {subTags.map((t) => (
-                      <div className="tag-group" key={t}>
-                        <p className="tag-label">{t}</p>
-                        {g.items
-                          .filter((s) => primaryTag(s) === t)
-                          .map((s) => (
-                            <StudyCard key={s.pmid} study={s} />
-                          ))}
-                      </div>
-                    ))}
-                  </div>
-                )
-              })
+              designGroups.map((g) => (
+                <div className="design-group" key={g.key}>
+                  <h3 className="design-title">
+                    {g.label}
+                    <span className="count">{g.items.length}</span>
+                  </h3>
+                  {byDateDesc(g.items).map((s) => (
+                    <StudyCard key={s.pmid} study={s} />
+                  ))}
+                </div>
+              ))
             )}
 
             {showDirect && issue.unavailable && issue.unavailable.length > 0 && (
               <div className="unavailable">
                 <p className="tag-label">Tam metne erişilemedi (kart yazılmadı)</p>
-                <TitleList items={issue.unavailable} empty="" limit={6} />
+                <TitleList items={byDateDesc(issue.unavailable)} empty="" limit={6} />
               </div>
             )}
           </section>
@@ -438,7 +429,7 @@ export default function App() {
             open={section === 'video-olgu'}
             onToggle={(open) => setSection(open ? 'video-olgu' : '')}
           >
-            <TitleList items={issue.videoCase} empty="Bu dönemde video veya olgu kaydı bulunmadı." limit={12} showAuthors />
+            <TitleList items={byDateDesc(issue.videoCase)} empty="Bu dönemde video veya olgu kaydı bulunmadı." limit={12} showAuthors />
           </SectionGroup>
 
           {issue.cardiac.length > 0 && (
@@ -450,7 +441,7 @@ export default function App() {
               open={section === 'kardiyak'}
               onToggle={(open) => setSection(open ? 'kardiyak' : '')}
             >
-              <TitleList items={issue.cardiac} empty="Kardiyak içerikli kayıt bulunmadı." limit={8} />
+              <TitleList items={byDateDesc(issue.cardiac)} empty="Kardiyak içerikli kayıt bulunmadı." limit={8} />
             </SectionGroup>
           )}
 
@@ -462,7 +453,7 @@ export default function App() {
             open={section === 'konu-disi'}
             onToggle={(open) => setSection(open ? 'konu-disi' : '')}
           >
-            <TitleList items={issue.offTopic} empty="Konu dışı kayıt bulunmadı." limit={10} />
+            <TitleList items={byDateDesc(issue.offTopic)} empty="Konu dışı kayıt bulunmadı." limit={10} />
           </SectionGroup>
 
           <footer className="site-footer">

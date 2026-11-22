@@ -185,6 +185,7 @@ for pmid, c in cls.items():
             "title": r["title"],
             "journal": journal_name(pmid),
             "pmid": pmid,
+            "entryDate": r.get("entry_date") or "",
             "doi": r.get("doi") or "",
             "url": f"https://pubmed.ncbi.nlm.nih.gov/{pmid}/",
             "oneLiner": c["one_liner"],

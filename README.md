@@ -7,7 +7,7 @@ Göğüs cerrahisi literatürünün günlük takibi için okuma odaklı, sade bi
 Bir sayı şu bölümlerden oluşur:
 
 1. **Genel bakış** — dönem, taranan kayıt sayısı, Doğrudan / Dolaylı / Konu dışı dağılımı, klinik araştırma sayısı.
-2. **Doğrudan makaleler** — çalışma kartları; tasarım türüne (RCT → meta-analiz → kohort → olgu-kontrol → olgu serisi → klinik dışı), ardından konu etiketine göre sıralanır. Her kartta yazarlar ve kurumlar bulunur.
+2. **Doğrudan makaleler** — çalışma kartları; tasarım türüne (RCT → meta-analiz → kohort → olgu-kontrol → olgu serisi → klinik dışı) göre gruplanır ve her grup içinde en yeni giriş en üstte olacak şekilde tarihe göre sıralanır. Her kartta yazarlar ve kurumlar bulunur.
 3. **Türkiye'den** — yazar veya kurum bilgisinde Türkiye'deki bir kurum geçen doğrudan makaleler; tasarım gruplarında tekrarlanmaz. Filtre çubuğunda ayrı bir çipi vardır.
 4. **PubMed dışı kaynaklar** — Crossref DOI kayıtları ve dergi RSS akışlarından gelen, PubMed taramasına girmeyen kayıtlar; başlık düzeyinde, Türkçe başlıkla listelenir.
 5. **Klinik araştırmalar** — ClinicalTrials.gov kayıtları, tablo halinde.
@@ -18,7 +18,7 @@ Bir sayı şu bölümlerden oluşur:
 
 Ana sayfada içindekiler yalnızca okuma bölümlerini listeler (Doğrudan makaleler, Türkiye'den, Dolaylı makaleler). Klinik araştırmalar, PubMed dışı kaynaklar, video ve olgu, kardiyak içerik ve konu dışı listeleri filtre çubuğundaki "Bölüm" seçicisinden açılır; bu bölümler varsayılan olarak kapalıdır.
 
-Filtre çubuğu sırasıyla konu etiketi, çalışma kapsamı (tek merkezli / çok merkezli / multidisipliner / uluslararası), ortak branş ve bölüm seçicisini içerir. Kapsam ve branş etiketleri PubMed kurum satırları ile kart metninden türetilir; kaynakta bulunmayan bilgi etiketlenmez.
+Filtre çubuğu varsayılan olarak kompakt: yalnızca arama kutusu ve "Filtreler" düğmesi görünür; düğme açılınca ilgi sınıfı, "Türkiye'den", konu etiketi, çalışma kapsamı (tek merkezli / çok merkezli / multidisipliner / uluslararası), ortak branş ve bölüm seçicisi tek panelde toplanır. Etkin filtre sayısı düğmede rozet olarak görünür; panel kapalıyken eşleşme sayısı ve "Filtreyi temizle" satırı kalır. Tüm listeler (doğrudan kartlar, dolaylı kayıtlar, başlık listeleri, PubMed dışı kayıtlar) tarihe göre yeniden eskiye sıralanır. Kapsam ve branş etiketleri PubMed kurum satırları ile kart metninden türetilir; kaynakta bulunmayan bilgi etiketlenmez.
 
 ## Teknoloji
 
@@ -51,6 +51,7 @@ pipeline/               # günlük tarama ve sayı üretimi
 | `indirect` | Dolaylı makaleler (tek cümlelik sonuç) |
 | `videoCase`, `offTopic`, `cardiac`, `unavailable` | Yalnızca başlıkla listelenen kayıtlar |
 | `external` | PubMed dışı kaynaklardan gelen kayıtlar (Türkçe ve orijinal başlık, dergi, tarih, DOI, yazarlar, kurumlar, ilgi sınıfı) |
+| `indirect[].entryDate` | Dolaylı kaydın PubMed'e giriş tarihi ([edat]); liste bu alana göre sıralanır |
 | `coverage` | 58 dergi için kapsama tablosu: bu sayı, son 30 gün, son giriş tarihi, kaynak, durum |
 | `sources` | Taranan, erişilemeyen kaynaklar ve kayıt bulunmayan dergiler |
 

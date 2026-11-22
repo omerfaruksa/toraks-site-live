@@ -2481,93 +2481,6 @@
  ],
  "indirect": [
   {
-   "id": "43056991",
-   "title": "Bridging the molecular and immune landscapes of pleural mesothelioma: Implications for immune checkpoint inhibitor response.",
-   "journal": "Lung Cancer",
-   "pmid": "43056991",
-   "doi": "10.1016/j.lungcan.2026.109686",
-   "url": "https://pubmed.ncbi.nlm.nih.gov/43056991/",
-   "oneLiner": "Plevral mezotelyomada moleküler ve immün profilleme, immünoterapi yanıtını öngörecek biyobelirteçlerin geliştirilmesine yardımcı olabilir.",
-   "tags": [
-    "Plevra"
-   ],
-   "authors": "Soares-Gonçalves J, Carvalheiro C, Batista A ve ark. (9 yazar)",
-   "institutions": [
-    "CNC-UC - Center for Neuroscience and Cell Biology, Coimbra, Portugal",
-    "Champalimaud Clinical Center, Lisboa, Portugal",
-    "Research Center of IPO Porto Health Research Network - Portuguese Oncology Institute of Porto (IPO Porto)/Porto Comprehensive Cancer Center Raquel Seruca (Porto"
-   ],
-   "turkey": false,
-   "scope": "",
-   "scopeLabel": "",
-   "disciplines": [
-    "Moleküler ve translasyonel bilimler",
-    "Patoloji"
-   ],
-   "countries": [
-    "Portugal",
-    "Sweden"
-   ],
-   "multidisciplinary": true,
-   "international": true
-  },
-  {
-   "id": "43051950",
-   "title": "National variation in endobronchial ultrasound performance: results from the 2024 British Thoracic Society pilot EBUS audit.",
-   "journal": "BMJ Open Respiratory Research",
-   "pmid": "43051950",
-   "doi": "10.1093/ejcts/ezu028",
-   "url": "https://pubmed.ncbi.nlm.nih.gov/43051950/",
-   "oneLiner": "1859 EBUS işleminde evreleme duyarlılığı %81, negatif öngörü değeri %86 bulundu; merkezler arasında performans farklılıkları saptandı.",
-   "tags": [
-    "Akciğer kanseri cerrahisi"
-   ],
-   "authors": "O'Dowd EL, Balata H, Moll C ve ark. (6 yazar)",
-   "institutions": [
-    "University of Nottingham, England, UK",
-    "Nottingham University Hospitals NHS Trust, England, UK",
-    "Manchester University NHS Foundation Trust, England, UK"
-   ],
-   "turkey": false,
-   "scope": "",
-   "scopeLabel": "",
-   "disciplines": [
-    "Göğüs hastalıkları",
-    "Göğüs cerrahisi"
-   ],
-   "countries": [
-    "England",
-    "Uk"
-   ],
-   "multidisciplinary": true,
-   "international": true
-  },
-  {
-   "id": "43039166",
-   "title": "Epidermal Growth Factor Receptor-Mutation Testing in Patients with Resected Stage IB-IIIB Lung Adenocarcinoma: Are Guidelines Followed?",
-   "journal": "Annals of Thoracic Surgery",
-   "pmid": "43039166",
-   "doi": "10.1016/j.athoracsur.2026.10.053",
-   "url": "https://pubmed.ncbi.nlm.nih.gov/43039166/",
-   "oneLiner": "Cerrahi uygulanan evre IB-IIIB akciğer adenokarsinomu hastalarının yalnızca %56,0’ına EGFR mutasyon testi yapılmış; test oranları hastaneler arasında belirgin farklılık göstermiştir.",
-   "tags": [],
-   "authors": "Pohlman A, Seder CW, Woodard GA ve ark. (6 yazar)",
-   "institutions": [
-    "Stritch School of Medicine, Chicago, IL",
-    "Rush University Medical Center, Chicago, IL",
-    "Yale School of Medicine, New Haven, CT"
-   ],
-   "turkey": false,
-   "scope": "",
-   "scopeLabel": "",
-   "disciplines": [
-    "Göğüs cerrahisi",
-    "Kalp ve damar cerrahisi"
-   ],
-   "multidisciplinary": true,
-   "international": false
-  },
-  {
    "id": "43064238",
    "title": "Artificial Intelligence in Thoracic Pathology and Biomarker Assessment: An IASLC Pathology Committee Review.",
    "journal": "Journal of Thoracic Oncology",
@@ -2608,7 +2521,8 @@
     "Spain"
    ],
    "multidisciplinary": true,
-   "international": true
+   "international": true,
+   "entryDate": "2026-11-20"
   },
   {
    "id": "43064237",
@@ -2639,7 +2553,8 @@
     "Australia"
    ],
    "multidisciplinary": false,
-   "international": true
+   "international": true,
+   "entryDate": "2026-11-20"
   },
   {
    "id": "43064236",
@@ -2685,37 +2600,72 @@
     "Germany"
    ],
    "multidisciplinary": true,
-   "international": true
+   "international": true,
+   "entryDate": "2026-11-20"
   },
   {
-   "id": "43033550",
-   "title": "Emerging molecular probes for lung cancer: Targets, translational evidence, and theranostic potential.",
+   "id": "43056991",
+   "title": "Bridging the molecular and immune landscapes of pleural mesothelioma: Implications for immune checkpoint inhibitor response.",
    "journal": "Lung Cancer",
-   "pmid": "43033550",
-   "doi": "10.1016/j.lungcan.2026.109683",
-   "url": "https://pubmed.ncbi.nlm.nih.gov/43033550/",
-   "oneLiner": "Moleküler görüntüleme probları akciğer kanserinde evreleme ve tedavi seçimini destekleme potansiyeli gösterse de klinik yararları ileriye dönük çalışmalarla doğrulanmalıdır.",
-   "tags": [],
-   "authors": "Yu Z, Sun X, Wang P ve ark. (6 yazar)",
+   "pmid": "43056991",
+   "doi": "10.1016/j.lungcan.2026.109686",
+   "url": "https://pubmed.ncbi.nlm.nih.gov/43056991/",
+   "oneLiner": "Plevral mezotelyomada moleküler ve immün profilleme, immünoterapi yanıtını öngörecek biyobelirteçlerin geliştirilmesine yardımcı olabilir.",
+   "tags": [
+    "Plevra"
+   ],
+   "authors": "Soares-Gonçalves J, Carvalheiro C, Batista A ve ark. (9 yazar)",
    "institutions": [
-    "Center for Nuclear Medicine and Molecular Imaging, Jinan, China",
-    "Binzhou People's Hospital, Binzhou, China",
-    "Shandong Cancer Hospital and Institute, Jinan, China"
+    "CNC-UC - Center for Neuroscience and Cell Biology, Coimbra, Portugal",
+    "Champalimaud Clinical Center, Lisboa, Portugal",
+    "Research Center of IPO Porto Health Research Network - Portuguese Oncology Institute of Porto (IPO Porto)/Porto Comprehensive Cancer Center Raquel Seruca (Porto"
    ],
    "turkey": false,
    "scope": "",
    "scopeLabel": "",
    "disciplines": [
-    "Nükleer tıp",
     "Moleküler ve translasyonel bilimler",
-    "Medikal onkoloji",
-    "Radyasyon onkolojisi"
+    "Patoloji"
    ],
    "countries": [
-    "China"
+    "Portugal",
+    "Sweden"
    ],
    "multidisciplinary": true,
-   "international": false
+   "international": true,
+   "entryDate": "2026-11-19"
+  },
+  {
+   "id": "43051950",
+   "title": "National variation in endobronchial ultrasound performance: results from the 2024 British Thoracic Society pilot EBUS audit.",
+   "journal": "BMJ Open Respiratory Research",
+   "pmid": "43051950",
+   "doi": "10.1093/ejcts/ezu028",
+   "url": "https://pubmed.ncbi.nlm.nih.gov/43051950/",
+   "oneLiner": "1859 EBUS işleminde evreleme duyarlılığı %81, negatif öngörü değeri %86 bulundu; merkezler arasında performans farklılıkları saptandı.",
+   "tags": [
+    "Akciğer kanseri cerrahisi"
+   ],
+   "authors": "O'Dowd EL, Balata H, Moll C ve ark. (6 yazar)",
+   "institutions": [
+    "University of Nottingham, England, UK",
+    "Nottingham University Hospitals NHS Trust, England, UK",
+    "Manchester University NHS Foundation Trust, England, UK"
+   ],
+   "turkey": false,
+   "scope": "",
+   "scopeLabel": "",
+   "disciplines": [
+    "Göğüs hastalıkları",
+    "Göğüs cerrahisi"
+   ],
+   "countries": [
+    "England",
+    "Uk"
+   ],
+   "multidisciplinary": true,
+   "international": true,
+   "entryDate": "2026-11-18"
   },
   {
    "id": "43044045",
@@ -2750,7 +2700,8 @@
     "Korea"
    ],
    "multidisciplinary": true,
-   "international": true
+   "international": true,
+   "entryDate": "2026-11-17"
   },
   {
    "id": "43044044",
@@ -2778,7 +2729,34 @@
     "Germany"
    ],
    "multidisciplinary": true,
-   "international": false
+   "international": false,
+   "entryDate": "2026-11-17"
+  },
+  {
+   "id": "43039166",
+   "title": "Epidermal Growth Factor Receptor-Mutation Testing in Patients with Resected Stage IB-IIIB Lung Adenocarcinoma: Are Guidelines Followed?",
+   "journal": "Annals of Thoracic Surgery",
+   "pmid": "43039166",
+   "doi": "10.1016/j.athoracsur.2026.10.053",
+   "url": "https://pubmed.ncbi.nlm.nih.gov/43039166/",
+   "oneLiner": "Cerrahi uygulanan evre IB-IIIB akciğer adenokarsinomu hastalarının yalnızca %56,0’ına EGFR mutasyon testi yapılmış; test oranları hastaneler arasında belirgin farklılık göstermiştir.",
+   "tags": [],
+   "authors": "Pohlman A, Seder CW, Woodard GA ve ark. (6 yazar)",
+   "institutions": [
+    "Stritch School of Medicine, Chicago, IL",
+    "Rush University Medical Center, Chicago, IL",
+    "Yale School of Medicine, New Haven, CT"
+   ],
+   "turkey": false,
+   "scope": "",
+   "scopeLabel": "",
+   "disciplines": [
+    "Göğüs cerrahisi",
+    "Kalp ve damar cerrahisi"
+   ],
+   "multidisciplinary": true,
+   "international": false,
+   "entryDate": "2026-11-16"
   },
   {
    "id": "43037522",
@@ -2798,7 +2776,39 @@
    "scopeLabel": "",
    "disciplines": [],
    "multidisciplinary": false,
-   "international": false
+   "international": false,
+   "entryDate": "2026-11-16"
+  },
+  {
+   "id": "43033550",
+   "title": "Emerging molecular probes for lung cancer: Targets, translational evidence, and theranostic potential.",
+   "journal": "Lung Cancer",
+   "pmid": "43033550",
+   "doi": "10.1016/j.lungcan.2026.109683",
+   "url": "https://pubmed.ncbi.nlm.nih.gov/43033550/",
+   "oneLiner": "Moleküler görüntüleme probları akciğer kanserinde evreleme ve tedavi seçimini destekleme potansiyeli gösterse de klinik yararları ileriye dönük çalışmalarla doğrulanmalıdır.",
+   "tags": [],
+   "authors": "Yu Z, Sun X, Wang P ve ark. (6 yazar)",
+   "institutions": [
+    "Center for Nuclear Medicine and Molecular Imaging, Jinan, China",
+    "Binzhou People's Hospital, Binzhou, China",
+    "Shandong Cancer Hospital and Institute, Jinan, China"
+   ],
+   "turkey": false,
+   "scope": "",
+   "scopeLabel": "",
+   "disciplines": [
+    "Nükleer tıp",
+    "Moleküler ve translasyonel bilimler",
+    "Medikal onkoloji",
+    "Radyasyon onkolojisi"
+   ],
+   "countries": [
+    "China"
+   ],
+   "multidisciplinary": true,
+   "international": false,
+   "entryDate": "2026-11-14"
   },
   {
    "id": "43033426",
@@ -2816,7 +2826,8 @@
    "scopeLabel": "",
    "disciplines": [],
    "multidisciplinary": false,
-   "international": false
+   "international": false,
+   "entryDate": "2026-11-14"
   },
   {
    "id": "43034221",
@@ -2847,7 +2858,8 @@
     "Japan"
    ],
    "multidisciplinary": true,
-   "international": false
+   "international": false,
+   "entryDate": "2026-11-14"
   }
  ],
  "videoCase": [

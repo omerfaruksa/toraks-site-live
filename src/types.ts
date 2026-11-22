@@ -52,6 +52,7 @@ export interface Indirect {
   id: string
   title: string
   journal: string
+  entryDate?: string
   pmid: string
   doi: string
   url: string

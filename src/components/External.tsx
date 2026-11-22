@@ -2,12 +2,17 @@ import type { ExternalItem } from '../types'
 import { shortDate } from '../data'
 
 export default function External({ items }: { items: ExternalItem[] }) {
+  const sorted = items
+    .map((item, i) => ({ item, i, key: item.date || '' }))
+    .sort((a, b) => (a.key === b.key ? a.i - b.i : a.key < b.key ? 1 : -1))
+    .map((x) => x.item)
+
   if (items.length === 0) {
     return <p className="empty">Bu dönemde PubMed dışı kaynaklardan yeni kayıt gelmedi.</p>
   }
   return (
     <ul className="external-list">
-      {items.map((it, i) => (
+      {sorted.map((it, i) => (
         <li key={`${it.doi || it.url || it.title}-${i}`}>
           <div className="external-head">
             {it.interestLabel && (
