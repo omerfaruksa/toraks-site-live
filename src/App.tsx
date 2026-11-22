@@ -3,7 +3,6 @@ import Header from './components/Header'
 import Hero from './components/Hero'
 import Filters, { type BranchOption, type SectionOption } from './components/Filters'
 import StudyCard from './components/StudyCard'
-import Toc, { type TocItem } from './components/Toc'
 import Trials from './components/Trials'
 import TitleList from './components/TitleList'
 import Sources from './components/Sources'
@@ -202,10 +201,6 @@ export default function App() {
     items: filtered.direct.filter((s) => s.design === (d.key as Design)),
   })).filter((g) => g.items.length > 0)
 
-  const toc: TocItem[] = [
-    { id: 'dogrudan', label: 'Doğrudan makaleler', count: filtered.direct.length },
-    { id: 'dolayli', label: 'Dolaylı makaleler', count: filtered.indirect.length },
-  ]
 
   const sectionOptions: SectionOption[] = [
     ...(issue.external && issue.external.length > 0
@@ -247,7 +242,9 @@ export default function App() {
       />
 
       <div className="shell">
-        <Hero issue={issue} open={detailsOpen} onToggle={toggleDetails} />
+        <div className="read-col">
+          <Hero issue={issue} open={detailsOpen} onToggle={toggleDetails} />
+        </div>
       </div>
 
       <div className="shell" hidden={!detailsOpen}>
@@ -302,12 +299,8 @@ export default function App() {
         onClear={clearFilters}
       />
 
-      <div className="shell layout">
-        <Toc items={toc} variant="aside" />
-
+      <div className="shell">
         <main className="content">
-          <Toc items={toc} variant="inline" />
-
           <section id="dogrudan" className="section">
             <div className="section-head">
               <h2>Doğrudan makaleler</h2>

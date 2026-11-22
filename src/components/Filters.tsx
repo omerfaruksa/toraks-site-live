@@ -67,7 +67,7 @@ export default function Filters(p: Props) {
               value={p.query}
               onChange={(e) => p.onQuery(e.target.value)}
               placeholder="Başlık, yazar, kurum, dergi, PMID"
-              aria-label="Makale ara"
+              aria-label="Başlık, yazar, kurum, dergi veya PMID içinde ara"
             />
           </div>
 
