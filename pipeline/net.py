@@ -64,7 +64,13 @@ def esearch(term: str, retmax: int = 400, **extra) -> list[str]:
     params = {"db": "pubmed", "term": term, "retmax": retmax, "retmode": "json"}
     params.update(extra)
     data = json.loads(get(f"{EUTILS}/esearch.fcgi", params))
-    return data["esearchresult"].get("idlist", [])
+    result = data["esearchresult"]
+    ids = result.get("idlist", [])
+    total = int(result.get("count", 0))
+    if total > len(ids):
+        # Sessiz kesme yerine görünür uyarı: sorgu daraltılmalı ya da sayfalama eklenmeli.
+        print(f"  uyarı: sorgu {total} sonuç, {len(ids)} PMID alındı (retmax={retmax})")
+    return ids
 
 
 def esearch_count(term: str, **extra) -> int:

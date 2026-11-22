@@ -144,13 +144,17 @@ def branches_of(affiliations) -> list[str]:
     return found
 
 
+COUNTRY_CANON = {"usa": "USA", "u.s.a": "USA", "u.s.": "USA", "us": "USA", "uk": "UK",
+                 "türkiye": "Turkey", "turkiye": "Turkey"}
+
+
 def countries_of(affiliations) -> list[str]:
     seen = []
     for aff in affiliations:
         for match in COUNTRY_RE.finditer(aff):
-            name = match.group(1).strip().title()
-            if name.lower() in ("türkiye", "turkiye"):
-                name = "Turkey"
+            name = match.group(1).strip()
+            # title() kısaltmaları bozuyor (USA -> Usa); kanonik adlar korunur.
+            name = COUNTRY_CANON.get(name.lower(), name.title())
             if name not in seen:
                 seen.append(name)
     return seen

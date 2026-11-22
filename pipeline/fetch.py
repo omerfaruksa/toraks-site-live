@@ -52,8 +52,11 @@ def iso_date(year, month="", day="") -> str:
     if not 1 <= idx <= 12:
         return year
     out = f"{year}-{idx:02d}"
-    if (day or "").strip().isdigit() and 1 <= int(day) <= 31:
-        out += f"-{int(day):02d}"
+    if (day or "").strip().isdigit():
+        try:
+            out += f"-{date(int(year), idx, int(day)).day:02d}"
+        except ValueError:
+            pass  # 2024-02-31 gibi takvimde olmayan gün yazılmaz
     return out
 
 

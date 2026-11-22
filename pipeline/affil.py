@@ -8,7 +8,7 @@ import re
 
 # --- ulke belirtecleri -------------------------------------------------------
 COUNTRY_TR = re.compile(
-    r"(?:^|[,\s])(?:turkey|t[üu]rkiye|turkiye)(?:[,\s.]|$)", re.I)
+    r"(?:^|[,\s])(?:turkey|t[üu]rkiye|turkiye)(?:[,;\s.]|$)", re.I)
 
 # Baska ulke belirtecleri: sehir eslesmesini gecersiz kilmak icin
 OTHER_COUNTRY = re.compile(

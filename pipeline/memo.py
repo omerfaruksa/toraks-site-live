@@ -31,6 +31,8 @@ def load(name: str) -> dict[str, dict]:
     try:
         return json.loads(file.read_text(encoding="utf-8"))
     except json.JSONDecodeError:
+        # Bozuk dosya hattı durdurmaz ama sessiz de kalmaz: tüm kayıtlar yeniden değerlendirilir.
+        print(f"  uyarı: {file.name} okunamadı, bellek boş kabul edildi")
         return {}
 
 

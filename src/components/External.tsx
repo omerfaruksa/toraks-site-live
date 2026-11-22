@@ -1,10 +1,13 @@
 import { useMemo } from 'react'
 import type { ExternalItem } from '../types'
-import { shortDate } from '../data'
+import { byDateDesc, shortDate } from '../data'
 import { matchesTokens, searchText } from '../search'
 import Highlight from './Highlight'
 
-export default function External({ items, tokens = [] }: { items: ExternalItem[]; tokens?: string[] }) {
+// Varsayılan boş dizi modül düzeyinde: her render'da yeni dizi useMemo'yu bozuyordu.
+const NO_TOKENS: string[] = []
+
+export default function External({ items, tokens = NO_TOKENS }: { items: ExternalItem[]; tokens?: string[] }) {
   const matched = useMemo(() => {
     if (tokens.length === 0) return items
     return items.filter((item) =>
@@ -14,10 +17,7 @@ export default function External({ items, tokens = [] }: { items: ExternalItem[]
       ),
     )
   }, [items, tokens])
-  const sorted = matched
-    .map((item, i) => ({ item, i, key: item.date || '' }))
-    .sort((a, b) => (a.key === b.key ? a.i - b.i : a.key < b.key ? 1 : -1))
-    .map((x) => x.item)
+  const sorted = useMemo(() => byDateDesc(matched), [matched])
 
   if (items.length === 0) {
     return <p className="empty">Bu dönemde PubMed dışı kaynaklardan yeni kayıt gelmedi.</p>
@@ -52,8 +52,7 @@ export default function External({ items, tokens = [] }: { items: ExternalItem[]
           </p>
           {(it.authors || (it.institutions && it.institutions.length > 0)) && (
             <p className="indirect-authors">
-              {it.authors}
-              {it.institutions && it.institutions.length > 0 ? ` · ${it.institutions.join(' · ')}` : ''}
+              {[it.authors, ...(it.institutions ?? [])].filter(Boolean).join(' · ')}
             </p>
           )}
           {it.oneLiner && <p className="indirect-line">{it.oneLiner}</p>}

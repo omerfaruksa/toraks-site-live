@@ -79,11 +79,10 @@ def run(records: list[dict]) -> dict:
 
     by_pmid = {r["pmid"]: r for r in records}
     for pmid, hit in second.items():
-        group = journals.group_of(by_pmid[pmid])
         interest = hit.get("interest") or "konu_disi"
         cardiac = bool(hit.get("cardiac"))
-        # A grubu: hiçbir makale konu dışı bırakılmaz (kardiyak ayrı etiketlenir).
-        if group == "A" and interest == "konu_disi" and not cardiac:
+        # A grubu: ikinci geçişe gelen (cerrahi anahtar sözcüklü) kayıt konu dışı kalmaz.
+        if journals.group_of(by_pmid[pmid]) == "A" and interest == "konu_disi" and not cardiac:
             interest = "dolayli"
         final[pmid] = {
             "interest": interest,

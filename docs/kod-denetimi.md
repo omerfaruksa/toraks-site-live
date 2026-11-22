@@ -67,7 +67,66 @@ Yani sadeleştirme çıktıyı değiştirmedi.
 | React satıcı paketini `manualChunks` ile ayırma | Ana paket 262 KB; ayırma ek bir ağ gidiş-dönüşü getirir, kazanç yok |
 | `byDateDesc` yerine sıralamayı tamamen kaldırma (OpenAI) | Filtre değişiminde sıralama gerekiyor; yalnızca büyük başlık listeleri önceden sıralandı |
 
-## 5. Kalan riskler
+## 5. İkinci tur: gerçek anahtarlarla yeniden denetim
+
+Kullanıcı Gemini API anahtarını ekledikten ve OpenAI'ın Manus Flex üzerinden çalıştığını
+bildirdikten sonra denetim güncel kod üzerinde yeniden koşuldu.
+
+- **Gemini**: anahtar doğrulandı (50 model). `gemini-2.5-pro` yeni kullanıcılara kapalı,
+  `gemini-3.1-pro-preview` kotası dolu olduğu için `gemini-3-flash-preview` kullanıldı.
+  Dosyalar dilimlenmedi: 97 KB'lik hat ve 63 KB'lik site paketi tek çağrıda okundu, 17 bulgu.
+- **OpenAI**: Manus Flex üzerinden `gpt-6-luna`, 8 KB'lik 21 dilim, 49 bulgu.
+- Modeller artık kodun tamamını gördüğü için "dosya yarım" türü yanlış pozitif oluşmadı.
+
+### Uygulanan düzeltmeler
+
+| Bulgu | Kaynak | Düzeltme |
+| --- | --- | --- |
+| `esearch` sonuç sayısı `retmax`ı aşınca sessizce kesiliyor | OpenAI | `net.esearch` toplam sayı ile dönen PMID sayısını karşılaştırıp uyarı basıyor |
+| `COUNTRY_TR` deseni `Turkey;` biçimini kaçırıyor | OpenAI | Sınır karakter sınıfına noktalı virgül eklendi |
+| `countries_of` kısaltmaları bozuyor (`USA` → `Usa`, `UK` → `Uk`) | OpenAI | `COUNTRY_CANON` eşlemesi; sayı dosyasında 27 ülke etiketi düzeldi |
+| `iso_date` takvimde olmayan günü kabul ediyor (`2024-02-31`) | OpenAI | Gün `datetime.date` ile doğrulanıyor |
+| `memo.load` bozuk dosyayı sessizce yutuyor | Gemini | Okunamayan bellekte uyarı basılıyor |
+| `byDateDesc` hem `App.tsx` hem `External.tsx` içinde kopya | Gemini | `src/data.ts` içinde tek fonksiyon |
+| `formatDate` ve `shortDate` ISO ayrıştırmayı tekrarlıyor | Gemini | `parseIso` + `trDate` yardımcıları |
+| `loadIssue` bozuk/eksik JSON'da sessizce boş sayfa bırakıyor | Gemini | `try/catch`, konsola hata, `null` dönüş |
+| `External` varsayılan `tokens = []` her render'da yeni dizi | OpenAI | Modül düzeyinde `NO_TOKENS`; `sorted` `useMemo` içinde |
+| Yazar yokken kurum listesi `· Kurum` ile başlıyor | OpenAI | Yazar ve kurumlar tek `join(' · ')` ile birleştiriliyor |
+| Bölüm filtresi etkin filtre sayacına eklenmiyor | OpenAI | `activeCount` içine `p.section` eklendi |
+| "Filtreyi temizle" tasarım filtresini sıfırlamıyor | OpenAI | `clearFilters` içine `setDesign('')` |
+| Tema tercihi `localStorage`'dan okunmuyor | OpenAI | Başlangıç değeri kayıtlı tercihten okunuyor |
+| `toggleDetails` yan etkisi durum güncellemesinin içinde | OpenAI | `requestAnimationFrame` güncelleme dışına alındı |
+
+### Karar bekleyen bulgu: A grubu ve konu dışı
+
+OpenAI, A grubu bir kaydın ikinci geçişe girmeden konu dışı kalabildiğini gösterdi: kural
+yalnızca `second` sözlüğündeki kayıtlara uygulanıyor. Kural tüm A grubu kayıtlarına
+uygulandığında 22 Kasım sayısında 4 kayıt Dolaylı listesine geçiyor (Dolaylı 9 → 13,
+Konu dışı 733 → 729). Proje talimatındaki "A: tüm makaleler, sonda tek satır" ifadesi bu
+kayıtların konu dışı listesinde tek satır kalmasını da desteklediği için değişiklik geri
+alındı ve yayımlanmış sayı korundu. Karar sizin: A grubunda konu dışı hiç kayıt kalmasın
+isteniyorsa `classify.py` içindeki kural tek satırda genişletilebilir.
+
+### Uygulanmayan ikinci tur önerileri
+
+| Öneri | Gerekçe |
+| --- | --- |
+| `coverage_table` ağ darboğazı (Gemini, "yüksek") | Fonksiyon zaten `net.pmap` ile 6 işçi paralel çalışıyor; soğuk önbellekte dergi başına ~3 çağrı, günlük tek koşuda kabul edilebilir |
+| `author_meta` yalnızca Doğrudan/Dolaylı için çağrılsın | `meta.json` artımlı; günde ~30 yeni PMID. Ayrıca başlık listelerindeki Türkiye rozeti ve `turkeyAll` sayacı tüm kayıtlara dayanıyor |
+| `searchText` önbellek anahtarına alan kümesi eklensin | Önbellek kayıt nesnesine bağlı; her kayıt türü her zaman aynı alan kümesiyle çağrılıyor |
+| Üç `useMemo` tek döngüde birleştirilsin | Liste 62 kayıt; kazanç ölçülemedi |
+| `enrich`/`tag_scope` yerinde mutasyon yerine yeni nesne döndürsün | Tek seferlik montaj adımı; davranış doğru, değişiklik riski kazancından büyük |
+| Crossref `rows: 100` sayfalansın | 7 günlük pencerede dergi başına 100 kayıt sınırına ulaşılmıyor; sınıra ulaşılırsa uyarı için `total-results` izlenebilir (kalan risk) |
+| `window(7)` uçlar dahil 8 takvim günü kapsıyor | Sayı etiketi (15–22 Kasım) ile aynı aralığı gösteriyor; daraltmak yayımlanmış sayıları değiştirir, karar sizin |
+
+### Bellek tohumlama
+
+Çalışma alanında `cls_memo.json` ve `cards_memo.json` dosyaları yoktu; kararlar yalnızca
+`final_cls.json` ve `cards.jsonl` içinde duruyordu. Yeni içerik anahtarlarıyla bellek bu iki
+dosyadan tohumlandı (1019 sınıflandırma, 63 kart). Böylece ilk günlük koşu tüm kayıtları
+yeniden sınıflandırmak zorunda kalmıyor.
+
+## 6. Kalan riskler
 
 - Bellek dosyaları büyümeye devam eder: içerik değişen kayıt için yeni anahtar eklenir, eski
   anahtar silinmez. Yılda bir `pipeline/.work/*_memo.json` dosyalarını temizlemek yeterli.

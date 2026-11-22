@@ -9,17 +9,9 @@ import Sources from './components/Sources'
 import External from './components/External'
 import Highlight from './components/Highlight'
 import SectionGroup from './components/SectionGroup'
-import { DESIGN_ORDER, TAG_ORDER, issueIndex, loadIssue, shortDate } from './data'
+import { DESIGN_ORDER, TAG_ORDER, byDateDesc, issueIndex, loadIssue, shortDate } from './data'
 import type { Indirect, Issue, Scope, Study } from './types'
 import { matchesTokens, searchText, tokenize } from './search'
-
-/** Tarihe göre yeniden eskiye; tarihi olmayan kayıtlar sona düşer, kendi aralarında sıra korunur. */
-function byDateDesc<T extends { entryDate?: string; date?: string }>(items: T[]): T[] {
-  return items
-    .map((item, i) => ({ item, i, key: item.entryDate || item.date || '' }))
-    .sort((a, b) => (a.key === b.key ? a.i - b.i : a.key < b.key ? 1 : -1))
-    .map((x) => x.item)
-}
 
 function readDetails(): boolean {
   return new URLSearchParams(window.location.search).get('sayfa') === 'kaynaklar'
@@ -100,9 +92,12 @@ export default function App() {
     return p && issueIndex.some((i) => i.date === p) ? p : issueIndex[0]?.date ?? ''
   })
   const [issue, setIssue] = useState<Issue | null>(null)
-  const [theme, setTheme] = useState<'light' | 'dark'>(
-    () => (document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light'),
-  )
+  const [theme, setTheme] = useState<'light' | 'dark'>(() => {
+    // Kayıtlı tercih önce okunur; yoksa belgedeki temaya düşülür.
+    const saved = localStorage.getItem('gclt-theme')
+    if (saved === 'dark' || saved === 'light') return saved
+    return document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light'
+  })
   const initialFilters = useMemo(readFilters, [])
   const [query, setQuery] = useState(initialFilters.query)
   const [tag, setTag] = useState(initialFilters.tag)
@@ -274,15 +269,14 @@ export default function App() {
   }
 
   const toggleDetails = () => {
-    setDetailsOpen((prev) => {
-      const next = !prev
-      if (next) {
-        requestAnimationFrame(() => {
-          document.getElementById('kaynaklar')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-        })
-      }
-      return next
-    })
+    // Yan etki durum güncellemesinin dışında: Strict Mode'da iki kez çalışmaz.
+    const next = !detailsOpen
+    setDetailsOpen(next)
+    if (next) {
+      requestAnimationFrame(() => {
+        document.getElementById('kaynaklar')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      })
+    }
   }
 
   const showDirect = interest !== 'indirect'
@@ -316,6 +310,7 @@ export default function App() {
     setMultiOnly(false)
     setIntlOnly(false)
     setBranches([])
+    setDesign('')
   }
 
   return (

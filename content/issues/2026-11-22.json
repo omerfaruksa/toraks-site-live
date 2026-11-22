@@ -4,7 +4,7 @@
  "windowStart": "2026-11-15",
  "windowEnd": "2026-11-22",
  "periodLabel": "15–22 Kasım 2026",
- "generatedAt": "2026-11-22T14:09:53+03:00",
+ "generatedAt": "2026-11-22T14:34:25+03:00",
  "stats": {
   "scanned": 1019,
   "direct": 53,
@@ -473,7 +473,7 @@
    "multidisciplinary": false,
    "international": false,
    "countries": [
-    "Usa"
+    "USA"
    ]
   },
   {
@@ -515,7 +515,7 @@
    "multidisciplinary": false,
    "international": false,
    "countries": [
-    "Usa"
+    "USA"
    ]
   },
   {
@@ -555,7 +555,7 @@
    "multidisciplinary": false,
    "international": false,
    "countries": [
-    "Usa"
+    "USA"
    ]
   },
   {
@@ -595,7 +595,7 @@
    "multidisciplinary": false,
    "international": false,
    "countries": [
-    "Usa"
+    "USA"
    ]
   },
   {
@@ -641,7 +641,7 @@
    "countries": [
     "Turkey",
     "Italy",
-    "Uk"
+    "UK"
    ]
   },
   {
@@ -683,7 +683,7 @@
    "multidisciplinary": true,
    "international": false,
    "countries": [
-    "Usa"
+    "USA"
    ]
   },
   {
@@ -724,7 +724,7 @@
    "multidisciplinary": true,
    "international": false,
    "countries": [
-    "Usa"
+    "USA"
    ]
   },
   {
@@ -767,7 +767,7 @@
    "multidisciplinary": true,
    "international": false,
    "countries": [
-    "Usa"
+    "USA"
    ]
   },
   {
@@ -812,7 +812,7 @@
    "multidisciplinary": true,
    "international": false,
    "countries": [
-    "Usa"
+    "USA"
    ]
   },
   {
@@ -905,12 +905,12 @@
    "international": true,
    "countries": [
     "Greece",
-    "Usa",
+    "USA",
     "Netherlands",
     "Belgium",
     "Germany",
     "France",
-    "Uk",
+    "UK",
     "Switzerland",
     "Denmark",
     "Japan",
@@ -1087,7 +1087,7 @@
    "international": true,
    "countries": [
     "China",
-    "Usa"
+    "USA"
    ]
   },
   {
@@ -1299,7 +1299,7 @@
    "multidisciplinary": false,
    "international": false,
    "countries": [
-    "Usa"
+    "USA"
    ]
   },
   {
@@ -1424,7 +1424,7 @@
    "multidisciplinary": false,
    "international": false,
    "countries": [
-    "Usa"
+    "USA"
    ]
   },
   {
@@ -1754,7 +1754,7 @@
    "international": true,
    "countries": [
     "Nigeria",
-    "Uk"
+    "UK"
    ]
   },
   {
@@ -2127,7 +2127,7 @@
    "multidisciplinary": false,
    "international": false,
    "countries": [
-    "Usa"
+    "USA"
    ]
   },
   {
@@ -2249,7 +2249,7 @@
    "multidisciplinary": false,
    "international": false,
    "countries": [
-    "Usa"
+    "USA"
    ]
   },
   {
@@ -2325,7 +2325,7 @@
    "international": true,
    "countries": [
     "China",
-    "Usa"
+    "USA"
    ]
   },
   {
@@ -2414,7 +2414,7 @@
    "multidisciplinary": false,
    "international": false,
    "countries": [
-    "Usa"
+    "USA"
    ]
   },
   {
@@ -2680,7 +2680,7 @@
    "international": true,
    "countries": [
     "Scotland",
-    "Uk",
+    "UK",
     "Netherlands",
     "Switzerland",
     "Taiwan",
@@ -2690,7 +2690,7 @@
     "India",
     "Korea",
     "Japan",
-    "Usa",
+    "USA",
     "Australia",
     "Spain"
    ]
@@ -2723,7 +2723,7 @@
    "international": true,
    "countries": [
     "Switzerland",
-    "Usa",
+    "USA",
     "Australia"
    ]
   },
@@ -2760,7 +2760,7 @@
    "multidisciplinary": true,
    "international": true,
    "countries": [
-    "Usa",
+    "USA",
     "Italy",
     "Israel",
     "Iran",
@@ -2769,7 +2769,7 @@
     "India",
     "Poland",
     "France",
-    "Uk",
+    "UK",
     "Japan",
     "Germany"
    ]
@@ -2840,7 +2840,7 @@
    "international": true,
    "countries": [
     "Germany",
-    "Usa",
+    "USA",
     "Korea"
    ]
   },
@@ -2912,7 +2912,7 @@
    "international": true,
    "countries": [
     "England",
-    "Uk"
+    "UK"
    ]
   }
  ],

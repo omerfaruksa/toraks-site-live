@@ -57,7 +57,8 @@ export default function Filters(p: Props) {
     (p.multiOnly ? 1 : 0) +
     (p.intlOnly ? 1 : 0) +
     (p.branches.length > 0 ? 1 : 0) +
-    (p.design ? 1 : 0)
+    (p.design ? 1 : 0) +
+    (p.section ? 1 : 0)
 
   const toggleBranch = (name: string) =>
     p.onBranches(p.branches.includes(name) ? p.branches.filter((b) => b !== name) : [...p.branches, name])
