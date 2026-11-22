@@ -128,15 +128,19 @@ def pubmed(start: str, end: str) -> dict:
     window = f'("{start}"[edat] : "{end}"[edat])'
 
     def scan(row):
-        term = f"({journals.issn_clause(row)}) AND {window}" if journals.issn_clause(row) else ""
+        # ISSN koşulu bir kez kurulur; sorgu ve boş denetimi aynı metni kullanır.
+        clause = journals.issn_clause(row)
+        term = f"({clause}) AND {window}" if clause else ""
         return row["journal"], (net.esearch(term) if term else [])
 
     per_journal = dict(net.pmap(scan, journals.rows()))
 
     topic_ids = net.esearch(f"{TOPIC_QUERY} AND {window}", retmax=1000)
-    listed_ids = {pid for ids in per_journal.values() for pid in ids}
+    # Sıra korunur (küme değil sözlük): aynı girdi her koşuda aynı sayıyı üretir.
+    listed_order = list(dict.fromkeys(pid for ids in per_journal.values() for pid in ids))
+    listed_ids = set(listed_order)
     extra = [pid for pid in topic_ids if pid not in listed_ids]
-    all_ids = list(listed_ids) + extra
+    all_ids = listed_order + extra
     owner = {}
     for name, ids in per_journal.items():
         for pid in ids:
@@ -369,8 +373,13 @@ def author_meta(pmids) -> dict[str, dict]:
             }
         return found
 
-    meta = {}
-    for part in net.pmap(chunk, list(net.chunks(sorted(set(pmids)), 150))):
-        meta.update(part)
-    (WORK / "meta.json").write_text(json.dumps(meta, ensure_ascii=False, indent=1), encoding="utf-8")
+    path = WORK / "meta.json"
+    meta = json.loads(path.read_text(encoding="utf-8")) if path.exists() else {}
+    # Yalnızca bellekte olmayan kayıtlar için ağa çıkılır; eski kayıtlar korunur.
+    missing = [p for p in sorted(set(pmids)) if p not in meta]
+    if missing:
+        for part in net.pmap(chunk, list(net.chunks(missing, 150))):
+            meta.update(part)
+        path.write_text(json.dumps(meta, ensure_ascii=False, indent=1), encoding="utf-8")
+    print(f"  yazar/kurum: {len(meta)} kayıt ({len(missing)} yeni)")
     return meta

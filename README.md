@@ -6,7 +6,7 @@ Göğüs cerrahisi literatürünün günlük takibi için okuma odaklı, sade bi
 
 Bir sayı şu bölümlerden oluşur:
 
-1. **Çalışma kartları (Doğrudan makaleler)** — tasarım türüne (RCT → meta-analiz → kohort → olgu-kontrol → olgu serisi → klinik dışı) göre gruplanır ve her grup içinde en yeni giriş en üstte olacak şekilde tarihe göre sıralanır. Her kartta yazarlar ve kurumlar bulunur.
+1. **Çalışma kartları (Doğrudan makaleler)** — tarihe göre yeniden eskiye tek akış halinde listelenir; tasarım türü (RCT → meta-analiz → kohort → olgu-kontrol → olgu serisi → klinik dışı) yalnızca filtre panelinden seçilir, sayfada varsayılan gruplama yapılmaz. Her kartta yazarlar ve kurumlar bulunur.
 2. **PubMed dışı kaynaklar** — Crossref DOI kayıtları ve dergi RSS akışlarından gelen, PubMed taramasına girmeyen kayıtlar; başlık düzeyinde, Türkçe başlıkla listelenir.
 3. **Klinik araştırmalar** — ClinicalTrials.gov kayıtları, tablo halinde.
 4. **Dolaylı makaleler** — başlık, dergi, PMID/DOI ve tek cümlelik ana sonuç.
@@ -45,7 +45,7 @@ pipeline/               # günlük tarama ve sayı üretimi
 
 | Alan | İçerik |
 | --- | --- |
-| `date`, `cadence`, `windowStart`, `windowEnd`, `periodLabel` | Sayı tarihi, kadans (weekly) ve tarama dönemi |
+| `date`, `cadence`, `windowStart`, `windowEnd`, `periodLabel` | Sayı tarihi, kadans (daily) ve tarama dönemi |
 | `stats` | Taranan kayıt, Doğrudan, Dolaylı, Konu dışı, klinik araştırma, dergi sayıları |
 | `journals` | Dergi bazında kayıt sayıları (grup harfiyle) |
 | `direct` | Çalışma kartları (başlık, künye, etiketler, özet, tasarım, örneklem, karşılaştırma, sonlanımlar, ana sonuç, takip, veri dönemi, yazarlar, kurumlar, Türkiye işareti, kapsam, branşlar, uluslararası bayrağı) |
@@ -66,12 +66,23 @@ bash pipeline/run_daily.sh                  # günlük sayı, yuvarlanan son 7 g
 bash pipeline/run_daily.sh --date 2026-11-28
 bash pipeline/run_weekly_report.sh          # son 7 günlük sayıyı birleştiren haftalık rapor
 python3 pipeline/run.py --stages issue --report   # yalnızca montaj + rapor
-pnpm test:pipeline                          # kural testleri
+pnpm check                                  # tip denetimi + testler + derleme
+pnpm pipeline:daily                         # run_daily.sh kısayolu
+pnpm pipeline:report                        # run_weekly_report.sh kısayolu
 ```
 
-Hat tek giriş noktasından (`pipeline/run.py`) çalışır: PubMed dergi taraması (tüm ISSN'ler + `[edat]`), konu sorgusu, iki geçişli sınıflandırma, çalışma kartı üretimi ve sayı denetimi, ClinicalTrials.gov, Crossref/RSS ile PubMed dışı kaynaklar, tek geçişte atomik sayı montajı ve aynı veriden üretilen haftalık Markdown raporu (`content/reports/`). Ayrıntı, darboğaz tablosu ve doğrulama notları için `pipeline/README.md`.
+Hat tek giriş noktasından (`pipeline/run.py`) çalışır: PubMed dergi taraması (tüm ISSN'ler + `[edat]`), konu sorgusu, iki geçişli sınıflandırma, çalışma kartı üretimi ve sayı denetimi, ClinicalTrials.gov, Crossref/RSS ile PubMed dışı kaynaklar, tek geçişte atomik sayı montajı ve aynı veriden üretilen haftalık Markdown raporu (`content/reports/`). Ayrıntı, darboğaz tablosu ve doğrulama notları için `docs/mimari.md`.
 
 Dergi listesi `pipeline/dergi_listesi.csv` dosyasındadır; tarama bu listenin tek doğru kaynağı olduğunu varsayar.
+
+## Dokümanlar
+
+| Dosya | İçerik |
+| --- | --- |
+| `README.md` | Sayfa yapısı, veri şeması, komutlar, içerik ilkeleri |
+| `docs/mimari.md` | Hat akışı, modül sorumlulukları, memo kuralı, darboğaz tablosu, sınırlılıklar |
+| `docs/zamanlanmis-gorevler.md` | Günlük 12:00 görevinin metni ve cumartesi haftalık rapor dalı |
+| `docs/kod-denetimi.md` | Üç kaynaklı kod denetimi, ölçümler, uygulanan ve uygulanmayan öneriler |
 
 ## Geliştirme
 

@@ -58,6 +58,8 @@ def _title_item(rec: dict) -> dict:
 def build_lists(records: list[dict], cls: dict, cards: dict, pmc: dict) -> dict:
     direct, indirect, video_case, off_topic, cardiac, unavailable = [], [], [], [], [], []
     by_pmid = {r["pmid"]: r for r in records}
+    # Liste her kayıt için yeniden kurulmasın: küme bir kez hazırlanır.
+    listed_names = journals.listed_names()
 
     for pmid, hit in cls.items():
         rec = by_pmid.get(pmid)
@@ -65,6 +67,7 @@ def build_lists(records: list[dict], cls: dict, cards: dict, pmc: dict) -> dict:
             continue
         title = rules.clean(rec.get("title"))
         abstract = rules.clean(rec.get("abstract"))
+        text = f"{title} {abstract}"
         if hit["cardiac"]:
             cardiac.append(_title_item(rec))
             continue
@@ -77,12 +80,12 @@ def build_lists(records: list[dict], cls: dict, cards: dict, pmc: dict) -> dict:
                 item["note"] = "Tam metne erişilemedi; kart yazılmadı."
                 unavailable.append(item)
                 continue
-            listed = journals.name_of(rec) in journals.listed_names()
+            listed = journals.name_of(rec) in listed_names
             group = journals.group_of(rec)
-            if not rules.is_thoracic(title + " " + abstract):
+            if not rules.is_thoracic(text):
                 off_topic.append(_title_item(rec))
                 continue
-            if not listed and not rules.is_surgical(title + " " + abstract):
+            if not listed and not rules.is_surgical(text):
                 off_topic.append(_title_item(rec))
                 continue
             if group == "C" and not rules.is_thoracic(title):
@@ -148,19 +151,26 @@ def build_lists(records: list[dict], cls: dict, cards: dict, pmc: dict) -> dict:
 
 
 def enrich(lists: dict, meta: dict) -> None:
-    """Yazar, kurum ve Türkiye bilgisi (yalnızca PubMed kurum satırlarından)."""
+    """Yazar, kurum ve Türkiye bilgisi (yalnızca PubMed kurum satırlarından).
+
+    Kurum listesi yalnızca çalışma kartlarında (Doğrudan/Dolaylı) gösterilir;
+    başlık listelerine taşınmaz, çünkü sayı dosyasının üçte birini şişiriyordu.
+    """
     turkey_all = 0
     for key in ("direct", "indirect", "videoCase", "offTopic", "cardiac", "unavailable"):
+        card_list = key in ("direct", "indirect")
         for item in lists[key]:
             info = meta.get(item.get("pmid") or "")
             if not info:
                 item.setdefault("authors", "belirtilmemiş")
-                item.setdefault("institutions", [])
                 item.setdefault("turkey", False)
+                if card_list:
+                    item.setdefault("institutions", [])
                 continue
             item["authors"] = info["authors"]
-            item["institutions"] = info["institutions"]
             item["turkey"] = info["turkey"]
+            if card_list:
+                item["institutions"] = info["institutions"]
             if info["turkey"]:
                 item["turkeyNote"] = info["turkeyEvidence"]
                 turkey_all += 1
@@ -299,7 +309,6 @@ def build(issue_date: str, start: str, end: str, *, use_cache: bool = False,
     cls = _load("final_cls.json", {})
     card_rows = {r["id"]: r for r in _load("cards.jsonl", []) if not r.get("error") and r.get("card")}
     trials_raw = _load("trials_raw.json", [])
-    external_raw = _load("external.json", {}).get("records", [])
     external_cls = _load("external_cls.json", [])
     meta = _load("meta.json", {})
 

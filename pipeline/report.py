@@ -1,7 +1,8 @@
-"""Sayı JSON'undan haftalık Markdown raporu üretir.
+"""Sayı JSON'undan Markdown raporu üretir.
 
-Site ile aynı veriyi kullanır; haftalık görevdeki rapor teslimi bu modüle devredildi,
-böylece iki ayrı üretim hattı yerine tek kaynak kalır.
+Tek sayı raporu (`render`) ile günlük sayıları birleştiren haftalık rapor
+(`render_weekly`) aynı bölüm üreticilerini kullanır; böylece kart, tablo ve
+başlık biçimi iki yerde ayrı ayrı bakım gerektirmez.
 """
 from __future__ import annotations
 
@@ -25,6 +26,7 @@ CARD_FIELDS = [("designLabel", "Tasarım"), ("sample", "Örneklem"), ("compariso
                ("dataPeriod", "Veri dönemi")]
 
 
+# ---------------------------------------------------------------- bölümler
 def _card(item: dict) -> list[str]:
     lines = [f"#### {item['titleTr']}", f"*{item['titleOrig']}*",
              f"{item['journal']} · giriş {item['entryDate'] or 'belirtilmemiş'} · "
@@ -38,65 +40,93 @@ def _card(item: dict) -> list[str]:
     return lines
 
 
-def render(issue: dict) -> str:
-    stats = issue["stats"]
-    out = [f"# Göğüs Cerrahisi Literatür Taraması — {issue['periodLabel']}", "",
-           f"Sayı {issue['date']} · pencere {issue['windowStart']} → {issue['windowEnd']}", "",
-           "## 1. Genel bakış", "",
-           f"- Taranan PubMed kaydı: **{stats['scanned']}**",
-           f"- Doğrudan: **{stats['direct']}** · Dolaylı: **{stats['indirect']}** · "
-           f"Konu dışı: **{stats['offTopic']}**",
-           f"- Kardiyak içerik (kapsam dışı): {len(issue['cardiac'])} · Video/olgu: {len(issue['videoCase'])}",
-           f"- Klinik araştırma: {stats['trials']} · PubMed dışı kayıt: {stats['external']}",
-           f"- Dergi kapsaması: {stats['journalsScanned']} dergi tarandı, "
-           f"{stats['journalsWithRecords']} dergide kayıt var",
-           f"- Türkiye bağlantılı doğrudan kart: {stats.get('turkey', 0)}", ""]
-
-    out += ["## 2. Doğrudan makaleler", ""]
+def _direct(direct: list[dict]) -> list[str]:
+    out = ["## 2. Doğrudan makaleler", ""]
     for design in rules.DESIGN_ORDER:
-        group = [c for c in issue["direct"] if c.get("design") == design]
+        group = [c for c in direct if c.get("design") == design]
         if not group:
             continue
         out += [f"### {DESIGN_TITLE.get(design, design)} ({len(group)})", ""]
         for item in sorted(group, key=lambda c: c.get("entryDate") or "", reverse=True):
             out += _card(item)
+    return out
 
-    out += ["## 3. Klinik araştırmalar", ""]
-    if issue["trials"]:
-        out += ["| NCT | Başlık | Faz | Durum | Kayıt |", "| --- | --- | --- | --- | --- |"]
-        for trial in issue["trials"]:
-            out.append(f"| [{trial['nct']}](https://clinicaltrials.gov/study/{trial['nct']}) | "
-                       f"{trial['title']} | {trial['phase']} | {trial['status']} | {trial['enrollment']} |")
-    else:
-        out.append("Bu dönemde yeni kaydedilen veya sonuçlanan torasik cerrahi çalışması yok.")
-    out.append("")
 
-    out += ["## 4. Dolaylı makaleler", ""]
-    for item in sorted(issue["indirect"], key=lambda c: c.get("entryDate") or "", reverse=True):
+def _trials(trials: list[dict]) -> list[str]:
+    out = ["## 3. Klinik araştırmalar", ""]
+    if not trials:
+        return out + ["Bu dönemde yeni kaydedilen veya sonuçlanan torasik cerrahi çalışması yok.", ""]
+    out += ["| NCT | Başlık | Faz | Durum | Kayıt |", "| --- | --- | --- | --- | --- |"]
+    for trial in trials:
+        out.append(f"| [{trial['nct']}](https://clinicaltrials.gov/study/{trial['nct']}) | "
+                   f"{trial['title']} | {trial['phase']} | {trial['status']} | {trial['enrollment']} |")
+    return out + [""]
+
+
+def _indirect(indirect: list[dict]) -> list[str]:
+    out = ["## 4. Dolaylı makaleler", ""]
+    for item in sorted(indirect, key=lambda c: c.get("entryDate") or "", reverse=True):
         out.append(f"- **{item['title']}** — {item['journal']} · PMID {item['pmid']}"
                    + (f" · {item['oneLiner']}" if item.get("oneLiner") else ""))
-    out.append("")
+    return out + [""]
 
-    out += ["## 5. Video ve olgu başlıkları", ""]
-    for item in sorted(issue["videoCase"], key=lambda c: c.get("date") or "", reverse=True):
-        out.append(f"- [{item['title']}]({item['url']}) — {item['journal']} · {item.get('date') or 'belirtilmemiş'}")
-    out.append("")
 
-    out += ["## 6. Konu dışı başlıklar", ""]
-    for item in sorted(issue["offTopic"], key=lambda c: c.get("date") or "", reverse=True):
+def _video(video_case: list[dict]) -> list[str]:
+    out = ["## 5. Video ve olgu başlıkları", ""]
+    for item in sorted(video_case, key=lambda c: c.get("date") or "", reverse=True):
+        out.append(f"- [{item['title']}]({item['url']}) — {item['journal']} · "
+                   f"{item.get('date') or 'belirtilmemiş'}")
+    return out + [""]
+
+
+def _off_topic(off_topic: list[dict]) -> list[str]:
+    out = ["## 6. Konu dışı başlıklar", ""]
+    for item in sorted(off_topic, key=lambda c: c.get("date") or "", reverse=True):
         out.append(f"- {item['title']} — {item['journal']}")
-    out.append("")
+    return out + [""]
 
-    out += ["## 7. Taranan kaynaklar ve erişilemeyenler", "", "**Taranan**", ""]
-    out += [f"- {line}" for line in issue["sources"]["scanned"]]
-    if issue["sources"].get("failed"):
-        out += ["", "**Erişilemeyen**", ""] + [f"- {line}" for line in issue["sources"]["failed"]]
-    if issue["sources"].get("note"):
-        out += ["", issue["sources"]["note"]]
-    if issue.get("unavailable"):
+
+def _sources(sources: dict, unavailable: list[dict]) -> list[str]:
+    out = ["## 7. Taranan kaynaklar ve erişilemeyenler", "", "**Taranan**", ""]
+    out += [f"- {line}" for line in sources.get("scanned", [])]
+    if sources.get("failed"):
+        out += ["", "**Erişilemeyen**", ""] + [f"- {line}" for line in sources["failed"]]
+    if sources.get("note"):
+        out += ["", sources["note"]]
+    if unavailable:
         out += ["", "**Kart yazılamayan doğrudan kayıtlar**", ""]
-        out += [f"- {item['title']} — {item['journal']} ({item.get('note', '')})" for item in issue["unavailable"]]
-    return "\n".join(out) + "\n"
+        out += [f"- {item['title']} — {item['journal']} ({item.get('note', '')})"
+                for item in unavailable]
+    return out
+
+
+def _overview(rows: list[str]) -> list[str]:
+    return ["## 1. Genel bakış", ""] + [f"- {row}" for row in rows] + [""]
+
+
+def _body(issue: dict) -> list[str]:
+    return (_direct(issue["direct"]) + _trials(issue["trials"]) + _indirect(issue["indirect"])
+            + _video(issue["videoCase"]) + _off_topic(issue["offTopic"])
+            + _sources(issue.get("sources") or {}, issue.get("unavailable") or []))
+
+
+# ---------------------------------------------------------------- tek sayı
+def render(issue: dict) -> str:
+    stats = issue["stats"]
+    head = [f"# Göğüs Cerrahisi Literatür Taraması — {issue['periodLabel']}", "",
+            f"Sayı {issue['date']} · pencere {issue['windowStart']} → {issue['windowEnd']}", ""]
+    overview = _overview([
+        f"Taranan PubMed kaydı: **{stats['scanned']}**",
+        f"Doğrudan: **{stats['direct']}** · Dolaylı: **{stats['indirect']}** · "
+        f"Konu dışı: **{stats['offTopic']}**",
+        f"Kardiyak içerik (kapsam dışı): {len(issue['cardiac'])} · "
+        f"Video/olgu: {len(issue['videoCase'])}",
+        f"Klinik araştırma: {stats['trials']} · PubMed dışı kayıt: {stats['external']}",
+        f"Dergi kapsaması: {stats['journalsScanned']} dergi tarandı, "
+        f"{stats['journalsWithRecords']} dergide kayıt var",
+        f"Türkiye bağlantılı doğrudan kart: {stats.get('turkey', 0)}",
+    ])
+    return "\n".join(head + overview + _body(issue)) + "\n"
 
 
 def write(issue: dict, path: Path | None = None) -> Path:
@@ -106,6 +136,7 @@ def write(issue: dict, path: Path | None = None) -> Path:
     return path
 
 
+# ---------------------------------------------------------------- haftalık
 def _key(item: dict) -> str:
     return (item.get("pmid") or "").strip() or (item.get("doi") or "").strip() or \
         (item.get("url") or item.get("nct") or item.get("title") or "").strip()
@@ -114,10 +145,10 @@ def _key(item: dict) -> str:
 def merge(issues: list[dict]) -> dict:
     """Günlük sayıları tek haftalık demete indirger; PMID/DOI ile tekilleştirir."""
     ordered = sorted(issues, key=lambda i: i["date"], reverse=True)
-    merged: dict[str, list[dict]] = {k: [] for k in
-                                     ("direct", "indirect", "trials", "videoCase",
-                                      "offTopic", "cardiac", "unavailable", "external")}
-    seen: dict[str, set[str]] = {k: set() for k in merged}
+    names = ("direct", "indirect", "trials", "videoCase", "offTopic", "cardiac", "unavailable",
+             "external")
+    merged: dict[str, list[dict]] = {name: [] for name in names}
+    seen: dict[str, set[str]] = {name: set() for name in names}
     for issue in ordered:
         for name, bucket in merged.items():
             for item in issue.get(name) or []:
@@ -132,10 +163,9 @@ def merge(issues: list[dict]) -> dict:
         "cadence": "weekly-report",
         "windowStart": min(i["windowStart"] for i in ordered),
         "windowEnd": max(i["windowEnd"] for i in ordered),
-        "periodLabel": f"{min(i['windowStart'] for i in ordered)} → {max(i['windowEnd'] for i in ordered)}",
         "issues": [i["date"] for i in ordered],
         "scannedSum": sum((i.get("stats") or {}).get("scanned", 0) for i in ordered),
-        "journalsScanned": max(((i.get("stats") or {}).get("journalsScanned", 0)) for i in ordered),
+        "journalsScanned": max((i.get("stats") or {}).get("journalsScanned", 0) for i in ordered),
         "turkey": sum(1 for c in merged["direct"] if c.get("turkey")),
         "sources": latest.get("sources") or {},
         **merged,
@@ -143,69 +173,24 @@ def merge(issues: list[dict]) -> dict:
 
 
 def render_weekly(merged: dict) -> str:
-    direct, indirect = merged["direct"], merged["indirect"]
-    evaluated = len(direct) + len(indirect) + len(merged["offTopic"]) + len(merged["cardiac"])
-    out = [f"# Göğüs Cerrahisi Literatür Raporu — {merged['windowStart']} → {merged['windowEnd']}", "",
-           f"Haftalık rapor · {len(merged['issues'])} günlük sayı birleştirildi "
-           f"({', '.join(merged['issues'])}). Tekilleştirme PMID/DOI ile yapıldı.", "",
-           "## 1. Genel bakış", "",
-           f"- Günlük taramalarda toplanan PubMed kaydı (pencereler örtüşür): **{merged['scannedSum']}**",
-           f"- Tekilleştirilmiş değerlendirilen kayıt: **{evaluated}**",
-           f"- Doğrudan: **{len(direct)}** · Dolaylı: **{len(indirect)}** · "
-           f"Konu dışı: **{len(merged['offTopic'])}**",
-           f"- Kardiyak içerik (kapsam dışı): {len(merged['cardiac'])} · "
-           f"Video/olgu: {len(merged['videoCase'])}",
-           f"- Klinik araştırma: {len(merged['trials'])} · PubMed dışı kayıt: {len(merged['external'])}",
-           f"- Dergi kapsaması: {merged['journalsScanned']} dergi",
-           f"- Türkiye bağlantılı doğrudan kart: {merged['turkey']}", ""]
-
-    out += ["## 2. Doğrudan makaleler", ""]
-    for design in rules.DESIGN_ORDER:
-        group = [c for c in direct if c.get("design") == design]
-        if not group:
-            continue
-        out += [f"### {DESIGN_TITLE.get(design, design)} ({len(group)})", ""]
-        for item in sorted(group, key=lambda c: c.get("entryDate") or "", reverse=True):
-            out += _card(item)
-
-    out += ["## 3. Klinik araştırmalar", ""]
-    if merged["trials"]:
-        out += ["| NCT | Başlık | Faz | Durum | Kayıt |", "| --- | --- | --- | --- | --- |"]
-        for trial in merged["trials"]:
-            out.append(f"| [{trial['nct']}](https://clinicaltrials.gov/study/{trial['nct']}) | "
-                       f"{trial['title']} | {trial['phase']} | {trial['status']} | {trial['enrollment']} |")
-    else:
-        out.append("Bu dönemde yeni kaydedilen veya sonuçlanan torasik cerrahi çalışması yok.")
-    out.append("")
-
-    out += ["## 4. Dolaylı makaleler", ""]
-    for item in sorted(indirect, key=lambda c: c.get("entryDate") or "", reverse=True):
-        out.append(f"- **{item['title']}** — {item['journal']} · PMID {item['pmid']}"
-                   + (f" · {item['oneLiner']}" if item.get("oneLiner") else ""))
-    out.append("")
-
-    out += ["## 5. Video ve olgu başlıkları", ""]
-    for item in sorted(merged["videoCase"], key=lambda c: c.get("date") or "", reverse=True):
-        out.append(f"- [{item['title']}]({item['url']}) — {item['journal']} · "
-                   f"{item.get('date') or 'belirtilmemiş'}")
-    out.append("")
-
-    out += ["## 6. Konu dışı başlıklar", ""]
-    for item in sorted(merged["offTopic"], key=lambda c: c.get("date") or "", reverse=True):
-        out.append(f"- {item['title']} — {item['journal']}")
-    out.append("")
-
-    out += ["## 7. Taranan kaynaklar ve erişilemeyenler", "", "**Taranan**", ""]
-    out += [f"- {line}" for line in merged["sources"].get("scanned", [])]
-    if merged["sources"].get("failed"):
-        out += ["", "**Erişilemeyen**", ""] + [f"- {line}" for line in merged["sources"]["failed"]]
-    if merged["sources"].get("note"):
-        out += ["", merged["sources"]["note"]]
-    if merged["unavailable"]:
-        out += ["", "**Kart yazılamayan doğrudan kayıtlar**", ""]
-        out += [f"- {item['title']} — {item['journal']} ({item.get('note', '')})"
-                for item in merged["unavailable"]]
-    return "\n".join(out) + "\n"
+    evaluated = (len(merged["direct"]) + len(merged["indirect"])
+                 + len(merged["offTopic"]) + len(merged["cardiac"]))
+    head = [f"# Göğüs Cerrahisi Literatür Raporu — {merged['windowStart']} → {merged['windowEnd']}",
+            "",
+            f"Haftalık rapor · {len(merged['issues'])} günlük sayı birleştirildi "
+            f"({', '.join(merged['issues'])}). Tekilleştirme PMID/DOI ile yapıldı.", ""]
+    overview = _overview([
+        f"Günlük taramalarda toplanan PubMed kaydı (pencereler örtüşür): **{merged['scannedSum']}**",
+        f"Tekilleştirilmiş değerlendirilen kayıt: **{evaluated}**",
+        f"Doğrudan: **{len(merged['direct'])}** · Dolaylı: **{len(merged['indirect'])}** · "
+        f"Konu dışı: **{len(merged['offTopic'])}**",
+        f"Kardiyak içerik (kapsam dışı): {len(merged['cardiac'])} · "
+        f"Video/olgu: {len(merged['videoCase'])}",
+        f"Klinik araştırma: {len(merged['trials'])} · PubMed dışı kayıt: {len(merged['external'])}",
+        f"Dergi kapsaması: {merged['journalsScanned']} dergi",
+        f"Türkiye bağlantılı doğrudan kart: {merged['turkey']}",
+    ])
+    return "\n".join(head + overview + _body(merged)) + "\n"
 
 
 def write_weekly(days: int = 7, path: Path | None = None) -> Path:

@@ -9,6 +9,7 @@ import json
 
 import journals
 import llm
+import memo
 import rules
 from config import MODEL_DEEP, WORK
 
@@ -55,35 +56,26 @@ def verify(rows: list[dict], records: dict[str, dict]) -> list[dict]:
     return rows
 
 
-MEMO = WORK / "cards_memo.json"
-
-
-def _load_memo() -> dict[str, dict]:
-    if MEMO.exists():
-        try:
-            return json.loads(MEMO.read_text(encoding="utf-8"))
-        except json.JSONDecodeError:
-            return {}
-    return {}
+MEMO = "cards_memo.json"
 
 
 def run(records: list[dict], cls: dict) -> dict[str, dict]:
     WORK.mkdir(parents=True, exist_ok=True)
-    memo = _load_memo()
+    memory = memo.load(MEMO)
     items = targets(records, cls)
     # Günlük kadansta aynı kart yedi kez yazılmasın: önceki kartlar yeniden kullanılır.
-    todo = [i for i in items if i["id"] not in memo]
-    reused = [memo[i["id"]] for i in items if i["id"] in memo]
-    if reused:
-        print(f"  bellekten: {len(reused)}/{len(items)} kart")
+    todo, cached = memo.partition(items, memory)
+    if cached:
+        print(f"  bellekten: {len(cached)}/{len(items)} kart")
     fresh = llm.run_worker("cards", todo, "cards.jsonl", MODEL_DEEP) if todo else []
-    rows = reused + fresh
     by_pmid = {r["pmid"]: r for r in records}
-    rows = verify(rows, by_pmid)
+    rows = verify(list(cached.values()) + fresh, by_pmid)
     (WORK / "cards.jsonl").write_text(
         "\n".join(json.dumps(r, ensure_ascii=False) for r in rows) + "\n", encoding="utf-8")
     cards = {r["id"]: r for r in rows if not r.get("error") and r.get("card")}
-    memo.update({r["id"]: r for r in rows if not r.get("error") and r.get("card")})
-    MEMO.write_text(json.dumps(memo, ensure_ascii=False), encoding="utf-8")
+    payloads = {item["id"]: item["payload"] for item in items}
+    memory.update({memo.key(pmid, payloads[pmid]): row
+                   for pmid, row in cards.items() if pmid in payloads})
+    memo.save(MEMO, memory)
     print(f"  kart: {len(cards)}/{len(items)}")
     return cards

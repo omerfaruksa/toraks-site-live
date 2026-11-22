@@ -36,10 +36,6 @@ AYLAR = ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz",
          "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"]
 
 
-def parse_date(value: str | None) -> date:
-    return date.fromisoformat(value) if value else date.today()
-
-
 def window(issue_date: date, days: int) -> tuple[str, str]:
     """(baslangic, bitis) ISO tarihleri. Pencere bitişi sayı tarihidir."""
     return (issue_date - timedelta(days=days)).isoformat(), issue_date.isoformat()

@@ -193,6 +193,17 @@ export default function App() {
   // Girdi alanı beklemeden yazılabilsin: süzme, ertelenmiş sorgu ile yapılır.
   const deferredQuery = useDeferredValue(query)
   const tokens = useMemo(() => tokenize(deferredQuery), [deferredQuery])
+  const branchSet = useMemo(() => new Set(branches), [branches])
+  // Başlık listeleri sayı yüklenince bir kez sıralanır; her tuş vuruşunda yeniden sıralanmaz.
+  const sortedLists = useMemo(
+    () => ({
+      videoCase: byDateDesc(issue?.videoCase ?? []),
+      cardiac: byDateDesc(issue?.cardiac ?? []),
+      offTopic: byDateDesc(issue?.offTopic ?? []),
+      unavailable: byDateDesc(issue?.unavailable ?? []),
+    }),
+    [issue],
+  )
   const filtered = useMemo(() => {
     if (!issue) return { direct: [] as Study[], indirect: [] as Indirect[] }
     const keep = (s: Filterable & { design?: string }) => {
@@ -202,14 +213,14 @@ export default function App() {
       if (scope && s.scope !== scope) return false
       if (multiOnly && !s.multidisciplinary) return false
       if (intlOnly && !s.international) return false
-      if (branches.length > 0 && !branches.some((b) => (s.disciplines ?? []).includes(b))) return false
+      if (branchSet.size > 0 && !(s.disciplines ?? []).some((d) => branchSet.has(d))) return false
       return matchesQuery(s, tokens)
     }
     return {
       direct: byDateDesc(issue.direct.filter(keep)),
       indirect: byDateDesc(issue.indirect.filter(keep)),
     }
-  }, [issue, tag, tokens, turkeyOnly, scope, multiOnly, intlOnly, branches, design])
+  }, [issue, tag, tokens, turkeyOnly, scope, multiOnly, intlOnly, branchSet, design])
 
   const tagOptions = useMemo(() => {
     if (!issue) return []
@@ -388,7 +399,7 @@ export default function App() {
             {showDirect && issue.unavailable && issue.unavailable.length > 0 && (
               <div className="unavailable">
                 <p className="tag-label">Tam metne erişilemedi (kart yazılmadı)</p>
-                <TitleList items={byDateDesc(issue.unavailable)} empty="" limit={6} tokens={tokens} />
+                <TitleList items={sortedLists.unavailable} empty="" limit={6} tokens={tokens} />
               </div>
             )}
           </section>
@@ -461,7 +472,7 @@ export default function App() {
             onToggle={(open) => setSection(open ? 'video-olgu' : '')}
           >
             <TitleList
-              items={byDateDesc(issue.videoCase)}
+              items={sortedLists.videoCase}
               empty="Bu dönemde video veya olgu kaydı bulunmadı."
               limit={12}
               showAuthors
@@ -478,7 +489,7 @@ export default function App() {
               open={section === 'kardiyak'}
               onToggle={(open) => setSection(open ? 'kardiyak' : '')}
             >
-              <TitleList items={byDateDesc(issue.cardiac)} empty="Kardiyak içerikli kayıt bulunmadı." limit={8} tokens={tokens} />
+              <TitleList items={sortedLists.cardiac} empty="Kardiyak içerikli kayıt bulunmadı." limit={8} tokens={tokens} />
             </SectionGroup>
           )}
 
@@ -490,7 +501,7 @@ export default function App() {
             open={section === 'konu-disi'}
             onToggle={(open) => setSection(open ? 'konu-disi' : '')}
           >
-            <TitleList items={byDateDesc(issue.offTopic)} empty="Konu dışı kayıt bulunmadı." limit={10} tokens={tokens} />
+            <TitleList items={sortedLists.offTopic} empty="Konu dışı kayıt bulunmadı." limit={10} tokens={tokens} />
           </SectionGroup>
 
           <footer className="site-footer">

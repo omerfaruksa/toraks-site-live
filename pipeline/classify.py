@@ -8,9 +8,9 @@ from __future__ import annotations
 
 import json
 
-import fetch
 import journals
 import llm
+import memo
 import rules
 from config import MODEL_DEEP, MODEL_FAST, WORK
 
@@ -28,7 +28,11 @@ def _payload(rec: dict) -> dict:
     }
 
 
-def _candidates(records: list[dict], first: dict[str, dict]) -> list[dict]:
+MEMO = "cls_memo.json"
+
+
+def _candidates(records: list[dict], first: dict[str, dict],
+                payloads: dict[str, dict]) -> list[dict]:
     """İkinci geçiş yalnızca Doğrudan/Dolaylı ve cerrahi anahtar sözcüklü kayıtlara."""
     out = []
     for rec in records:
@@ -39,42 +43,30 @@ def _candidates(records: list[dict], first: dict[str, dict]) -> list[dict]:
         text = f"{rec.get('title', '')} {rec.get('abstract', '')}"
         if interest in ("dogrudan", "dolayli") or (
                 interest == "konu_disi" and rules.SURGICAL_KEYWORD.search(text)):
-            out.append({"id": rec["pmid"], "payload": _payload(rec)})
+            out.append({"id": rec["pmid"], "payload": payloads[rec["pmid"]]})
     return out
-
-
-MEMO = WORK / "cls_memo.json"
-
-
-def _load_memo() -> dict[str, dict]:
-    if MEMO.exists():
-        try:
-            return json.loads(MEMO.read_text(encoding="utf-8"))
-        except json.JSONDecodeError:
-            return {}
-    return {}
 
 
 def run(records: list[dict]) -> dict:
     WORK.mkdir(parents=True, exist_ok=True)
-    memo = _load_memo()
+    memory = memo.load(MEMO)
     # Günlük kadans aynı kayıtları yedi kez görmemek için önceki kararlar saklanır.
-    todo = [r for r in records if r["pmid"] not in memo]
-    reused = len(records) - len(todo)
-    if reused:
-        print(f"  bellekten: {reused}/{len(records)} kayıt")
+    payloads = {r["pmid"]: _payload(r) for r in records}
+    items = [{"id": r["pmid"], "payload": payloads[r["pmid"]]} for r in records]
+    todo, cached = memo.partition(items, memory)
+    if cached:
+        print(f"  bellekten: {len(cached)}/{len(records)} kayıt")
 
-    first_items = [{"id": r["pmid"], "payload": _payload(r)} for r in todo]
-    first_rows = llm.run_worker("triage", first_items, "classify_pass1.jsonl", MODEL_FAST)
+    first_rows = llm.run_worker("triage", todo, "classify_pass1.jsonl", MODEL_FAST)
     first = {r["id"]: r for r in first_rows if not r.get("error")}
-    print(f"  birinci geçiş: {len(first)}/{len(records)}")
+    print(f"  birinci geçiş: {len(first)}/{len(todo)}")
 
-    second_items = _candidates(todo, first)
+    second_items = _candidates([r for r in records if r["pmid"] in first], first, payloads)
     second_rows = llm.run_worker("triage", second_items, "classify_pass2.jsonl", MODEL_DEEP)
     second = {r["id"]: r for r in second_rows if not r.get("error")}
     print(f"  ikinci geçiş: {len(second)}/{len(second_items)}")
 
-    final = {r["pmid"]: memo[r["pmid"]] for r in records if r["pmid"] in memo}
+    final = dict(cached)
     for pmid, hit in first.items():
         final[pmid] = {
             "interest": hit.get("interest") or "konu_disi",
@@ -85,8 +77,9 @@ def run(records: list[dict]) -> dict:
             "source": "triage",
         }
 
+    by_pmid = {r["pmid"]: r for r in records}
     for pmid, hit in second.items():
-        group = journals.group_of(next(r for r in records if r["pmid"] == pmid))
+        group = journals.group_of(by_pmid[pmid])
         interest = hit.get("interest") or "konu_disi"
         cardiac = bool(hit.get("cardiac"))
         # A grubu: hiçbir makale konu dışı bırakılmaz (kardiyak ayrı etiketlenir).
@@ -102,8 +95,9 @@ def run(records: list[dict]) -> dict:
         }
 
     (WORK / "final_cls.json").write_text(json.dumps(final, ensure_ascii=False, indent=0), encoding="utf-8")
-    memo.update(final)
-    MEMO.write_text(json.dumps(memo, ensure_ascii=False, indent=0), encoding="utf-8")
+    memory.update({memo.key(pmid, payloads[pmid]): value
+                   for pmid, value in final.items() if pmid in payloads})
+    memo.save(MEMO, memory)
     counts = {}
     for value in final.values():
         key = (value["interest"], value["cardiac"])

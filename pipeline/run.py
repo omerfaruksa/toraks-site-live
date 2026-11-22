@@ -66,6 +66,8 @@ def main(argv=None) -> int:
         log("PubMed taraması")
         records = fetch.pubmed(start, end)["records"]
         log(f"  {len(records)} kayıt")
+        log("Yazar/kurum bilgisi")
+        fetch.author_meta([r["pmid"] for r in records])
         log("ClinicalTrials.gov")
         log(f"  {len(fetch.trials(start, end))} aday çalışma")
         log("PubMed dışı kaynaklar (Crossref/RSS)")

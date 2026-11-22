@@ -5,5 +5,6 @@ pipeline/.work/
 *.log
 .DS_Store
 __pycache__/
+.ruff_cache/
 pipeline/.cache/
 content/reports/*.tmp

@@ -11,6 +11,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import config  # noqa: E402
 import fetch  # noqa: E402
 import journals  # noqa: E402
+import report  # noqa: E402
 import rules  # noqa: E402
 
 
@@ -87,6 +88,36 @@ class TestJournals(unittest.TestCase):
     def test_every_group_has_rule(self):
         for row in journals.rows():
             self.assertTrue(journals.group_rule(row["group"]))
+
+
+class TestWeeklyMerge(unittest.TestCase):
+    def _issue(self, date, direct):
+        return {"date": date, "windowStart": "2026-11-15", "windowEnd": date,
+                "stats": {"scanned": 10, "journalsScanned": 58}, "direct": direct,
+                "indirect": [], "trials": [], "videoCase": [], "offTopic": [],
+                "cardiac": [], "unavailable": [], "external": []}
+
+    def test_same_pmid_counted_once(self):
+        merged = report.merge([
+            self._issue("2026-11-22", [{"pmid": "1", "title": "A", "turkey": True}]),
+            self._issue("2026-11-21", [{"pmid": "1", "title": "A"}, {"pmid": "2", "title": "B"}]),
+        ])
+        self.assertEqual([c["pmid"] for c in merged["direct"]], ["1", "2"])
+        self.assertEqual(merged["turkey"], 1)
+
+    def test_doi_used_when_pmid_missing(self):
+        merged = report.merge([
+            self._issue("2026-11-22", [{"doi": "10.1/x", "title": "A"}]),
+            self._issue("2026-11-21", [{"doi": "10.1/x", "title": "A"}]),
+        ])
+        self.assertEqual(len(merged["direct"]), 1)
+
+    def test_window_spans_all_issues(self):
+        merged = report.merge([
+            self._issue("2026-11-22", []), self._issue("2026-11-21", []),
+        ])
+        self.assertEqual(merged["issues"], ["2026-11-22", "2026-11-21"])
+        self.assertEqual(merged["scannedSum"], 20)
 
 
 if __name__ == "__main__":

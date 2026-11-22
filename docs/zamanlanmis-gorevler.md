@@ -19,7 +19,7 @@ tazelenir ve kapsam proje talimatındaki gibi kalır. Tekrar eden kayıtlar LLM'
 >
 > 1. `/home/ubuntu/torakslit` dizininde `bash pipeline/run_daily.sh` çalıştır (son 7 gün; PubMed `[edat]`, ClinicalTrials.gov, Europe PMC, Crossref/RSS). `content/issues/YYYY-MM-DD.json`, `content/index.json` ve `content/reports/YYYY-MM-DD.md` üretilir.
 > 2. Sayıyı doğrula: `stats.scanned` değeri `direct + indirect + offTopic + videoCase + cardiac + unavailable` toplamına eşit olmalı; `numberMismatches` dolu kartları özet metniyle karşılaştır, uyuşmayanı düzelt, doğrulanamayanı "doğrulanamadı" bırak.
-> 3. `pnpm exec tsc -b --noEmit`, `pnpm test:pipeline`, `pnpm test:search`, `pnpm build` komutlarını çalıştır.
+> 3. `pnpm exec tsc -b --noEmit`, `pnpm test:pipeline`, `pnpm test:search`, `pnpm build` komutlarını çalıştır (tek komut: `pnpm check`).
 > 4. `git fetch origin main` ile birleştir, commit et ve `git push origin HEAD:main` ile gönder.
 > 5. `webdev.config` ile `POST publish` çağır; yayın URL'sini yalnızca başarılı sonuçtan sonra paylaş.
 > 6. Bugün cumartesiyse ek olarak `bash pipeline/run_weekly_report.sh` çalıştır. `content/reports/haftalik-YYYY-MM-DD.md` üretilir; `manus-md-to-pdf` ile PDF'e çevir ve Markdown ile PDF dosyalarını ekleyerek haftalık raporu teslim et. Bölüm sırası: genel bakış, doğrudan makaleler (tasarım içinde tarih sıralı), klinik araştırmalar, dolaylı makaleler, video ve olgu başlıkları, konu dışı başlıklar, taranan kaynaklar ve erişilemeyenler. Sayıları kaynak JSON ile karşılaştır.
@@ -32,4 +32,5 @@ tazelenir ve kapsam proje talimatındaki gibi kalır. Tekrar eden kayıtlar LLM'
 - İlk çalıştırmada 30 günlük pencere gerekirse: `bash pipeline/run_daily.sh --window 30`.
 - Haftalık rapor günlük sayıların üzerine yeni tarama eklemez; iki çıktı arasında sayı farkı oluşmaz.
 - Yayın adımı başarısız olursa commit korunur; yalnızca `POST publish` yeniden denenir.
+- Sadeleştirme ve denetim kararları `docs/mimari.md` ve `docs/kod-denetimi.md` içinde tutulur.
 - Rapor teslimi başarısız olursa Markdown dosyası yine `content/reports/` altında durur.

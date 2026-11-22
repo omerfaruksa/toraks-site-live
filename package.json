@@ -9,7 +9,10 @@
     "preview": "vite preview --host 0.0.0.0 --port 3000",
     "typecheck": "tsc -b --noEmit",
     "test:search": "node --experimental-strip-types tests/search.test.mts",
-    "test:pipeline": "python3 -m unittest discover -s pipeline/tests"
+    "test:pipeline": "python3 -m unittest discover -s pipeline/tests",
+    "check": "pnpm typecheck && pnpm test:search && pnpm test:pipeline && pnpm build",
+    "pipeline:daily": "bash pipeline/run_daily.sh",
+    "pipeline:report": "bash pipeline/run_weekly_report.sh"
   },
   "dependencies": {
     "react": "^19.1.0",
