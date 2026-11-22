@@ -14,7 +14,7 @@ Bir sayı şu bölümlerden oluşur:
 6. **Dolaylı makaleler** — başlık, dergi, PMID/DOI ve tek cümlelik ana sonuç.
 7. **Video ve olgu başlıkları** — yalnızca başlık düzeyinde.
 8. **Konu dışı başlıklar** ve **Kardiyak içerik (kapsam dışı)** — tek satır.
-9. **Kaynaklar ve detaylar** — ayrı sayfada (`/?sayi=YYYY-MM-DD&sayfa=kaynaklar`): tarama özeti, sayılar, taranan ve erişilemeyen kaynaklar, kayıt bulunmayan dergiler ve dergi kapsama tablosu (bu sayı, son 30 gün, son giriş tarihi, kaynak, durum). Ana sayfadaki künyeden yeni sekmede açılır.
+9. **Kaynaklar ve detaylar** — ana sayfada künyedeki "Kaynaklar ve detaylar" düğmesine basınca sayfa içinde açılan panel: tarama özeti, sayılar, taranan ve erişilemeyen kaynaklar, kayıt bulunmayan dergiler ve dergi kapsama tablosu (bu sayı, son 30 gün, son giriş tarihi, kaynak, durum). Panelin altındaki "Kapat" düğmesi ya da künyedeki düğme ile kapanır; adres çubuğu `sayfa=kaynaklar` parametresiyle panelin durumunu korur, böylece eski bağlantılar panel açık şekilde çalışır.
 
 Ana sayfada içindekiler yalnızca okuma bölümlerini listeler (Doğrudan makaleler, Türkiye'den, Dolaylı makaleler). Klinik araştırmalar, PubMed dışı kaynaklar, video ve olgu, kardiyak içerik ve konu dışı listeleri filtre çubuğundaki "Bölüm" seçicisinden açılır; bu bölümler varsayılan olarak kapalıdır.
 

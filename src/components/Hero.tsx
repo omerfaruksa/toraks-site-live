@@ -1,15 +1,24 @@
 import type { Issue } from '../types'
 import { formatDate } from '../data'
 
+interface Props {
+  issue: Issue
+  variant?: 'compact' | 'full'
+  title?: string
+  heading?: 'h1' | 'h2'
+  open?: boolean
+  onToggle?: () => void
+}
+
 /**
- * variant="compact": ana sayfa künyesi. Dönem başlığı ve "Kaynaklar ve detaylar" bağlantısı.
- * variant="full": ayrı sayfadaki tarama özeti; sayılar ve dağılım çubuğu.
+ * variant="compact": ana sayfa künyesi. Dönem başlığı ve "Kaynaklar ve detaylar" düğmesi.
+ * variant="full": aynı sayfada açılan tarama özeti; sayılar ve dağılım çubuğu.
  */
-export default function Hero({ issue, variant = 'compact', title }: { issue: Issue; variant?: 'compact' | 'full'; title?: string }) {
+export default function Hero({ issue, variant = 'compact', title, heading = 'h1', open = false, onToggle }: Props) {
   const { stats } = issue
   const total = Math.max(stats.scanned, 1)
   const pct = (n: number) => `${(n / total) * 100}%`
-  const detailsHref = `/?sayi=${issue.date}&sayfa=kaynaklar`
+  const Heading = heading
 
   if (variant === 'compact') {
     return (
@@ -17,17 +26,25 @@ export default function Hero({ issue, variant = 'compact', title }: { issue: Iss
         <p className="eyebrow">Sayı · {formatDate(issue.date)}</p>
         <h1 className="hero-title">{issue.periodLabel}</h1>
         <p className="hero-links">
-          <a className="hero-detail-link" href={detailsHref} target="_blank" rel="noreferrer">
+          <button
+            type="button"
+            className={`hero-detail-link hero-toggle ${open ? 'is-open' : ''}`}
+            onClick={onToggle}
+            aria-expanded={open}
+            aria-controls="kaynaklar"
+          >
             Kaynaklar ve detaylar
-            <span aria-hidden="true"> →</span>
-          </a>
+            <span className="hero-caret" aria-hidden="true">
+              {open ? '▴' : '▾'}
+            </span>
+          </button>
         </p>
       </section>
     )
   }
 
   return (
-    <section className="hero" id="genel-bakis">
+    <section className="hero hero-full" id="kaynak-ozeti">
       <p className="eyebrow">
         Sayı · {formatDate(issue.date)}
         <span className="eyebrow-sep" aria-hidden="true">
@@ -43,7 +60,7 @@ export default function Hero({ issue, variant = 'compact', title }: { issue: Iss
           </>
         ) : null}
       </p>
-      <h1 className="hero-title">{title || issue.periodLabel}</h1>
+      <Heading className="hero-title">{title || issue.periodLabel}</Heading>
       <p className="lede">
         {stats.scanned.toLocaleString('tr-TR')} kayıt değerlendirildi. {stats.direct} makale doğrudan
         ilgili bulundu ve çalışma kartı olarak açıldı; {stats.indirect} makale dolaylı olarak

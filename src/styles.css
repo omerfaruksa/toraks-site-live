@@ -1103,10 +1103,43 @@ summary:focus-visible {
   padding-bottom: 1px;
 }
 .hero-detail-link:hover { border-bottom-color: var(--accent); }
-.page-back { margin: 34px 0 60px; font-size: 0.875rem; }
-.page-back-top { margin: 22px 0 -14px; }
-.page-back a::before { content: "← "; }
-.page-back a { color: var(--accent-ink); }
+.hero-toggle {
+  font: inherit;
+  font-size: 0.875rem;
+  background: none;
+  border: 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--accent) 45%, transparent);
+  border-radius: 0;
+  padding: 0 0 1px;
+  cursor: pointer;
+}
+.hero-toggle:hover { border-bottom-color: var(--accent); }
+.hero-caret { font-size: 0.6875rem; opacity: 0.7; }
+
+/* sayfa içinde açılan kaynaklar ve detaylar paneli */
+.shell[hidden] { display: none; }
+
+.details-panel {
+  margin: 4px 0 22px;
+  padding: 20px 22px 14px;
+  border: 1px solid var(--rule);
+  border-radius: 12px;
+  background: var(--surface);
+}
+.details-panel .hero { padding: 0 0 18px; max-width: none; }
+.details-panel .hero-title {
+  font-size: clamp(1.35rem, 1rem + 1.2vw, 1.75rem);
+  margin-bottom: 10px;
+}
+.details-panel .lede { max-width: 62ch; }
+.details-sources { margin-top: 0; padding-top: 6px; }
+.details-sources .section-head { margin-bottom: 12px; }
+.details-sources h3 {
+  font-size: 1.0625rem;
+  margin: 0 0 4px;
+}
+.details-foot { margin: 14px 0 0; text-align: right; }
+.details-foot .linkish { padding-left: 0; }
 
 /* ---------- filtre satırları ---------- */
 .filter-line {

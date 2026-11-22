@@ -22,10 +22,8 @@ function byDateDesc<T extends { entryDate?: string; date?: string }>(items: T[])
     .map((x) => x.item)
 }
 
-type Page = 'issue' | 'kaynaklar'
-
-function readPage(): Page {
-  return new URLSearchParams(window.location.search).get('sayfa') === 'kaynaklar' ? 'kaynaklar' : 'issue'
+function readDetails(): boolean {
+  return new URLSearchParams(window.location.search).get('sayfa') === 'kaynaklar'
 }
 
 interface Filterable {
@@ -62,7 +60,7 @@ function matchesQuery(s: Filterable, q: string) {
 }
 
 export default function App() {
-  const [page] = useState<Page>(readPage)
+  const [detailsOpen, setDetailsOpen] = useState<boolean>(readDetails)
   const [date, setDate] = useState(() => {
     const p = new URLSearchParams(window.location.search).get('sayi')
     return p && issueIndex.some((i) => i.date === p) ? p : issueIndex[0]?.date ?? ''
@@ -101,10 +99,10 @@ export default function App() {
     const url = new URL(window.location.href)
     if (date) url.searchParams.set('sayi', date)
     else url.searchParams.delete('sayi')
-    if (page === 'kaynaklar') url.searchParams.set('sayfa', 'kaynaklar')
+    if (detailsOpen) url.searchParams.set('sayfa', 'kaynaklar')
     else url.searchParams.delete('sayfa')
     window.history.replaceState({}, '', url)
-  }, [date, page])
+  }, [date, detailsOpen])
 
   useEffect(() => {
     setQuery('')
@@ -176,38 +174,16 @@ export default function App() {
     )
   }
 
-  if (page === 'kaynaklar') {
-    return (
-      <>
-        <Header
-          issues={issueIndex}
-          currentDate={issue.date}
-          onSelect={setDate}
-          theme={theme}
-          onToggleTheme={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-        />
-        <div className="shell">
-          <p className="page-back page-back-top">
-            <a href={`/?sayi=${issue.date}`}>Sayıya dön</a>
-          </p>
-          <Hero issue={issue} variant="full" title="Kaynaklar ve detaylar" />
-          <section className="section" id="kaynaklar">
-            <div className="section-head">
-              <h2>Kaynaklar</h2>
-              <p className="section-note">
-                Dönem: {shortDate(issue.windowStart)} – {shortDate(issue.windowEnd)} ·{' '}
-                {issue.stats.journalsScanned} dergi tarandı · {issue.stats.journalsWithRecords} dergide kayıt
-                bulundu.
-              </p>
-            </div>
-            <Sources issue={issue} />
-          </section>
-          <p className="page-back">
-            <a href={`/?sayi=${issue.date}`}>Sayıya dön</a>
-          </p>
-        </div>
-      </>
-    )
+  const toggleDetails = () => {
+    setDetailsOpen((prev) => {
+      const next = !prev
+      if (next) {
+        requestAnimationFrame(() => {
+          document.getElementById('kaynaklar')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+        })
+      }
+      return next
+    })
   }
 
   const showDirect = interest !== 'indirect'
@@ -267,7 +243,29 @@ export default function App() {
       />
 
       <div className="shell">
-        <Hero issue={issue} />
+        <Hero issue={issue} open={detailsOpen} onToggle={toggleDetails} />
+      </div>
+
+      <div className="shell" hidden={!detailsOpen}>
+        <section className="details-panel" id="kaynaklar" aria-label="Kaynaklar ve detaylar">
+            <Hero issue={issue} variant="full" heading="h2" title="Kaynaklar ve detaylar" />
+            <section className="section details-sources">
+              <div className="section-head">
+                <h3>Kaynaklar</h3>
+                <p className="section-note">
+                  Dönem: {shortDate(issue.windowStart)} – {shortDate(issue.windowEnd)} ·{' '}
+                  {issue.stats.journalsScanned} dergi tarandı · {issue.stats.journalsWithRecords} dergide
+                  kayıt bulundu.
+                </p>
+              </div>
+              <Sources issue={issue} />
+            </section>
+          <p className="details-foot">
+            <button type="button" className="linkish" onClick={toggleDetails}>
+              Kapat
+            </button>
+          </p>
+        </section>
       </div>
 
       <Filters
@@ -462,7 +460,9 @@ export default function App() {
               kaynaktan aynen aktarılır. Klinik öneri içermez.
             </p>
             <p>
-              <a href={`/?sayi=${issue.date}&sayfa=kaynaklar`}>Kaynaklar ve detaylar</a>
+              <button type="button" className="linkish" onClick={toggleDetails}>
+                Kaynaklar ve detaylar
+              </button>
               {issue.generatedAt ? ` · Son güncelleme ${formatStamp(issue.generatedAt)}` : ''}
             </p>
           </footer>
