@@ -1,0 +1,59 @@
+group,mode,journal,issn_print,issn_electronic,former_issn,pubmed,yearly_est,note
+A,full,Annals of Thoracic Surgery,0003-4975,1552-6259,,yes,640,
+A,full,European Journal of Cardio-thoracic Surgery,1010-7940,1873-734X,,yes,320,
+A,full,Journal of Thoracic and Cardiovascular Surgery,0022-5223,1097-685X,,yes,400,
+A,full,JTCVS Open,,2666-2736,,yes,490,
+A,full,JTCVS Techniques,,2666-2507,,yes,340,video makaleler yalnızca başlık
+A,full,Journal of Thoracic Oncology,1556-0864,1556-1380,,yes,240,
+A,full,Interdisciplinary CardioVascular and Thoracic Surgery,,2753-670X,1569-9293;1569-9285,yes,350,eski adı Interactive CVTS; eski ISSN'de son kayıt 2022
+A,full,General Thoracic and Cardiovascular Surgery,1863-6705,1863-6713,,yes,200,
+A,full,Annals of Thoracic and Cardiovascular Surgery,1341-1098,2186-1005,,yes,60,
+A,full,Asian Cardiovascular & Thoracic Annals,0218-4923,1816-5370,,yes,90,
+A,full,Journal of Cardiothoracic Surgery,,1749-8090,,yes,950,
+A,full,Journal of Thoracic Disease,2072-1439,2077-6624,,yes,1370,
+A,full,Thoracic and Cardiovascular Surgeon,0171-6425,1439-1902,,yes,80,
+A,full,Thoracic and Cardiovascular Surgeon Reports,2194-7635,2194-7643,,yes,7,
+A,full,Seminars in Thoracic and Cardiovascular Surgery,1043-0679,1532-9488,,yes,15,kayıtlar seyrek
+A,full,Thoracic Surgery Clinics,1547-4127,1558-5069,,yes,50,
+A,full,Journal of Chest Surgery,2765-1606,2765-1614,2233-601X;2093-6516,yes,55,eski adı Korean J Thorac Cardiovasc Surg; eski ISSN'de son kayıt 2020
+A,full,Indian Journal of Thoracic and Cardiovascular Surgery,0970-9134,0973-7723,,yes,220,
+A,full,Polish Journal of Cardio-Thoracic Surgery (Kardiochirurgia i Torakochirurgia Polska),1731-5530,1897-4252,,yes,90,
+A,full,Innovations: Technology and Techniques in Cardiothoracic and Vascular Surgery,1556-9845,1559-0879,,yes,110,
+A,full,Thoracic Cancer,1759-7706,1759-7714,,yes,195,
+B,topic_filter,Chest,0012-3692,1931-3543,,yes,680,
+B,topic_filter,Thorax,0040-6376,1468-3296,,yes,290,
+B,topic_filter,Lung Cancer,0169-5002,1872-8332,,yes,350,
+B,topic_filter,Clinical Lung Cancer,1525-7304,1938-0690,,yes,150,
+B,topic_filter,Lung,0341-2040,1432-1750,,yes,110,
+B,topic_filter,Annals of the American Thoracic Society,2329-6933,2325-6621,,yes,390,
+B,topic_filter,European Respiratory Journal,0903-1936,1399-3003,,yes,390,
+B,topic_filter,Respiration,0025-7931,1423-0356,,yes,135,
+B,topic_filter,BMJ Open Respiratory Research,,2052-4439,,yes,290,
+B,topic_filter,Annals of Thoracic Medicine,1817-1737,1998-3557,,yes,35,
+B,topic_filter,Journal of Cardiovascular and Thoracic Research,2008-5117,2008-6830,,yes,35,
+B,topic_filter,Journal of Thoracic Imaging,0883-5993,1536-0237,,yes,55,
+B,topic_filter,Journal of Heart and Lung Transplantation,1053-2498,1557-3117,,yes,390,yalnızca akciğer nakli; kalp nakli dışla
+B,topic_filter,"Heart, Lung and Circulation",1443-9506,1444-2892,,yes,290,kardiyak ağırlıklı; yalnızca torasik içerik
+B,topic_filter,JTCVS Structural & Endovascular,,2950-6050,,yes,85,kalp/damar ağırlıklı; yalnızca torasik içerik
+C,strict_filter,Annals of Surgical Oncology,1068-9265,1534-4681,,yes,2100,
+C,strict_filter,Surgical Oncology,0960-7404,1879-3320,,yes,220,
+C,strict_filter,Journal of Clinical Oncology,0732-183X,1527-7755,,yes,600,
+C,strict_filter,Lancet Oncology,1470-2045,1474-5488,,yes,470,
+C,strict_filter,New England Journal of Medicine,0028-4793,1533-4406,,yes,1350,
+C,strict_filter,BMJ,0959-8138,1756-1833,,yes,2450,
+C,strict_filter,BMJ Open,,2044-6055,,yes,4550,
+D,title_only,Multimedia Manual of Cardiothoracic Surgery (MMCTS),,1813-9175,,yes,125,video
+D,title_only,Journal of Visualized Surgery,,2221-2965,,yes,70,video
+D,title_only,BMJ Case Reports,,1757-790X,,yes,1980,olgu sunumu
+E,full,Türk Göğüs Kalp Damar Cerrahisi Dergisi,1301-5680,2149-8156,,yes,150,Türkçe
+E,full,Thoracic Research and Practice,,2979-9139,2148-7197;2149-2530,yes,100,eski adı Turkish Thoracic Journal; eski ISSN'de son kayıt 2022
+E,full,Tüberküloz ve Toraks,0494-1373,2980-3187,,yes,22,Türkçe
+E,non_pubmed,İzmir Göğüs Hastanesi Dergisi,1300-4115,,,no,,PubMed'de makale yok; TR Dizin/dergi sitesi
+E,non_pubmed,Eurasian Journal of Pulmonology,2148-3620,2148-5402,,no,,PubMed'de makale bulunamadı; dergi sitesi
+E,non_pubmed,Güncel Göğüs Hastalıkları Dergisi,,,,no,,NLM'de kayıt yok; TR Dizin/dergi sitesi
+F,non_pubmed,Operative Techniques in Thoracic and Cardiovascular Surgery,1522-2942,1532-8627,,partial,,PubMed'de yalnızca 7 kayıt; dergi sitesi/RSS
+F,non_pubmed,Video-Assisted Thoracic Surgery,,2519-0792,,partial,,PubMed'de 4 kayıt (son 2023); video; dergi sitesi
+F,non_pubmed,Shanghai Chest,,2521-3768,,partial,,PubMed'de 8 kayıt (son 2023); dergi sitesi
+F,non_pubmed,Respiratory Case Reports,,2147-2475,,no,,olgu sunumu; PubMed'de yok
+F,non_pubmed,Open Journal of Thoracic Surgery,,,,no,,NLM'de kayıt yok; dergi sitesi
+E,non_pubmed,Cerrahpaşa Medical Journal,,2687-1904,1300-5227,no,,Genel tıp; yalnızca torasik içerik ve cerrahi yönetim; TR Dizin/dergi sitesi; İngilizce; 2019'da ad değişti (Cerrahpaşa Tıp Dergisi)
