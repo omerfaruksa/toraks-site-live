@@ -41,6 +41,8 @@ Ara dosyalar `pipeline/.work/` altında tutulur ve sürüm kontrolüne girmez. A
 - Makine okunur akışı doğrulanamayan dergiler: MMCTS, Shanghai Chest, Respiratory Case Reports, İzmir Göğüs Hastanesi Dergisi, Güncel Göğüs Hastalıkları. Bunlarda Crossref kaydı varsa oradan, yoksa yalnızca PubMed kayıtları değerlendirilir.
 - Crossref/RSS kayıtlarında özet metni çoğunlukla bulunmaz; bu kayıtlar başlık düzeyinde listelenir, çalışma kartı yazılmaz.
 - Europe PMC ön baskı taraması servis kesintilerinde boş dönebilir.
+- Giriş tarihi (`entry_date`) PubMed `PubMedPubDate[@PubStatus="entrez"]` alanından `iso_date()` ile üretilir: ay adı sayıya çevrilir, ay ve gün iki haneye tamamlanır, eksik parçada `YYYY` veya `YYYY-MM` döner. Böylece tarihler sözlük sırasına göre de doğru sıralanır.
+- `prep.py` ve `build_issue.py` giriş tarihini `iso_or_empty()` ile doğrular: yalnızca `YYYY`, `YYYY-MM`, `YYYY-MM-DD` (veya saatli ISO'nun gün kısmı) geçer; bozuk değer boş bırakılır ve listede sona düşer. Doğrulama testleri: `python3 pipeline/test_dates.py`.
 - `build_issue.py` dolaylı kayıtlara PubMed giriş tarihini (`entryDate`) yazar; arayüzdeki tarih sıralaması bu alana dayanır.
 - İlk sınıflandırma modeli (gpt-6-luna) düşük maliyetlidir; ikinci geçiş yalnızca Doğrudan/Dolaylı adaylarına uygulanır. Bu nedenle konu dışı listesinde tek tük hatalı sınıflandırma kalabilir.
 

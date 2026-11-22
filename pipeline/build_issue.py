@@ -92,6 +92,17 @@ SURGICAL = re.compile(
 
 LISTED = {r["journal"] for r in rows}
 
+ISO_DATE = re.compile(r"^\d{4}(-\d{2}(-\d{2})?)?$")
+
+
+def iso_or_empty(value):
+    """Yalnizca YYYY, YYYY-MM veya YYYY-MM-DD kabul eder; saat varsa gun kismini alir."""
+    v = (value or "").strip()
+    if ISO_DATE.match(v):
+        return v
+    m = re.match(r"^(\d{4}-\d{2}-\d{2})T", v)
+    return m.group(1) if m else ""
+
 
 def listed_journal(pmid):
     return journal_name(pmid) in LISTED
@@ -117,7 +128,7 @@ def title_item(pmid):
     return {
         "title": r["title"],
         "journal": journal_name(pmid),
-        "date": r.get("entry_date") or "",
+        "date": iso_or_empty(r.get("entry_date")),
         "url": f"https://pubmed.ncbi.nlm.nih.gov/{pmid}/",
         "pmid": pmid,
     }
@@ -161,7 +172,7 @@ for pmid, c in cls.items():
             "titleTr": title_tr,
             "titleOrig": r["title"],
             "journal": journal_name(pmid),
-            "entryDate": r.get("entry_date") or "",
+            "entryDate": iso_or_empty(r.get("entry_date")),
             "pmid": pmid,
             "doi": r.get("doi") or "",
             "url": f"https://pubmed.ncbi.nlm.nih.gov/{pmid}/",
@@ -185,7 +196,7 @@ for pmid, c in cls.items():
             "title": r["title"],
             "journal": journal_name(pmid),
             "pmid": pmid,
-            "entryDate": r.get("entry_date") or "",
+            "entryDate": iso_or_empty(r.get("entry_date")),
             "doi": r.get("doi") or "",
             "url": f"https://pubmed.ncbi.nlm.nih.gov/{pmid}/",
             "oneLiner": c["one_liner"],

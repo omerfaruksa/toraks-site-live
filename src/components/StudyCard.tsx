@@ -19,7 +19,7 @@ export default function StudyCard({ study }: { study: Study }) {
       <p className="card-meta">
         <span className="card-journal">{study.journal}</span>
         <span className="dot" aria-hidden="true" />
-        <span>Giriş {formatDate(study.entryDate)}</span>
+        <span>{study.entryDate ? `Giriş ${formatDate(study.entryDate)}` : 'Giriş belirtilmemiş'}</span>
         {study.pmid && (
           <>
             <span className="dot" aria-hidden="true" />

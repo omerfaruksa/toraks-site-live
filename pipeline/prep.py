@@ -8,6 +8,18 @@ rows = {r["journal"]: r for r in csv.DictReader(open(
     "/home/ubuntu/torakslit/pipeline/dergi_listesi.csv", encoding="utf-8"))}
 
 
+ISO_DATE = re.compile(r"^\d{4}(-\d{2}(-\d{2})?)?$")
+
+
+def iso_or_empty(value):
+    """Yalnizca YYYY, YYYY-MM veya YYYY-MM-DD kabul eder; saat varsa gun kismini alir."""
+    v = (value or "").strip()
+    if ISO_DATE.match(v):
+        return v
+    m = re.match(r"^(\d{4}-\d{2}-\d{2})T", v)
+    return m.group(1) if m else ""
+
+
 def clean(s):
     s = re.sub(r"<[^>]+>", "", s or "")
     s = html.unescape(s)
@@ -37,7 +49,7 @@ for r in data["records"]:
         "language": r["language"],
         "title": clean(r["title"]),
         "abstract": clean(r["abstract"])[:2200],
-        "entry_date": r["entry_date"],
+        "entry_date": iso_or_empty(r.get("entry_date")),
         "doi": r["doi"],
         "in_list": bool(r.get("from_journal_list")),
     })
@@ -48,7 +60,7 @@ json.dump(out, open(f"{BASE}/triage_input.json", "w", encoding="utf-8"), ensure_
 records = [{
     "pmid": r["pmid"], "journal": clean(r["journal"]), "title": clean(r["title"]),
     "abstract": clean(r["abstract"])[:2600], "pubtypes": r["pubtypes"],
-    "entry_date": r["entry_date"], "doi": r["doi"], "issns": r["issns"],
+    "entry_date": iso_or_empty(r.get("entry_date")), "doi": r["doi"], "issns": r["issns"],
 } for r in data["records"]]
 json.dump(records, open(f"{BASE}/pubmed_records.json", "w", encoding="utf-8"), ensure_ascii=False)
 print("kayit:", len(out))

@@ -3,7 +3,7 @@
 
 Protokol: dergi_listesi.csv'deki tum ISSN'ler + [edat] penceresi.
 """
-import csv, json, os, sys, time, urllib.parse, urllib.request, xml.etree.ElementTree as ET
+import csv, json, os, re, sys, time, urllib.parse, urllib.request, xml.etree.ElementTree as ET
 
 BASE = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils"
 START = os.environ.get("WINDOW_START", "2026-11-15")
@@ -42,6 +42,35 @@ def txt(el, path):
     return "".join(x.itertext()).strip() if x is not None else ""
 
 
+MONTHS = {name: i for i, name in enumerate(
+    ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"], 1)}
+
+
+def iso_date(year, month="", day=""):
+    """YYYY, YYYY-MM veya YYYY-MM-DD dondurur; eksik/gecersiz parcada en kisa gecerli bicim.
+
+    Ay adi (Nov) sayiya cevrilir, ay ve gun iki haneye tamamlanir. Yil yoksa bos string.
+    Boylece tarihler sozluk sirasina gore de dogru siralanir.
+    """
+    y = (year or "").strip()
+    if not re.fullmatch(r"\d{4}", y):
+        return ""
+    m = (month or "").strip()
+    if not m:
+        return y
+    if m.isdigit():
+        mi = int(m)
+    else:
+        mi = MONTHS.get(m[:3].lower(), 0)
+    if not 1 <= mi <= 12:
+        return y
+    out = f"{y}-{mi:02d}"
+    d = (day or "").strip()
+    if d.isdigit() and 1 <= int(d) <= 31:
+        out += f"-{int(d):02d}"
+    return out
+
+
 def parse(xml_text):
     recs = []
     if not xml_text.strip():
@@ -75,16 +104,15 @@ def parse(xml_text):
         pubdate = ""
         pd = jr.find("JournalIssue/PubDate") if jr is not None else None
         if pd is not None:
-            y = txt(pd, "Year"); m = txt(pd, "Month"); d = txt(pd, "Day")
-            pubdate = "-".join([p for p in [y, m, d] if p])
+            pubdate = iso_date(txt(pd, "Year"), txt(pd, "Month"), txt(pd, "Day"))
         article_date = ""
         ad = ac.find("ArticleDate")
         if ad is not None:
-            article_date = "-".join([txt(ad, "Year"), txt(ad, "Month"), txt(ad, "Day")])
+            article_date = iso_date(txt(ad, "Year"), txt(ad, "Month"), txt(ad, "Day"))
         edat = ""
         for h in art.iter("PubMedPubDate"):
             if h.get("PubStatus") == "entrez":
-                edat = "-".join([txt(h, "Year"), txt(h, "Month"), txt(h, "Day")])
+                edat = iso_date(txt(h, "Year"), txt(h, "Month"), txt(h, "Day"))
         ptypes = [p.text for p in ac.iter("PublicationType") if p.text]
         lang = txt(ac, "Language")
         authors = []

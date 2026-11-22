@@ -48,7 +48,15 @@ export const TAG_ORDER = [
 export function formatDate(iso: string): string {
   if (!iso) return ''
   const [y, m, d] = iso.split('-').map(Number)
-  if (!y || !m || !d) return iso
+  if (!y) return iso
+  if (!m) return String(y)
+  if (!d) {
+    return new Date(Date.UTC(y, m - 1, 1)).toLocaleDateString('tr-TR', {
+      month: 'long',
+      year: 'numeric',
+      timeZone: 'UTC',
+    })
+  }
   return new Date(Date.UTC(y, m - 1, d)).toLocaleDateString('tr-TR', {
     day: 'numeric',
     month: 'long',
