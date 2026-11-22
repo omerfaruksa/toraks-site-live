@@ -889,3 +889,134 @@ summary:focus-visible {
   .card { page-break-inside: avoid; }
   a { color: #000; }
 }
+
+/* ---------- yazarlar, kurumlar, Türkiye ---------- */
+.card-people {
+  margin: 12px 0 0;
+  padding: 10px 12px;
+  background: var(--paper-2);
+  border-radius: var(--radius);
+  border: 1px solid var(--rule-soft);
+}
+.card-people p {
+  margin: 0;
+  display: grid;
+  grid-template-columns: 5.2rem 1fr;
+  gap: 8px;
+  font-size: 0.8125rem;
+  line-height: 1.5;
+}
+.card-people p + p { margin-top: 4px; }
+.people-key {
+  font-family: var(--sans);
+  font-size: 0.6875rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding-top: 2px;
+}
+.people-val { color: var(--ink-2); text-wrap: pretty; }
+.tr-badge {
+  display: inline-block;
+  padding: 1px 8px;
+  border-radius: 999px;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  color: var(--accent-ink);
+  background: var(--accent-wash);
+  border: 1px solid color-mix(in srgb, var(--accent) 40%, var(--rule));
+  white-space: nowrap;
+}
+@supports not (border-color: color-mix(in srgb, red 50%, blue)) {
+  .tr-badge { border-color: var(--accent); }
+}
+.tr-badge-sm { font-size: 0.625rem; padding: 0 6px; margin-left: 6px; vertical-align: 1px; }
+.chip-tr.is-active { font-weight: 700; }
+.turkey-block {
+  padding: 16px 0 8px 14px;
+  margin-top: 18px;
+  border-left: 2px solid var(--accent);
+  background: linear-gradient(to right, var(--accent-wash), transparent 65%);
+  border-radius: 2px;
+}
+.turkey-block .design-title { font-size: 0.8125rem; }
+.turkey-block .section-note { margin-bottom: 6px; }
+.indirect-authors {
+  margin: 4px 0 0;
+  font-size: 0.75rem;
+  line-height: 1.5;
+  color: var(--ink-2);
+  word-break: break-word;
+}
+@media (max-width: 560px) {
+  .card-people p { grid-template-columns: 1fr; gap: 1px; }
+  .people-key { padding-top: 0; }
+  .turkey-block { padding-left: 10px; }
+}
+
+/* ---------- PubMed dışı kaynaklar ---------- */
+.external-list { list-style: none; margin: 14px 0 0; padding: 0; }
+.external-list > li {
+  padding: 14px 0;
+  border-bottom: 1px solid var(--rule-soft);
+}
+.external-list > li:last-child { border-bottom: 0; }
+.external-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px; }
+.interest-mark {
+  font-size: 0.625rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 1px 6px;
+  border-radius: 3px;
+  border: 1px solid var(--rule);
+  color: var(--muted);
+  white-space: nowrap;
+}
+.interest-dogrudan { color: var(--accent-ink); border-color: var(--accent); background: var(--accent-wash); }
+.interest-kardiyak { color: var(--muted); border-style: dashed; }
+.external-orig {
+  margin: 3px 0 0;
+  font-size: 0.8125rem;
+  line-height: 1.4;
+  color: var(--muted);
+  font-style: italic;
+  text-wrap: pretty;
+}
+.external-title {
+  font-family: var(--serif);
+  font-size: 1rem;
+  line-height: 1.45;
+  color: var(--ink);
+  text-decoration: none;
+  text-wrap: pretty;
+}
+.external-title:hover { text-decoration: underline; text-underline-offset: 2px; }
+.external-meta { margin: 5px 0 0; font-size: 0.75rem; color: var(--muted); word-break: break-word; }
+.external-note { margin: 4px 0 0; font-size: 0.75rem; color: var(--warn); }
+
+/* ---------- kapsama tablosu ---------- */
+.coverage-wrap { overflow-x: auto; margin-top: 10px; }
+.coverage {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.75rem;
+  min-width: 34rem;
+}
+.coverage th, .coverage td {
+  text-align: left;
+  padding: 5px 8px;
+  border-bottom: 1px solid var(--rule-soft);
+  white-space: nowrap;
+}
+.coverage th {
+  font-family: var(--sans);
+  font-size: 0.6875rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+  border-bottom: 1px solid var(--rule);
+}
+.coverage td:first-child { white-space: normal; min-width: 12rem; }
+.coverage tr.is-hit td { color: var(--ink); }
+.coverage tr.is-missing td { color: var(--warn); }

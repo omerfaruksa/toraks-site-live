@@ -40,6 +40,7 @@ export default function StudyCard({ study }: { study: Study }) {
         <span className={`access access-${study.access}`}>
           {study.access === 'open' ? 'Açık tam metin' : 'Yalnızca özet'}
         </span>
+        {study.turkey && <span className="tr-badge">Türkiye'den</span>}
       </p>
 
       {study.tags.length > 0 && (
@@ -49,6 +50,21 @@ export default function StudyCard({ study }: { study: Study }) {
           ))}
         </ul>
       )}
+
+      <div className="card-people">
+        <p>
+          <span className="people-key">Yazarlar</span>
+          <span className="people-val">{study.authors || 'belirtilmemiş'}</span>
+        </p>
+        <p>
+          <span className="people-key">Kurumlar</span>
+          <span className="people-val">
+            {study.institutions && study.institutions.length > 0
+              ? study.institutions.join(' · ')
+              : 'belirtilmemiş'}
+          </span>
+        </p>
+      </div>
 
       {study.summary && <p className="card-summary">{study.summary}</p>}
 

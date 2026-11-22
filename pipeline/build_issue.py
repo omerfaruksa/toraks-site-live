@@ -260,10 +260,12 @@ issue = {
             "PubMed — konu sorgusu (MeSH + [tiab]) ile liste dışı dergiler",
             "ClinicalTrials.gov — StudyFirstPostDate ve ResultsFirstPostDate",
             "Europe PMC — ön baskılar (SRC:PPR)",
+            "Crossref — kaynak_esleme.csv'deki dergiler için DOI kayıtları (online ve basılı yayın tarihi)",
+            "Dergi RSS — Elsevier akışları (Seminars in TCVS, JTCVS Open, JTCVS Techniques, Operative Techniques)",
             "A grubu dergilerde kardiyak içerik ayrı listelendi",
         ],
         "failed": [
-            "TR Dizin — otomatik sorgu arayüzü yanıt vermedi",
+            "TR Dizin — arama API'si kimlik doğrulama istiyor (yonetim.trdizin.gov.tr HTTP 401); OAI-PMH ve toplu indirme yolu bulunamadı. TR Dizin dergileri Crossref DOI kayıtları üzerinden izleniyor.",
             "F grubu dergi siteleri (MMCTS, JOVS, VATS, Shanghai Chest, Respiratory Case Reports, Open Journal of Thoracic Surgery) — RSS akışı alınamadı; yalnızca PubMed kayıtları değerlendirildi",
         ],
         "empty": empty,

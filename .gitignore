@@ -4,3 +4,4 @@ pipeline/.work/
 *.tsbuildinfo
 *.log
 .DS_Store
+__pycache__/

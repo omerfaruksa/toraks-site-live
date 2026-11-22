@@ -6,9 +6,10 @@ interface Props {
   items: TitleOnly[]
   empty: string
   limit?: number
+  showAuthors?: boolean
 }
 
-export default function TitleList({ items, empty, limit = 12 }: Props) {
+export default function TitleList({ items, empty, limit = 12, showAuthors = false }: Props) {
   const [open, setOpen] = useState(false)
   if (items.length === 0) return <p className="empty">{empty}</p>
 
@@ -23,10 +24,12 @@ export default function TitleList({ items, empty, limit = 12 }: Props) {
             <a href={item.url} target="_blank" rel="noreferrer" className="title-link">
               {item.title}
             </a>
+            {item.turkey && <span className="tr-badge tr-badge-sm">Türkiye'den</span>}
             <span className="title-meta">
               {item.journal}
               {item.date ? ` · ${shortDate(item.date)}` : ''}
               {item.kind === 'video' ? ' · video' : item.kind === 'case' ? ' · olgu' : ''}
+              {showAuthors && item.authors ? ` · ${item.authors}` : ''}
             </span>
           </li>
         ))}

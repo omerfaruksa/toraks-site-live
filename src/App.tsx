@@ -7,6 +7,7 @@ import Toc, { type TocItem } from './components/Toc'
 import Trials from './components/Trials'
 import TitleList from './components/TitleList'
 import Sources from './components/Sources'
+import External from './components/External'
 import { DESIGN_ORDER, TAG_ORDER, issueIndex, loadIssue, shortDate } from './data'
 import type { Design, Indirect, Issue, Study } from './types'
 
@@ -21,10 +22,11 @@ function primaryTag(s: Study): string {
   return ordered[0] ?? 'Diğer'
 }
 
-function matchesQuery(s: { titleTr?: string; titleOrig?: string; title?: string; journal: string; summary?: string; oneLiner?: string; pmid: string; doi: string; tags?: string[] }, q: string) {
+function matchesQuery(s: { titleTr?: string; titleOrig?: string; title?: string; journal: string; summary?: string; oneLiner?: string; pmid: string; doi: string; tags?: string[]; authors?: string; institutions?: string[] }, q: string) {
   if (!q) return true
   const hay = norm(
-    [s.titleTr, s.titleOrig, s.title, s.journal, s.summary, s.oneLiner, s.pmid, s.doi, (s.tags ?? []).join(' ')]
+    [s.titleTr, s.titleOrig, s.title, s.journal, s.summary, s.oneLiner, s.pmid, s.doi, (s.tags ?? []).join(' '),
+     s.authors, (s.institutions ?? []).join(' ')]
       .filter(Boolean)
       .join(' '),
   )
@@ -46,6 +48,7 @@ export default function App() {
   const [query, setQuery] = useState('')
   const [tag, setTag] = useState('')
   const [interest, setInterest] = useState<'all' | 'direct' | 'indirect'>('all')
+  const [turkeyOnly, setTurkeyOnly] = useState(false)
 
   useEffect(() => {
     document.documentElement.dataset.theme = theme
@@ -71,19 +74,22 @@ export default function App() {
     setQuery('')
     setTag('')
     setInterest('all')
+    setTurkeyOnly(false)
     window.scrollTo({ top: 0 })
   }, [date])
 
   const filtered = useMemo(() => {
     if (!issue) return { direct: [] as Study[], indirect: [] as Indirect[] }
+    const keep = (s: { tags: string[]; turkey?: boolean }) =>
+      (tag === '' || s.tags.includes(tag)) && (!turkeyOnly || Boolean(s.turkey))
     const direct = issue.direct.filter(
-      (s) => (tag === '' || s.tags.includes(tag)) && matchesQuery(s, query),
+      (s) => keep(s) && matchesQuery(s, query),
     )
     const indirect = issue.indirect.filter(
-      (s) => (tag === '' || s.tags.includes(tag)) && matchesQuery(s, query),
+      (s) => keep(s) && matchesQuery(s, query),
     )
     return { direct, indirect }
-  }, [issue, tag, query])
+  }, [issue, tag, query, turkeyOnly])
 
   const tagOptions = useMemo(() => {
     if (!issue) return []
@@ -115,14 +121,23 @@ export default function App() {
   const showDirect = interest !== 'indirect'
   const showIndirect = interest !== 'direct'
 
+  const turkeyCards = filtered.direct.filter((s) => s.turkey)
+  const otherDirect = filtered.direct.filter((s) => !s.turkey)
+
   const designGroups = DESIGN_ORDER.map((d) => ({
     ...d,
-    items: filtered.direct.filter((s) => s.design === (d.key as Design)),
+    items: otherDirect.filter((s) => s.design === (d.key as Design)),
   })).filter((g) => g.items.length > 0)
 
   const toc: TocItem[] = [
     { id: 'genel-bakis', label: 'Genel bakış' },
     { id: 'dogrudan', label: 'Doğrudan makaleler', count: filtered.direct.length },
+    ...(turkeyCards.length > 0
+      ? [{ id: 'turkiye', label: "Türkiye'den", count: turkeyCards.length }]
+      : []),
+    ...(issue.external && issue.external.length > 0
+      ? [{ id: 'pubmed-disi', label: 'PubMed dışı kaynaklar', count: issue.external.length }]
+      : []),
     { id: 'arastirmalar', label: 'Klinik araştırmalar', count: issue.trials.length },
     { id: 'dolayli', label: 'Dolaylı makaleler', count: filtered.indirect.length },
     { id: 'video-olgu', label: 'Video ve olgu', count: issue.videoCase.length },
@@ -155,7 +170,9 @@ export default function App() {
         interest={interest}
         onInterest={setInterest}
         tags={tagOptions}
-        result={query || tag || interest !== 'all' ? { direct: filtered.direct.length, indirect: filtered.indirect.length } : null}
+        turkeyOnly={turkeyOnly}
+        onTurkeyOnly={setTurkeyOnly}
+        result={query || tag || interest !== 'all' || turkeyOnly ? { direct: filtered.direct.length, indirect: filtered.indirect.length } : null}
       />
 
       <div className="shell layout">
@@ -173,9 +190,25 @@ export default function App() {
               </p>
             </div>
 
-            {!showDirect ? null : designGroups.length === 0 ? (
+            {showDirect && turkeyCards.length > 0 && (
+              <div className="design-group turkey-block" id="turkiye">
+                <h3 className="design-title">
+                  Türkiye'den
+                  <span className="count">{turkeyCards.length}</span>
+                </h3>
+                <p className="section-note">
+                  Yazar veya kurum bilgisinde Türkiye'deki bir kurum bulunan çalışmalar. Tasarım
+                  gruplarında tekrarlanmaz.
+                </p>
+                {turkeyCards.map((s) => (
+                  <StudyCard key={s.pmid} study={s} />
+                ))}
+              </div>
+            )}
+
+            {!showDirect ? null : designGroups.length === 0 && turkeyCards.length === 0 ? (
               <p className="empty">Bu filtreye uyan doğrudan makale yok.</p>
-            ) : (
+            ) : designGroups.length === 0 ? null : (
               designGroups.map((g) => {
                 const subTags = Array.from(new Set(g.items.map(primaryTag)))
                 return (
@@ -207,6 +240,20 @@ export default function App() {
             )}
           </section>
 
+          {issue.external && issue.external.length > 0 && (
+            <section id="pubmed-disi" className="section">
+              <div className="section-head">
+                <h2>PubMed dışı kaynaklar</h2>
+                <p className="section-note">
+                  Crossref DOI kayıtları ve dergi RSS akışlarından gelen, PubMed taramasında yer
+                  almayan kayıtlar. Bu kanallarda özet metni çoğunlukla bulunmadığı için yalnızca
+                  başlık düzeyinde listelenir; çalışma kartı yazılmaz.
+                </p>
+              </div>
+              <External items={issue.external} />
+            </section>
+          )}
+
           <section id="arastirmalar" className="section">
             <div className="section-head">
               <h2>Klinik araştırmalar</h2>
@@ -235,11 +282,20 @@ export default function App() {
                     <a href={s.url} target="_blank" rel="noreferrer" className="indirect-title">
                       {s.title}
                     </a>
+                    {s.turkey && <span className="tr-badge tr-badge-sm">Türkiye'den</span>}
                     <p className="indirect-meta">
                       {s.journal}
                       {s.pmid ? ` · PMID ${s.pmid}` : ''}
                       {s.doi ? ` · ${s.doi}` : ''}
                     </p>
+                    {(s.authors || (s.institutions && s.institutions.length > 0)) && (
+                      <p className="indirect-authors">
+                        {s.authors}
+                        {s.institutions && s.institutions.length > 0
+                          ? ` · ${s.institutions.join(' · ')}`
+                          : ''}
+                      </p>
+                    )}
                     {s.oneLiner && <p className="indirect-line">{s.oneLiner}</p>}
                   </li>
                 ))}
@@ -252,7 +308,7 @@ export default function App() {
               <h2>Video ve olgu başlıkları</h2>
               <p className="section-note">Yalnızca başlık düzeyinde izlenir; özet yazılmaz.</p>
             </div>
-            <TitleList items={issue.videoCase} empty="Bu dönemde video veya olgu kaydı bulunmadı." limit={12} />
+            <TitleList items={issue.videoCase} empty="Bu dönemde video veya olgu kaydı bulunmadı." limit={12} showAuthors />
           </section>
 
           <section id="konu-disi" className="section">

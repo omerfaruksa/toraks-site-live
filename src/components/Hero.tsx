@@ -19,7 +19,7 @@ export default function Hero({ issue }: { issue: Issue }) {
       <p className="lede">
         {stats.scanned.toLocaleString('tr-TR')} kayıt değerlendirildi. {stats.direct} makale doğrudan
         ilgili bulundu ve çalışma kartı olarak açıldı; {stats.indirect} makale dolaylı olarak
-        izleniyor.
+        izleniyor.{stats.turkey ? ` Doğrudan makalelerin ${stats.turkey} tanesi Türkiye'den bir kurum veya yazara ait.` : ''}
       </p>
 
       <dl className="stats">
@@ -38,6 +38,10 @@ export default function Hero({ issue }: { issue: Issue }) {
         <div className="stat">
           <dt>Klinik araştırma</dt>
           <dd>{stats.trials}</dd>
+        </div>
+        <div className="stat">
+          <dt>Türkiye'den</dt>
+          <dd>{stats.turkey ?? 0}</dd>
         </div>
         <div className="stat stat-muted">
           <dt>Konu dışı</dt>

@@ -7,10 +7,12 @@ interface Props {
   onInterest: (v: 'all' | 'direct' | 'indirect') => void
   tags: string[]
   result: { direct: number; indirect: number } | null
+  turkeyOnly: boolean
+  onTurkeyOnly: (v: boolean) => void
 }
 
-export default function Filters({ query, onQuery, tag, onTag, interest, onInterest, tags, result }: Props) {
-  const active = Boolean(query || tag || interest !== 'all')
+export default function Filters({ query, onQuery, tag, onTag, interest, onInterest, tags, result, turkeyOnly, onTurkeyOnly }: Props) {
+  const active = Boolean(query || tag || interest !== 'all' || turkeyOnly)
 
   return (
     <div className="filters" id="filtreler">
@@ -49,6 +51,15 @@ export default function Filters({ query, onQuery, tag, onTag, interest, onIntere
               </button>
             ))}
           </div>
+          <button
+            type="button"
+            className={`chip chip-tr ${turkeyOnly ? 'is-active' : ''}`}
+            onClick={() => onTurkeyOnly(!turkeyOnly)}
+            aria-pressed={turkeyOnly}
+            title="Türkiye'den bir kurum veya yazarın yer aldığı kayıtlar"
+          >
+            Türkiye'den
+          </button>
         </div>
 
         <div className="chips" role="group" aria-label="Konu etiketi">
@@ -78,6 +89,7 @@ export default function Filters({ query, onQuery, tag, onTag, interest, onIntere
                 onQuery('')
                 onTag('')
                 onInterest('all')
+                onTurkeyOnly(false)
               }}
             >
               Filtreyi temizle

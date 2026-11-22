@@ -35,8 +35,22 @@ manus-node pipeline/cards.mjs
 echo "-- Klinik araştırmalar"
 python3 pipeline/fetch_trials.py
 
+echo "-- PubMed dışı kaynaklar (Crossref + RSS)"
+python3 pipeline/fetch_external.py
+manus-node pipeline/triage_external.mjs
+
 echo "-- Sayı dosyası"
 python3 pipeline/build_issue.py
+
+echo "-- Yazar/kurum bilgisi ve Türkiye tespiti"
+python3 pipeline/enrich_meta.py "content/issues/$DATE.json"
+
+echo "-- PubMed dışı kayıtları ekle"
+python3 pipeline/merge_external.py "content/issues/$DATE.json"
+
+echo "-- Dergi kapsama tablosu"
+export WINDOW_30D="${WINDOW_30D:-$(date -d "$DATE -30 days" +%F)}"
+python3 pipeline/coverage.py "content/issues/$DATE.json"
 
 echo "-- Sayı doğrulaması"
 python3 pipeline/verify_numbers.py | tail -3

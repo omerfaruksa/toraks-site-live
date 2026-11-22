@@ -50,6 +50,50 @@ export default function Sources({ issue }: { issue: Issue }) {
         </ul>
       </details>
 
+      {issue.coverage && issue.coverage.length > 0 && (
+        <details className="sources-wide journal-details">
+          <summary>Dergi kapsama tablosu ({issue.coverage.length} dergi)</summary>
+          <div className="coverage-wrap">
+            <table className="coverage">
+              <thead>
+                <tr>
+                  <th>Dergi</th>
+                  <th>Grup</th>
+                  <th>Bu sayı</th>
+                  <th>30 gün</th>
+                  <th>Son kayıt</th>
+                  <th>Kaynak</th>
+                  <th>Durum</th>
+                </tr>
+              </thead>
+              <tbody>
+                {issue.coverage.map((c) => (
+                  <tr
+                    key={c.journal}
+                    className={c.count7 > 0 ? 'is-hit' : c.status === "PubMed'de yok" ? 'is-missing' : ''}
+                  >
+                    <td>{c.journal}</td>
+                    <td>{c.group}</td>
+                    <td>{c.count7}</td>
+                    <td>{c.count30}</td>
+                    <td>{c.lastEntry || '—'}</td>
+                    <td>{c.source}</td>
+                    <td className="cov-status">{c.status}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <p className="muted-text">
+            "Bu sayı" bu sayıya alınan kayıt sayısıdır (içerik filtresi uygulanmış). "30 gün" son
+            30 günde PubMed'e giren kayıt sayısı, "Son kayıt" en son PubMed giriş tarihidir ([edat]);
+            bu iki sütun filtresizdir ve dergi toplu yükleme yaptığında haftalık sayı sıfır kalabilir.
+            "Kaynak" sütunu derginin hangi kanaldan tarandığını gösterir: PubMed, Crossref DOI
+            kayıtları, dergi RSS akışı veya makine okunur akış bulunamadı (none).
+          </p>
+        </details>
+      )}
+
       {sources.note && <p className="muted-text sources-wide">{sources.note}</p>}
     </div>
   )

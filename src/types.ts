@@ -24,6 +24,10 @@ export interface Study {
   dataPeriod: string
   verified?: boolean
   note?: string
+  authors?: string
+  institutions?: string[]
+  turkey?: boolean
+  turkeyNote?: string
 }
 
 export interface Trial {
@@ -46,6 +50,9 @@ export interface Indirect {
   url: string
   oneLiner: string
   tags: string[]
+  authors?: string
+  institutions?: string[]
+  turkey?: boolean
 }
 
 export interface TitleOnly {
@@ -54,8 +61,40 @@ export interface TitleOnly {
   date: string
   url: string
   kind?: 'video' | 'case' | 'other'
+  authors?: string
+  institutions?: string[]
+  turkey?: boolean
+  note?: string
 }
 
+export interface ExternalItem {
+  titleTr?: string
+  title: string
+  journal: string
+  date: string
+  dateBasis?: string
+  doi: string
+  url: string
+  authors?: string
+  institutions?: string[]
+  turkey?: boolean
+  interest: string
+  interestLabel: string
+  tags: string[]
+  oneLiner?: string
+  source: string
+  note?: string
+}
+export interface Coverage {
+  journal: string
+  group: string
+  issn: string
+  count7: number
+  count30: number
+  lastEntry: string
+  source: string
+  status: string
+}
 export interface JournalCount {
   name: string
   group: string
@@ -72,6 +111,9 @@ export interface IssueStats {
   journalsWithRecords: number
   externalRecords?: number
   externalJournals?: number
+  external?: number
+  turkey?: number
+  turkeyAll?: number
 }
 
 export interface Issue {
@@ -89,6 +131,8 @@ export interface Issue {
   offTopic: TitleOnly[]
   cardiac: TitleOnly[]
   unavailable?: TitleOnly[]
+  external?: ExternalItem[]
+  coverage?: Coverage[]
   sources: {
     scanned: string[]
     failed: string[]
