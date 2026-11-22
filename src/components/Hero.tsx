@@ -1,10 +1,30 @@
 import type { Issue } from '../types'
 import { formatDate } from '../data'
 
-export default function Hero({ issue }: { issue: Issue }) {
+/**
+ * variant="compact": ana sayfa künyesi. Dönem başlığı ve "Kaynaklar ve detaylar" bağlantısı.
+ * variant="full": ayrı sayfadaki tarama özeti; sayılar ve dağılım çubuğu.
+ */
+export default function Hero({ issue, variant = 'compact', title }: { issue: Issue; variant?: 'compact' | 'full'; title?: string }) {
   const { stats } = issue
   const total = Math.max(stats.scanned, 1)
   const pct = (n: number) => `${(n / total) * 100}%`
+  const detailsHref = `/?sayi=${issue.date}&sayfa=kaynaklar`
+
+  if (variant === 'compact') {
+    return (
+      <section className="hero hero-compact" id="genel-bakis">
+        <p className="eyebrow">Sayı · {formatDate(issue.date)}</p>
+        <h1 className="hero-title">{issue.periodLabel}</h1>
+        <p className="hero-links">
+          <a className="hero-detail-link" href={detailsHref} target="_blank" rel="noreferrer">
+            Kaynaklar ve detaylar
+            <span aria-hidden="true"> →</span>
+          </a>
+        </p>
+      </section>
+    )
+  }
 
   return (
     <section className="hero" id="genel-bakis">
@@ -13,9 +33,17 @@ export default function Hero({ issue }: { issue: Issue }) {
         <span className="eyebrow-sep" aria-hidden="true">
           /
         </span>
-        {issue.stats.journalsScanned} dergi tarandı
+        {stats.journalsScanned} dergi tarandı
+        {title ? (
+          <>
+            <span className="eyebrow-sep" aria-hidden="true">
+              /
+            </span>
+            {issue.periodLabel}
+          </>
+        ) : null}
       </p>
-      <h1 className="hero-title">{issue.periodLabel}</h1>
+      <h1 className="hero-title">{title || issue.periodLabel}</h1>
       <p className="lede">
         {stats.scanned.toLocaleString('tr-TR')} kayıt değerlendirildi. {stats.direct} makale doğrudan
         ilgili bulundu ve çalışma kartı olarak açıldı; {stats.indirect} makale dolaylı olarak

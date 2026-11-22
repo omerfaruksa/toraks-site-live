@@ -14,7 +14,11 @@ Bir sayı şu bölümlerden oluşur:
 6. **Dolaylı makaleler** — başlık, dergi, PMID/DOI ve tek cümlelik ana sonuç.
 7. **Video ve olgu başlıkları** — yalnızca başlık düzeyinde.
 8. **Konu dışı başlıklar** ve **Kardiyak içerik (kapsam dışı)** — tek satır.
-9. **Taranan kaynaklar** — erişilemeyen kaynaklar, kayıt bulunmayan dergiler ve dergi kapsama tablosu (bu sayı, son 30 gün, son giriş tarihi, kaynak, durum).
+9. **Kaynaklar ve detaylar** — ayrı sayfada (`/?sayi=YYYY-MM-DD&sayfa=kaynaklar`): tarama özeti, sayılar, taranan ve erişilemeyen kaynaklar, kayıt bulunmayan dergiler ve dergi kapsama tablosu (bu sayı, son 30 gün, son giriş tarihi, kaynak, durum). Ana sayfadaki künyeden yeni sekmede açılır.
+
+Ana sayfada içindekiler yalnızca okuma bölümlerini listeler (Doğrudan makaleler, Türkiye'den, Dolaylı makaleler). Klinik araştırmalar, PubMed dışı kaynaklar, video ve olgu, kardiyak içerik ve konu dışı listeleri filtre çubuğundaki "Bölüm" seçicisinden açılır; bu bölümler varsayılan olarak kapalıdır.
+
+Filtre çubuğu sırasıyla konu etiketi, çalışma kapsamı (tek merkezli / çok merkezli / multidisipliner / uluslararası), ortak branş ve bölüm seçicisini içerir. Kapsam ve branş etiketleri PubMed kurum satırları ile kart metninden türetilir; kaynakta bulunmayan bilgi etiketlenmez.
 
 ## Teknoloji
 
@@ -42,7 +46,7 @@ pipeline/               # günlük tarama ve sayı üretimi
 | `date`, `windowStart`, `windowEnd`, `periodLabel` | Sayı tarihi ve tarama dönemi |
 | `stats` | Taranan kayıt, Doğrudan, Dolaylı, Konu dışı, klinik araştırma, dergi sayıları |
 | `journals` | Dergi bazında kayıt sayıları (grup harfiyle) |
-| `direct` | Çalışma kartları (başlık, künye, etiketler, özet, tasarım, örneklem, karşılaştırma, sonlanımlar, ana sonuç, takip, veri dönemi, yazarlar, kurumlar, Türkiye işareti) |
+| `direct` | Çalışma kartları (başlık, künye, etiketler, özet, tasarım, örneklem, karşılaştırma, sonlanımlar, ana sonuç, takip, veri dönemi, yazarlar, kurumlar, Türkiye işareti, kapsam, branşlar, uluslararası bayrağı) |
 | `trials` | NCT kayıtları |
 | `indirect` | Dolaylı makaleler (tek cümlelik sonuç) |
 | `videoCase`, `offTopic`, `cardiac`, `unavailable` | Yalnızca başlıkla listelenen kayıtlar |

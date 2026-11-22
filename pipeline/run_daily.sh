@@ -45,6 +45,9 @@ python3 pipeline/build_issue.py
 echo "-- Yazar/kurum bilgisi ve Türkiye tespiti"
 python3 pipeline/enrich_meta.py "content/issues/$DATE.json"
 
+echo "-- Kapsam ve branş etiketleri"
+python3 pipeline/scope_tags.py "content/issues/$DATE.json"
+
 echo "-- PubMed dışı kayıtları ekle"
 python3 pipeline/merge_external.py "content/issues/$DATE.json"
 

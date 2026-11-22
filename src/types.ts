@@ -1,6 +1,7 @@
 export type Design = 'rct' | 'meta' | 'cohort' | 'casecontrol' | 'caseseries' | 'nonclinical' | 'other'
 
 export type Access = 'open' | 'abstract'
+export type Scope = 'tek_merkezli' | 'cok_merkezli' | ''
 
 export interface Study {
   id: string
@@ -28,6 +29,12 @@ export interface Study {
   institutions?: string[]
   turkey?: boolean
   turkeyNote?: string
+  scope?: Scope
+  scopeLabel?: string
+  disciplines?: string[]
+  multidisciplinary?: boolean
+  international?: boolean
+  countries?: string[]
 }
 
 export interface Trial {
@@ -53,6 +60,12 @@ export interface Indirect {
   authors?: string
   institutions?: string[]
   turkey?: boolean
+  scope?: Scope
+  scopeLabel?: string
+  disciplines?: string[]
+  multidisciplinary?: boolean
+  international?: boolean
+  countries?: string[]
 }
 
 export interface TitleOnly {

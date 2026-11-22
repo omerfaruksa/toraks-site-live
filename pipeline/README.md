@@ -28,9 +28,10 @@ Ortam değişkenleri: `DATE`, `WINDOW_START`, `WINDOW_END`, `CONC` (eşzamanlı 
 | 10 | `triage_external.mjs` | PubMed dışı kayıtları sınıflandırır (gpt-6-luna): ilgi sınıfı, etiket, tek cümlelik sonuç |
 | 11 | `build_issue.py` | Sayı JSON'unu yazar; PMC üzerinden açık tam metin durumunu, torasik/cerrahi içerik filtrelerini ve protokol ayıklamasını uygular |
 | 12 | `enrich_meta.py` | Her kayda yazar, kurum ve Türkiye kökeni bilgisini ekler (PubMed `AffiliationInfo`) |
-| 13 | `merge_external.py` | Crossref/RSS kayıtlarını sayıya ekler (başlık düzeyinde; kart yazılmaz) |
-| 14 | `coverage.py` | Dergi kapsama tablosunu üretir: bu sayı, son 30 gün, son giriş tarihi, kaynak |
-| 15 | `verify_numbers.py` | Kartlardaki sayıları kaynak özetle karşılaştırır, uyuşmayanları listeler |
+| 13 | `scope_tags.py` | Kartlara çalışma kapsamı (tek merkezli / çok merkezli), uluslararası işbirliği bayrağı ve ortak branşları ekler (PubMed kurum satırları + kart metni) |
+| 14 | `merge_external.py` | Crossref/RSS kayıtlarını sayıya ekler (başlık düzeyinde; kart yazılmaz) |
+| 15 | `coverage.py` | Dergi kapsama tablosunu üretir: bu sayı, son 30 gün, son giriş tarihi, kaynak |
+| 16 | `verify_numbers.py` | Kartlardaki sayıları kaynak özetle karşılaştırır, uyuşmayanları listeler |
 
 Ara dosyalar `pipeline/.work/` altında tutulur ve sürüm kontrolüne girmez. Adımlar tekrar çalıştırılabilir: `triage.mjs`, `recheck.mjs` ve `cards.mjs` tamamlanmış kayıtları atlar.
 
@@ -41,6 +42,9 @@ Ara dosyalar `pipeline/.work/` altında tutulur ve sürüm kontrolüne girmez. A
 - Crossref/RSS kayıtlarında özet metni çoğunlukla bulunmaz; bu kayıtlar başlık düzeyinde listelenir, çalışma kartı yazılmaz.
 - Europe PMC ön baskı taraması servis kesintilerinde boş dönebilir.
 - İlk sınıflandırma modeli (gpt-6-luna) düşük maliyetlidir; ikinci geçiş yalnızca Doğrudan/Dolaylı adaylarına uygulanır. Bu nedenle konu dışı listesinde tek tük hatalı sınıflandırma kalabilir.
+
+## Kapsam ve branş etiketleri
+`scope_tags.py` yalnızca kaynak metne dayanır: kapsam bilgisi kartın tasarım etiketi ve özetindeki ifadelerden ("çok merkezli", "ulusal kayıt", "tek merkezli"), branşlar ise PubMed kurum satırlarındaki bölüm adlarından ("Department of Medical Oncology" gibi) okunur. Kurum satırında branş yoksa kart "belirtilmemiş" kalır; metinde geçmeyen bilgi üretilmez. "Uluslararası" bayrağı yazar kurumlarının iki veya daha fazla ülkede olmasını gösterir, çalışma tasarımını değil.
 
 ## Kaynak eşleme
 `kaynak_esleme.csv` her dergi için hangi kanalın kullanılacağını belirler: `pubmed` (varsayılan, listede yoksa), `crossref`, `rss`, `none`. Yeni bir dergi eklenirken ISSN ve kanal buraya yazılır; `coverage.py` ürettiği tabloda her derginin son 30 günlük kayıt sayısını ve son giriş tarihini gösterir.

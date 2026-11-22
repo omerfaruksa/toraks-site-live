@@ -1,17 +1,24 @@
 import { useEffect, useMemo, useState } from 'react'
 import Header from './components/Header'
 import Hero from './components/Hero'
-import Filters from './components/Filters'
+import Filters, { type BranchOption, type SectionOption } from './components/Filters'
 import StudyCard from './components/StudyCard'
 import Toc, { type TocItem } from './components/Toc'
 import Trials from './components/Trials'
 import TitleList from './components/TitleList'
 import Sources from './components/Sources'
 import External from './components/External'
+import SectionGroup from './components/SectionGroup'
 import { DESIGN_ORDER, TAG_ORDER, issueIndex, loadIssue, shortDate } from './data'
-import type { Design, Indirect, Issue, Study } from './types'
+import type { Design, Indirect, Issue, Scope, Study } from './types'
 
 const norm = (s: string) => s.toLocaleLowerCase('tr')
+
+type Page = 'issue' | 'kaynaklar'
+
+function readPage(): Page {
+  return new URLSearchParams(window.location.search).get('sayfa') === 'kaynaklar' ? 'kaynaklar' : 'issue'
+}
 
 function primaryTag(s: Study): string {
   const ordered = [...s.tags].sort((a, b) => {
@@ -22,11 +29,30 @@ function primaryTag(s: Study): string {
   return ordered[0] ?? 'Diğer'
 }
 
-function matchesQuery(s: { titleTr?: string; titleOrig?: string; title?: string; journal: string; summary?: string; oneLiner?: string; pmid: string; doi: string; tags?: string[]; authors?: string; institutions?: string[] }, q: string) {
+interface Filterable {
+  titleTr?: string
+  titleOrig?: string
+  title?: string
+  journal: string
+  summary?: string
+  oneLiner?: string
+  pmid: string
+  doi: string
+  tags?: string[]
+  authors?: string
+  institutions?: string[]
+  scope?: Scope
+  disciplines?: string[]
+  multidisciplinary?: boolean
+  international?: boolean
+  turkey?: boolean
+}
+
+function matchesQuery(s: Filterable, q: string) {
   if (!q) return true
   const hay = norm(
     [s.titleTr, s.titleOrig, s.title, s.journal, s.summary, s.oneLiner, s.pmid, s.doi, (s.tags ?? []).join(' '),
-     s.authors, (s.institutions ?? []).join(' ')]
+     s.authors, (s.institutions ?? []).join(' '), (s.disciplines ?? []).join(' ')]
       .filter(Boolean)
       .join(' '),
   )
@@ -37,6 +63,7 @@ function matchesQuery(s: { titleTr?: string; titleOrig?: string; title?: string;
 }
 
 export default function App() {
+  const [page] = useState<Page>(readPage)
   const [date, setDate] = useState(() => {
     const p = new URLSearchParams(window.location.search).get('sayi')
     return p && issueIndex.some((i) => i.date === p) ? p : issueIndex[0]?.date ?? ''
@@ -49,6 +76,11 @@ export default function App() {
   const [tag, setTag] = useState('')
   const [interest, setInterest] = useState<'all' | 'direct' | 'indirect'>('all')
   const [turkeyOnly, setTurkeyOnly] = useState(false)
+  const [scope, setScope] = useState<Scope>('')
+  const [multiOnly, setMultiOnly] = useState(false)
+  const [intlOnly, setIntlOnly] = useState(false)
+  const [branches, setBranches] = useState<string[]>([])
+  const [section, setSection] = useState('')
 
   useEffect(() => {
     document.documentElement.dataset.theme = theme
@@ -70,26 +102,40 @@ export default function App() {
     const url = new URL(window.location.href)
     if (date) url.searchParams.set('sayi', date)
     else url.searchParams.delete('sayi')
+    if (page === 'kaynaklar') url.searchParams.set('sayfa', 'kaynaklar')
+    else url.searchParams.delete('sayfa')
     window.history.replaceState({}, '', url)
+  }, [date, page])
+
+  useEffect(() => {
     setQuery('')
     setTag('')
     setInterest('all')
     setTurkeyOnly(false)
+    setScope('')
+    setMultiOnly(false)
+    setIntlOnly(false)
+    setBranches([])
+    setSection('')
     window.scrollTo({ top: 0 })
   }, [date])
 
   const filtered = useMemo(() => {
     if (!issue) return { direct: [] as Study[], indirect: [] as Indirect[] }
-    const keep = (s: { tags: string[]; turkey?: boolean }) =>
-      (tag === '' || s.tags.includes(tag)) && (!turkeyOnly || Boolean(s.turkey))
-    const direct = issue.direct.filter(
-      (s) => keep(s) && matchesQuery(s, query),
-    )
-    const indirect = issue.indirect.filter(
-      (s) => keep(s) && matchesQuery(s, query),
-    )
-    return { direct, indirect }
-  }, [issue, tag, query, turkeyOnly])
+    const keep = (s: Filterable) => {
+      if (tag && !(s.tags ?? []).includes(tag)) return false
+      if (turkeyOnly && !s.turkey) return false
+      if (scope && s.scope !== scope) return false
+      if (multiOnly && !s.multidisciplinary) return false
+      if (intlOnly && !s.international) return false
+      if (branches.length > 0 && !branches.some((b) => (s.disciplines ?? []).includes(b))) return false
+      return matchesQuery(s, query)
+    }
+    return {
+      direct: issue.direct.filter(keep),
+      indirect: issue.indirect.filter(keep),
+    }
+  }, [issue, tag, query, turkeyOnly, scope, multiOnly, intlOnly, branches])
 
   const tagOptions = useMemo(() => {
     if (!issue) return []
@@ -97,6 +143,17 @@ export default function App() {
     issue.direct.forEach((s) => s.tags.forEach((t) => present.add(t)))
     issue.indirect.forEach((s) => s.tags.forEach((t) => present.add(t)))
     return TAG_ORDER.filter((t) => present.has(t))
+  }, [issue])
+
+  const branchOptions = useMemo<BranchOption[]>(() => {
+    if (!issue) return []
+    const counts = new Map<string, number>()
+    for (const s of [...issue.direct, ...issue.indirect]) {
+      for (const b of s.disciplines ?? []) counts.set(b, (counts.get(b) ?? 0) + 1)
+    }
+    return [...counts.entries()]
+      .map(([name, count]) => ({ name, count }))
+      .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name, 'tr'))
   }, [issue])
 
   if (!issue) {
@@ -118,6 +175,40 @@ export default function App() {
     )
   }
 
+  if (page === 'kaynaklar') {
+    return (
+      <>
+        <Header
+          issues={issueIndex}
+          currentDate={issue.date}
+          onSelect={setDate}
+          theme={theme}
+          onToggleTheme={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+        />
+        <div className="shell">
+          <p className="page-back page-back-top">
+            <a href={`/?sayi=${issue.date}`}>Sayıya dön</a>
+          </p>
+          <Hero issue={issue} variant="full" title="Kaynaklar ve detaylar" />
+          <section className="section" id="kaynaklar">
+            <div className="section-head">
+              <h2>Kaynaklar</h2>
+              <p className="section-note">
+                Dönem: {shortDate(issue.windowStart)} – {shortDate(issue.windowEnd)} ·{' '}
+                {issue.stats.journalsScanned} dergi tarandı · {issue.stats.journalsWithRecords} dergide kayıt
+                bulundu.
+              </p>
+            </div>
+            <Sources issue={issue} />
+          </section>
+          <p className="page-back">
+            <a href={`/?sayi=${issue.date}`}>Sayıya dön</a>
+          </p>
+        </div>
+      </>
+    )
+  }
+
   const showDirect = interest !== 'indirect'
   const showIndirect = interest !== 'direct'
 
@@ -130,22 +221,38 @@ export default function App() {
   })).filter((g) => g.items.length > 0)
 
   const toc: TocItem[] = [
-    { id: 'genel-bakis', label: 'Genel bakış' },
     { id: 'dogrudan', label: 'Doğrudan makaleler', count: filtered.direct.length },
-    ...(turkeyCards.length > 0
-      ? [{ id: 'turkiye', label: "Türkiye'den", count: turkeyCards.length }]
-      : []),
+    ...(turkeyCards.length > 0 ? [{ id: 'turkiye', label: "Türkiye'den", count: turkeyCards.length }] : []),
+    { id: 'dolayli', label: 'Dolaylı makaleler', count: filtered.indirect.length },
+  ]
+
+  const sectionOptions: SectionOption[] = [
     ...(issue.external && issue.external.length > 0
-      ? [{ id: 'pubmed-disi', label: 'PubMed dışı kaynaklar', count: issue.external.length }]
+      ? [{ id: 'pubmed-disi', label: 'PubMed dışı', count: issue.external.length }]
       : []),
     { id: 'arastirmalar', label: 'Klinik araştırmalar', count: issue.trials.length },
-    { id: 'dolayli', label: 'Dolaylı makaleler', count: filtered.indirect.length },
     { id: 'video-olgu', label: 'Video ve olgu', count: issue.videoCase.length },
+    ...(issue.cardiac.length > 0 ? [{ id: 'kardiyak', label: 'Kardiyak içerik', count: issue.cardiac.length }] : []),
     { id: 'konu-disi', label: 'Konu dışı', count: issue.offTopic.length },
-    { id: 'kaynaklar', label: 'Kaynaklar' },
   ]
-  if (issue.cardiac.length > 0) {
-    toc.splice(6, 0, { id: 'kardiyak', label: 'Kardiyak içerik', count: issue.cardiac.length })
+
+  const openSection = (id: string) => {
+    setSection(id)
+    if (!id) return
+    window.setTimeout(() => {
+      document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }, 80)
+  }
+
+  const clearFilters = () => {
+    setQuery('')
+    setTag('')
+    setInterest('all')
+    setTurkeyOnly(false)
+    setScope('')
+    setMultiOnly(false)
+    setIntlOnly(false)
+    setBranches([])
   }
 
   return (
@@ -172,7 +279,24 @@ export default function App() {
         tags={tagOptions}
         turkeyOnly={turkeyOnly}
         onTurkeyOnly={setTurkeyOnly}
-        result={query || tag || interest !== 'all' || turkeyOnly ? { direct: filtered.direct.length, indirect: filtered.indirect.length } : null}
+        scope={scope}
+        onScope={setScope}
+        multiOnly={multiOnly}
+        onMultiOnly={setMultiOnly}
+        intlOnly={intlOnly}
+        onIntlOnly={setIntlOnly}
+        branches={branches}
+        onBranches={setBranches}
+        branchOptions={branchOptions}
+        section={section}
+        onSection={openSection}
+        sectionOptions={sectionOptions}
+        result={
+          query || tag || scope || multiOnly || intlOnly || turkeyOnly || branches.length > 0 || interest !== 'all'
+            ? { direct: filtered.direct.length, indirect: filtered.indirect.length }
+            : null
+        }
+        onClear={clearFilters}
       />
 
       <div className="shell layout">
@@ -240,31 +364,6 @@ export default function App() {
             )}
           </section>
 
-          {issue.external && issue.external.length > 0 && (
-            <section id="pubmed-disi" className="section">
-              <div className="section-head">
-                <h2>PubMed dışı kaynaklar</h2>
-                <p className="section-note">
-                  Crossref DOI kayıtları ve dergi RSS akışlarından gelen, PubMed taramasında yer
-                  almayan kayıtlar. Bu kanallarda özet metni çoğunlukla bulunmadığı için yalnızca
-                  başlık düzeyinde listelenir; çalışma kartı yazılmaz.
-                </p>
-              </div>
-              <External items={issue.external} />
-            </section>
-          )}
-
-          <section id="arastirmalar" className="section">
-            <div className="section-head">
-              <h2>Klinik araştırmalar</h2>
-              <p className="section-note">
-                ClinicalTrials.gov üzerinde bu dönemde ilk kez kaydedilen veya sonuçları yüklenen
-                torasik cerrahi çalışmaları.
-              </p>
-            </div>
-            <Trials trials={issue.trials} />
-          </section>
-
           <section id="dolayli" className="section">
             <div className="section-head">
               <h2>Dolaylı makaleler</h2>
@@ -283,6 +382,7 @@ export default function App() {
                       {s.title}
                     </a>
                     {s.turkey && <span className="tr-badge tr-badge-sm">Türkiye'den</span>}
+                    {s.scopeLabel && <span className="scope-badge scope-badge-sm">{s.scopeLabel}</span>}
                     <p className="indirect-meta">
                       {s.journal}
                       {s.pmid ? ` · PMID ${s.pmid}` : ''}
@@ -296,6 +396,9 @@ export default function App() {
                           : ''}
                       </p>
                     )}
+                    {s.disciplines && s.disciplines.length > 0 && (
+                      <p className="indirect-authors">Branşlar: {s.disciplines.join(' · ')}</p>
+                    )}
                     {s.oneLiner && <p className="indirect-line">{s.oneLiner}</p>}
                   </li>
                 ))}
@@ -303,45 +406,64 @@ export default function App() {
             )}
           </section>
 
-          <section id="video-olgu" className="section">
-            <div className="section-head">
-              <h2>Video ve olgu başlıkları</h2>
-              <p className="section-note">Yalnızca başlık düzeyinde izlenir; özet yazılmaz.</p>
-            </div>
-            <TitleList items={issue.videoCase} empty="Bu dönemde video veya olgu kaydı bulunmadı." limit={12} showAuthors />
-          </section>
-
-          <section id="konu-disi" className="section">
-            <div className="section-head">
-              <h2>Konu dışı başlıklar</h2>
-              <p className="section-note">Cerrahinin kapsamına girmeyen kayıtlar, tek satır.</p>
-            </div>
-            <TitleList items={issue.offTopic} empty="Konu dışı kayıt bulunmadı." limit={10} />
-          </section>
-
-          {issue.cardiac.length > 0 && (
-            <section id="kardiyak" className="section">
-              <div className="section-head">
-                <h2>Kardiyak içerik (kapsam dışı)</h2>
-                <p className="section-note">
-                  A grubu dergilerde yayımlanan, torasik cerrahi kapsamı dışındaki kardiyak
-                  makaleler.
-                </p>
-              </div>
-              <TitleList items={issue.cardiac} empty="Kardiyak içerikli kayıt bulunmadı." limit={8} />
-            </section>
+          {issue.external && issue.external.length > 0 && (
+            <SectionGroup
+              id="pubmed-disi"
+              title="PubMed dışı kaynaklar"
+              count={issue.external.length}
+              note="Crossref DOI kayıtları ve dergi RSS akışlarından gelen, PubMed taramasında yer almayan kayıtlar. Bu kanallarda özet metni çoğunlukla bulunmadığı için yalnızca başlık düzeyinde listelenir; çalışma kartı yazılmaz."
+              open={section === 'pubmed-disi'}
+              onToggle={(open) => setSection(open ? 'pubmed-disi' : '')}
+            >
+              <External items={issue.external} />
+            </SectionGroup>
           )}
 
-          <section id="kaynaklar" className="section">
-            <div className="section-head">
-              <h2>Taranan kaynaklar</h2>
-              <p className="section-note">
-                Dönem: {shortDate(issue.windowStart)} – {shortDate(issue.windowEnd)} ·{' '}
-                {issue.stats.journalsScanned} dergi · {issue.stats.journalsWithRecords} dergide kayıt.
-              </p>
-            </div>
-            <Sources issue={issue} />
-          </section>
+          <SectionGroup
+            id="arastirmalar"
+            title="Klinik araştırmalar"
+            count={issue.trials.length}
+            note="ClinicalTrials.gov üzerinde bu dönemde ilk kez kaydedilen veya sonuçları yüklenen torasik cerrahi çalışmaları."
+            open={section === 'arastirmalar'}
+            onToggle={(open) => setSection(open ? 'arastirmalar' : '')}
+          >
+            <Trials trials={issue.trials} />
+          </SectionGroup>
+
+          <SectionGroup
+            id="video-olgu"
+            title="Video ve olgu başlıkları"
+            count={issue.videoCase.length}
+            note="Yalnızca başlık düzeyinde izlenir; özet yazılmaz."
+            open={section === 'video-olgu'}
+            onToggle={(open) => setSection(open ? 'video-olgu' : '')}
+          >
+            <TitleList items={issue.videoCase} empty="Bu dönemde video veya olgu kaydı bulunmadı." limit={12} showAuthors />
+          </SectionGroup>
+
+          {issue.cardiac.length > 0 && (
+            <SectionGroup
+              id="kardiyak"
+              title="Kardiyak içerik"
+              count={issue.cardiac.length}
+              note="A grubu dergilerde yayımlanan, torasik cerrahi kapsamı dışındaki kardiyak makaleler."
+              open={section === 'kardiyak'}
+              onToggle={(open) => setSection(open ? 'kardiyak' : '')}
+            >
+              <TitleList items={issue.cardiac} empty="Kardiyak içerikli kayıt bulunmadı." limit={8} />
+            </SectionGroup>
+          )}
+
+          <SectionGroup
+            id="konu-disi"
+            title="Konu dışı başlıklar"
+            count={issue.offTopic.length}
+            note="Cerrahinin kapsamına girmeyen kayıtlar, tek satır."
+            open={section === 'konu-disi'}
+            onToggle={(open) => setSection(open ? 'konu-disi' : '')}
+          >
+            <TitleList items={issue.offTopic} empty="Konu dışı kayıt bulunmadı." limit={10} />
+          </SectionGroup>
 
           <footer className="site-footer">
             <p>
@@ -349,7 +471,7 @@ export default function App() {
               kaynaktan aynen aktarılır. Klinik öneri içermez.
             </p>
             <p>
-              <a href="#genel-bakis">Başa dön</a>
+              <a href={`/?sayi=${issue.date}&sayfa=kaynaklar`}>Kaynaklar ve detaylar</a>
               {issue.generatedAt ? ` · Son güncelleme ${formatStamp(issue.generatedAt)}` : ''}
             </p>
           </footer>

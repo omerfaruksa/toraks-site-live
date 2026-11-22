@@ -1020,3 +1020,115 @@ summary:focus-visible {
 .coverage td:first-child { white-space: normal; min-width: 12rem; }
 .coverage tr.is-hit td { color: var(--ink); }
 .coverage tr.is-missing td { color: var(--warn); }
+
+/* ---------- sade künye ve ayrıntı bağlantısı ---------- */
+.hero-compact { padding: 34px 0 22px; }
+.hero-compact .hero-title {
+  font-size: clamp(1.5rem, 1.1rem + 1.4vw, 2rem);
+  margin-bottom: 8px;
+}
+.hero-links { margin: 0; font-size: 0.875rem; }
+.hero-detail-link {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 2px;
+  color: var(--accent-ink);
+  text-decoration: none;
+  border-bottom: 1px solid color-mix(in srgb, var(--accent) 45%, transparent);
+  padding-bottom: 1px;
+}
+.hero-detail-link:hover { border-bottom-color: var(--accent); }
+.page-back { margin: 34px 0 60px; font-size: 0.875rem; }
+.page-back-top { margin: 22px 0 -14px; }
+.page-back a::before { content: "← "; }
+.page-back a { color: var(--accent-ink); }
+
+/* ---------- filtre satırları ---------- */
+.filter-line {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 8px;
+  min-width: 0;
+}
+.filter-line .chips { margin-top: 0; flex: 1 1 auto; }
+.filter-label {
+  flex: 0 0 auto;
+  font-size: 0.625rem;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--muted);
+  min-width: 3.6rem;
+}
+.chip-count {
+  margin-left: 5px;
+  font-size: 0.625rem;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+.chip.is-active .chip-count { color: inherit; opacity: 0.75; }
+
+/* ---------- katlanabilir ikincil bölümler ---------- */
+.section-fold {
+  border-top: 1px solid var(--rule-soft);
+  padding-top: 0;
+  margin-top: 26px;
+  scroll-margin-top: calc(var(--header-h) + 16px);
+}
+.section-fold > summary {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  cursor: pointer;
+  padding: 14px 0;
+  list-style: none;
+}
+.section-fold > summary::-webkit-details-marker { display: none; }
+.section-fold > summary::before {
+  content: "▸";
+  color: var(--muted);
+  font-size: 0.7rem;
+  transform: translateY(-1px);
+}
+.section-fold[open] > summary::before { content: "▾"; }
+.fold-title {
+  font-family: var(--serif);
+  font-size: 1.0625rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+.section-fold .count {
+  font-size: 0.75rem;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+.section-fold > summary:hover .fold-title { color: var(--accent-ink); }
+.fold-body { padding: 2px 0 8px; }
+.fold-body .section-note { margin-top: 0; margin-bottom: 12px; }
+
+/* ---------- kapsam ve branş ---------- */
+.scope-badge {
+  display: inline-block;
+  margin-left: 8px;
+  padding: 1px 7px;
+  border: 1px solid var(--rule);
+  border-radius: 3px;
+  font-size: 0.6875rem;
+  letter-spacing: 0.02em;
+  color: var(--ink-2);
+  background: var(--paper-2);
+  white-space: nowrap;
+}
+.scope-badge-sm { margin-left: 6px; font-size: 0.625rem; padding: 0 6px; }
+.card-branches {
+  margin: 10px 0 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 4px;
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  color: var(--ink-2);
+}
+.card-branches .people-key { margin-right: 6px; }
+.intl-note { color: var(--muted); }

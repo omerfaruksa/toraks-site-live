@@ -1,3 +1,16 @@
+import type { Scope } from '../types'
+
+export interface SectionOption {
+  id: string
+  label: string
+  count: number
+}
+
+export interface BranchOption {
+  name: string
+  count: number
+}
+
 interface Props {
   query: string
   onQuery: (v: string) => void
@@ -6,13 +19,31 @@ interface Props {
   interest: 'all' | 'direct' | 'indirect'
   onInterest: (v: 'all' | 'direct' | 'indirect') => void
   tags: string[]
-  result: { direct: number; indirect: number } | null
   turkeyOnly: boolean
   onTurkeyOnly: (v: boolean) => void
+  scope: Scope
+  onScope: (v: Scope) => void
+  multiOnly: boolean
+  onMultiOnly: (v: boolean) => void
+  intlOnly: boolean
+  onIntlOnly: (v: boolean) => void
+  branches: string[]
+  onBranches: (v: string[]) => void
+  branchOptions: BranchOption[]
+  section: string
+  onSection: (v: string) => void
+  sectionOptions: SectionOption[]
+  result: { direct: number; indirect: number } | null
+  onClear: () => void
 }
 
-export default function Filters({ query, onQuery, tag, onTag, interest, onInterest, tags, result, turkeyOnly, onTurkeyOnly }: Props) {
-  const active = Boolean(query || tag || interest !== 'all' || turkeyOnly)
+export default function Filters(p: Props) {
+  const active =
+    Boolean(p.query || p.tag || p.scope || p.multiOnly || p.intlOnly || p.turkeyOnly || p.branches.length) ||
+    p.interest !== 'all'
+
+  const toggleBranch = (name: string) =>
+    p.onBranches(p.branches.includes(name) ? p.branches.filter((b) => b !== name) : [...p.branches, name])
 
   return (
     <div className="filters" id="filtreler">
@@ -25,9 +56,9 @@ export default function Filters({ query, onQuery, tag, onTag, interest, onIntere
             </svg>
             <input
               type="search"
-              value={query}
-              onChange={(e) => onQuery(e.target.value)}
-              placeholder="Başlık, dergi, PMID veya etiket"
+              value={p.query}
+              onChange={(e) => p.onQuery(e.target.value)}
+              placeholder="Başlık, yazar, kurum, dergi, PMID"
               aria-label="Makale ara"
             />
           </div>
@@ -43,9 +74,9 @@ export default function Filters({ query, onQuery, tag, onTag, interest, onIntere
               <button
                 key={key}
                 type="button"
-                className={interest === key ? 'is-active' : ''}
-                onClick={() => onInterest(key)}
-                aria-pressed={interest === key}
+                className={p.interest === key ? 'is-active' : ''}
+                onClick={() => p.onInterest(key)}
+                aria-pressed={p.interest === key}
               >
                 {label}
               </button>
@@ -53,45 +84,136 @@ export default function Filters({ query, onQuery, tag, onTag, interest, onIntere
           </div>
           <button
             type="button"
-            className={`chip chip-tr ${turkeyOnly ? 'is-active' : ''}`}
-            onClick={() => onTurkeyOnly(!turkeyOnly)}
-            aria-pressed={turkeyOnly}
+            className={`chip chip-tr ${p.turkeyOnly ? 'is-active' : ''}`}
+            onClick={() => p.onTurkeyOnly(!p.turkeyOnly)}
+            aria-pressed={p.turkeyOnly}
             title="Türkiye'den bir kurum veya yazarın yer aldığı kayıtlar"
           >
             Türkiye'den
           </button>
         </div>
 
-        <div className="chips" role="group" aria-label="Konu etiketi">
-          <button type="button" className={`chip ${tag === '' ? 'is-active' : ''}`} onClick={() => onTag('')}>
-            Tüm konular
-          </button>
-          {tags.map((t) => (
-            <button
-              key={t}
-              type="button"
-              className={`chip ${tag === t ? 'is-active' : ''}`}
-              onClick={() => onTag(tag === t ? '' : t)}
-              aria-pressed={tag === t}
-            >
-              {t}
+        <div className="filter-line">
+          <span className="filter-label">Konu</span>
+          <div className="chips" role="group" aria-label="Konu etiketi">
+            <button type="button" className={`chip ${p.tag === '' ? 'is-active' : ''}`} onClick={() => p.onTag('')}>
+              Tüm konular
             </button>
-          ))}
+            {p.tags.map((t) => (
+              <button
+                key={t}
+                type="button"
+                className={`chip ${p.tag === t ? 'is-active' : ''}`}
+                onClick={() => p.onTag(p.tag === t ? '' : t)}
+                aria-pressed={p.tag === t}
+              >
+                {t}
+              </button>
+            ))}
+          </div>
         </div>
 
-        {active && result && (
-          <p className="filter-result">
-            {result.direct} doğrudan, {result.indirect} dolaylı kayıt eşleşti.
+        <div className="filter-line">
+          <span className="filter-label">Kapsam</span>
+          <div className="chips" role="group" aria-label="Çalışma kapsamı">
+            <button type="button" className={`chip ${p.scope === '' ? 'is-active' : ''}`} onClick={() => p.onScope('')}>
+              Tümü
+            </button>
+            {(
+              [
+                ['tek_merkezli', 'Tek merkezli'],
+                ['cok_merkezli', 'Çok merkezli'],
+              ] as const
+            ).map(([key, label]) => (
+              <button
+                key={key}
+                type="button"
+                className={`chip ${p.scope === key ? 'is-active' : ''}`}
+                onClick={() => p.onScope(p.scope === key ? '' : key)}
+                aria-pressed={p.scope === key}
+              >
+                {label}
+              </button>
+            ))}
             <button
               type="button"
-              className="linkish"
-              onClick={() => {
-                onQuery('')
-                onTag('')
-                onInterest('all')
-                onTurkeyOnly(false)
-              }}
+              className={`chip ${p.multiOnly ? 'is-active' : ''}`}
+              onClick={() => p.onMultiOnly(!p.multiOnly)}
+              aria-pressed={p.multiOnly}
+              title="Yazar kurumlarında birden fazla branş saptanan çalışmalar"
             >
+              Multidisipliner
+            </button>
+            <button
+              type="button"
+              className={`chip ${p.intlOnly ? 'is-active' : ''}`}
+              onClick={() => p.onIntlOnly(!p.intlOnly)}
+              aria-pressed={p.intlOnly}
+              title="Yazar kurumları iki veya daha fazla ülkede olan çalışmalar"
+            >
+              Uluslararası
+            </button>
+          </div>
+        </div>
+
+        {p.branchOptions.length > 0 && (
+          <div className="filter-line">
+            <span className="filter-label">Branş</span>
+            <div className="chips" role="group" aria-label="Ortak branş">
+              <button
+                type="button"
+                className={`chip ${p.branches.length === 0 ? 'is-active' : ''}`}
+                onClick={() => p.onBranches([])}
+              >
+                Tüm branşlar
+              </button>
+              {p.branchOptions.map((b) => (
+                <button
+                  key={b.name}
+                  type="button"
+                  className={`chip ${p.branches.includes(b.name) ? 'is-active' : ''}`}
+                  onClick={() => toggleBranch(b.name)}
+                  aria-pressed={p.branches.includes(b.name)}
+                >
+                  {b.name}
+                  <span className="chip-count">{b.count}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {p.sectionOptions.length > 0 && (
+          <div className="filter-line filter-line-section">
+            <span className="filter-label">Bölüm</span>
+            <div className="chips" role="group" aria-label="Diğer listeler">
+              <button
+                type="button"
+                className={`chip ${p.section === '' ? 'is-active' : ''}`}
+                onClick={() => p.onSection('')}
+              >
+                Kapalı
+              </button>
+              {p.sectionOptions.map((s) => (
+                <button
+                  key={s.id}
+                  type="button"
+                  className={`chip ${p.section === s.id ? 'is-active' : ''}`}
+                  onClick={() => p.onSection(p.section === s.id ? '' : s.id)}
+                  aria-pressed={p.section === s.id}
+                >
+                  {s.label}
+                  <span className="chip-count">{s.count}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {active && p.result && (
+          <p className="filter-result">
+            {p.result.direct} doğrudan, {p.result.indirect} dolaylı kayıt eşleşti.
+            <button type="button" className="linkish" onClick={p.onClear}>
               Filtreyi temizle
             </button>
           </p>

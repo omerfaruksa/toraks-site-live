@@ -41,6 +41,7 @@ export default function StudyCard({ study }: { study: Study }) {
           {study.access === 'open' ? 'Açık tam metin' : 'Yalnızca özet'}
         </span>
         {study.turkey && <span className="tr-badge">Türkiye'den</span>}
+        {study.scopeLabel && <span className="scope-badge">{study.scopeLabel}</span>}
       </p>
 
       {study.tags.length > 0 && (
@@ -65,6 +66,23 @@ export default function StudyCard({ study }: { study: Study }) {
           </span>
         </p>
       </div>
+
+      {(study.disciplines?.length || study.international) && (
+        <p className="card-branches">
+          {study.disciplines && study.disciplines.length > 0 && (
+            <>
+              <span className="people-key">Branşlar</span>
+              <span className="people-val">{study.disciplines.join(' · ')}</span>
+            </>
+          )}
+          {study.international && (
+            <span className="intl-note">
+              {study.disciplines?.length ? ' · ' : ''}Uluslararası işbirliği
+              {study.countries && study.countries.length > 1 ? ` (${study.countries.slice(0, 3).join(', ')})` : ''}
+            </span>
+          )}
+        </p>
+      )}
 
       {study.summary && <p className="card-summary">{study.summary}</p>}
 

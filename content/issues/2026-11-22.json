@@ -341,7 +341,17 @@
     "Shanghai Pulmonary Hospital, Shanghai, China",
     "Department of Clinical Laboratory, Shanghai, China"
    ],
-   "turkey": false
+   "turkey": false,
+   "scope": "",
+   "scopeLabel": "",
+   "disciplines": [
+    "Göğüs cerrahisi"
+   ],
+   "countries": [
+    "China"
+   ],
+   "multidisciplinary": false,
+   "international": false
   },
   {
    "id": "43062534",
@@ -372,7 +382,18 @@
    "institutions": [
     "Beijing Chest Hospital, Beijing, P. R. China"
    ],
-   "turkey": false
+   "turkey": false,
+   "scope": "",
+   "scopeLabel": "",
+   "disciplines": [
+    "Moleküler ve translasyonel bilimler",
+    "Göğüs cerrahisi"
+   ],
+   "countries": [
+    "China"
+   ],
+   "multidisciplinary": true,
+   "international": false
   },
   {
    "id": "43052899",
@@ -404,7 +425,18 @@
     "Shenzhen Hospital, Guangdong, China",
     "Zhujiang Hospital, Guangdong, China"
    ],
-   "turkey": false
+   "turkey": false,
+   "scope": "",
+   "scopeLabel": "",
+   "disciplines": [
+    "Göğüs cerrahisi",
+    "Kalp ve damar cerrahisi"
+   ],
+   "countries": [
+    "China"
+   ],
+   "multidisciplinary": true,
+   "international": false
   },
   {
    "id": "43043567",
@@ -435,7 +467,14 @@
    "institutions": [
     "21 September University for Medical and Applied Sciences, Sana'a, Yemen"
    ],
-   "turkey": false
+   "turkey": false,
+   "scope": "",
+   "scopeLabel": "",
+   "disciplines": [
+    "Genel cerrahi"
+   ],
+   "multidisciplinary": false,
+   "international": false
   },
   {
    "id": "43039202",
@@ -467,7 +506,15 @@
     "University Hospitals Leuven, Leuven",
     "Lung transplant UCLouvain center, CHU UCL Namur site Godinne, Yvoir"
    ],
-   "turkey": false
+   "turkey": false,
+   "scope": "cok_merkezli",
+   "scopeLabel": "Çok merkezli",
+   "disciplines": [
+    "Göğüs hastalıkları",
+    "Göğüs cerrahisi"
+   ],
+   "multidisciplinary": true,
+   "international": false
   },
   {
    "id": "43036204",
@@ -497,7 +544,18 @@
    "institutions": [
     "Xiaogan Hospital Affiliated to Wuhan University of Science and Technology, Hubei, China"
    ],
-   "turkey": false
+   "turkey": false,
+   "scope": "tek_merkezli",
+   "scopeLabel": "Tek merkezli",
+   "disciplines": [
+    "Göğüs cerrahisi",
+    "Kalp ve damar cerrahisi"
+   ],
+   "countries": [
+    "China"
+   ],
+   "multidisciplinary": true,
+   "international": false
   },
   {
    "id": "43039167",
@@ -530,7 +588,16 @@
     "Memorial Sloan Kettering Cancer Center, New York, NY",
     "The Society of Thoracic Surgeons Research and Analytic Center, Chicago, IL"
    ],
-   "turkey": false
+   "turkey": false,
+   "scope": "cok_merkezli",
+   "scopeLabel": "Çok merkezli",
+   "disciplines": [
+    "Genel cerrahi",
+    "Göğüs cerrahisi",
+    "Kalp ve damar cerrahisi"
+   ],
+   "multidisciplinary": true,
+   "international": false
   },
   {
    "id": "43051876",
@@ -560,7 +627,17 @@
    "institutions": [
     "Hokkaido University Hospital, Hokkaido, Japan"
    ],
-   "turkey": false
+   "turkey": false,
+   "scope": "",
+   "scopeLabel": "",
+   "disciplines": [
+    "Göğüs cerrahisi"
+   ],
+   "countries": [
+    "Japan"
+   ],
+   "multidisciplinary": false,
+   "international": false
   },
   {
    "id": "43045212",
@@ -590,7 +667,17 @@
    "institutions": [
     "University of Arkansas for Medical Sciences, AR, USA"
    ],
-   "turkey": false
+   "turkey": false,
+   "scope": "",
+   "scopeLabel": "",
+   "disciplines": [
+    "Genel cerrahi"
+   ],
+   "countries": [
+    "Usa"
+   ],
+   "multidisciplinary": false,
+   "international": false
   },
   {
    "id": "43045211",
@@ -622,7 +709,17 @@
    "institutions": [
     "University of Oklahoma Health Sciences Center, OK, USA"
    ],
-   "turkey": false
+   "turkey": false,
+   "scope": "",
+   "scopeLabel": "",
+   "disciplines": [
+    "Genel cerrahi"
+   ],
+   "countries": [
+    "Usa"
+   ],
+   "multidisciplinary": false,
+   "international": false
   },
   {
    "id": "43045210",
@@ -652,7 +749,17 @@
    "institutions": [
     "MD Anderson Cancer Center, TX, USA"
    ],
-   "turkey": false
+   "turkey": false,
+   "scope": "",
+   "scopeLabel": "",
+   "disciplines": [
+    "Genel cerrahi"
+   ],
+   "countries": [
+    "Usa"
+   ],
+   "multidisciplinary": false,
+   "international": false
   },
   {
    "id": "43045209",
@@ -682,7 +789,17 @@
    "institutions": [
     "Keck School of Medicine of the University of Southern California, CA, USA"
    ],
-   "turkey": false
+   "turkey": false,
+   "scope": "",
+   "scopeLabel": "",
+   "disciplines": [
+    "Göğüs cerrahisi"
+   ],
+   "countries": [
+    "Usa"
+   ],
+   "multidisciplinary": false,
+   "international": false
   },
   {
    "id": "43045207",
@@ -716,7 +833,19 @@
     "Institute For Clinical and Applied Health Research, Hull, UK"
    ],
    "turkey": true,
-   "turkeyNote": "ülke alanı: Turkey"
+   "turkeyNote": "ülke alanı: Turkey",
+   "scope": "",
+   "scopeLabel": "",
+   "disciplines": [
+    "Göğüs cerrahisi"
+   ],
+   "countries": [
+    "Turkey",
+    "Italy",
+    "Uk"
+   ],
+   "multidisciplinary": false,
+   "international": true
   },
   {
    "id": "43045206",
@@ -747,7 +876,18 @@
    "institutions": [
     "Rush University Medical Center, IL, USA"
    ],
-   "turkey": false
+   "turkey": false,
+   "scope": "",
+   "scopeLabel": "",
+   "disciplines": [
+    "Genel cerrahi",
+    "Göğüs cerrahisi"
+   ],
+   "countries": [
+    "Usa"
+   ],
+   "multidisciplinary": true,
+   "international": false
   },
   {
    "id": "43045205",
@@ -777,7 +917,18 @@
    "institutions": [
     "Medical University of South Carolina, SC, USA"
    ],
-   "turkey": false
+   "turkey": false,
+   "scope": "",
+   "scopeLabel": "",
+   "disciplines": [
+    "Göğüs cerrahisi",
+    "Kalp ve damar cerrahisi"
+   ],
+   "countries": [
+    "Usa"
+   ],
+   "multidisciplinary": true,
+   "international": false
   },
   {
    "id": "43045204",
@@ -809,7 +960,18 @@
     "Virginia Commonwealth University School of Medicine, VA, USA",
     "University of Virginia, VA, USA"
    ],
-   "turkey": false
+   "turkey": false,
+   "scope": "",
+   "scopeLabel": "",
+   "disciplines": [
+    "Genel cerrahi",
+    "Anesteziyoloji ve yoğun bakım"
+   ],
+   "countries": [
+    "Usa"
+   ],
+   "multidisciplinary": true,
+   "international": false
   },
   {
    "id": "43040978",
@@ -841,7 +1003,20 @@
     "Brigham and Women's Hospital, MA, USA",
     "MA, USA"
    ],
-   "turkey": false
+   "turkey": false,
+   "scope": "tek_merkezli",
+   "scopeLabel": "Tek merkezli",
+   "disciplines": [
+    "Göğüs cerrahisi",
+    "Enfeksiyon hastalıkları",
+    "Kalp ve damar cerrahisi",
+    "Anesteziyoloji ve yoğun bakım"
+   ],
+   "countries": [
+    "Usa"
+   ],
+   "multidisciplinary": true,
+   "international": false
   },
   {
    "id": "43041172",
@@ -873,7 +1048,19 @@
     "Enschede, The Netherlands",
     "University Twente, Enschede, The Netherlands"
    ],
-   "turkey": false
+   "turkey": false,
+   "scope": "",
+   "scopeLabel": "",
+   "disciplines": [
+    "Göğüs hastalıkları",
+    "Göğüs cerrahisi",
+    "Kalp ve damar cerrahisi"
+   ],
+   "countries": [
+    "Netherlands"
+   ],
+   "multidisciplinary": true,
+   "international": false
   },
   {
    "id": "43057869",
@@ -906,7 +1093,34 @@
     "Yale School of Medicine, CT, USA",
     "Erasmus University Medical Center, Rotterdam, The Netherlands"
    ],
-   "turkey": false
+   "turkey": false,
+   "scope": "",
+   "scopeLabel": "",
+   "disciplines": [
+    "Göğüs hastalıkları",
+    "Anesteziyoloji ve yoğun bakım",
+    "Radyasyon onkolojisi",
+    "Radyoloji",
+    "Göğüs cerrahisi",
+    "Palyatif bakım"
+   ],
+   "countries": [
+    "Greece",
+    "Usa",
+    "Netherlands",
+    "Belgium",
+    "Germany",
+    "France",
+    "Uk",
+    "Switzerland",
+    "Denmark",
+    "Japan",
+    "Italy",
+    "Czech",
+    "Spain"
+   ],
+   "multidisciplinary": true,
+   "international": true
   },
   {
    "id": "43034056",
@@ -939,7 +1153,15 @@
     "Linköping University, Linköping, Sweden",
     "Department of Clinical Physiology in Linköping, Linköping, Sweden"
    ],
-   "turkey": false
+   "turkey": false,
+   "scope": "",
+   "scopeLabel": "",
+   "disciplines": [],
+   "countries": [
+    "Sweden"
+   ],
+   "multidisciplinary": false,
+   "international": false
   },
   {
    "id": "43040169",
@@ -971,7 +1193,15 @@
     "School of Clinical Medicine, Sichuan Province, China",
     "North Sichuan Medical College, Sichuan Province, China"
    ],
-   "turkey": false
+   "turkey": false,
+   "scope": "",
+   "scopeLabel": "",
+   "disciplines": [],
+   "countries": [
+    "China"
+   ],
+   "multidisciplinary": false,
+   "international": false
   },
   {
    "id": "43034220",
@@ -1004,7 +1234,20 @@
     "Mayo Clinic, MN, USA",
     "Xi'an Jiaotong-Liverpool University, Suzhou, China"
    ],
-   "turkey": false
+   "turkey": false,
+   "scope": "",
+   "scopeLabel": "",
+   "disciplines": [
+    "Göğüs cerrahisi",
+    "Genel cerrahi",
+    "Biyoistatistik ve halk sağlığı"
+   ],
+   "countries": [
+    "China",
+    "Usa"
+   ],
+   "multidisciplinary": true,
+   "international": true
   },
   {
    "id": "43033602",
@@ -1036,7 +1279,17 @@
     "Humanitas University, Milan, Italy",
     "IRCCS Humanitas Research Hospital, Milan, Italy"
    ],
-   "turkey": false
+   "turkey": false,
+   "scope": "tek_merkezli",
+   "scopeLabel": "Tek merkezli",
+   "disciplines": [
+    "Göğüs cerrahisi"
+   ],
+   "countries": [
+    "Italy"
+   ],
+   "multidisciplinary": false,
+   "international": false
   },
   {
    "id": "43063368",
@@ -1068,7 +1321,20 @@
     "Genova, Italy",
     "Monza, Italy"
    ],
-   "turkey": false
+   "turkey": false,
+   "scope": "cok_merkezli",
+   "scopeLabel": "Çok merkezli",
+   "disciplines": [
+    "Medikal onkoloji",
+    "Biyoistatistik ve halk sağlığı",
+    "Patoloji",
+    "Genel cerrahi"
+   ],
+   "countries": [
+    "Italy"
+   ],
+   "multidisciplinary": true,
+   "international": false
   },
   {
    "id": "43059414",
@@ -1100,7 +1366,18 @@
     "Necmettin Erbakan University Faculty of Medicine, Konya, Türkiye"
    ],
    "turkey": true,
-   "turkeyNote": "ülke alanı: Türkiye"
+   "turkeyNote": "ülke alanı: Türkiye",
+   "scope": "",
+   "scopeLabel": "",
+   "disciplines": [
+    "Göğüs cerrahisi",
+    "Kardiyoloji"
+   ],
+   "countries": [
+    "Turkey"
+   ],
+   "multidisciplinary": true,
+   "international": false
   },
   {
    "id": "43059370",
@@ -1133,7 +1410,17 @@
     "Sakarya University Faculty of Medicine, Sakarya, Türkiye"
    ],
    "turkey": true,
-   "turkeyNote": "ülke alanı: Türkiye"
+   "turkeyNote": "ülke alanı: Türkiye",
+   "scope": "tek_merkezli",
+   "scopeLabel": "Tek merkezli",
+   "disciplines": [
+    "Göğüs cerrahisi"
+   ],
+   "countries": [
+    "Turkey"
+   ],
+   "multidisciplinary": false,
+   "international": false
   },
   {
    "id": "43065253",
@@ -1164,7 +1451,15 @@
    "institutions": [
     "Touro College of Osteopathic Medicine, New York, USA"
    ],
-   "turkey": false
+   "turkey": false,
+   "scope": "cok_merkezli",
+   "scopeLabel": "Çok merkezli",
+   "disciplines": [],
+   "countries": [
+    "Usa"
+   ],
+   "multidisciplinary": false,
+   "international": false
   },
   {
    "id": "43064955",
@@ -1196,7 +1491,17 @@
     "Halle, Germany",
     "Martin-Luther-University Halle-Wittenberg, Halle, Germany"
    ],
-   "turkey": false
+   "turkey": false,
+   "scope": "tek_merkezli",
+   "scopeLabel": "Tek merkezli",
+   "disciplines": [
+    "Göğüs cerrahisi"
+   ],
+   "countries": [
+    "Germany"
+   ],
+   "multidisciplinary": false,
+   "international": false
   },
   {
    "id": "43063226",
@@ -1227,7 +1532,17 @@
    "institutions": [
     "Northwestern University Feinberg School of Medicine, Illinois, USA"
    ],
-   "turkey": false
+   "turkey": false,
+   "scope": "",
+   "scopeLabel": "",
+   "disciplines": [
+    "Anesteziyoloji ve yoğun bakım"
+   ],
+   "countries": [
+    "Usa"
+   ],
+   "multidisciplinary": false,
+   "international": false
   },
   {
    "id": "43062533",
@@ -1258,7 +1573,17 @@
    "institutions": [
     "Kasturba Medical College, Karnataka, India"
    ],
-   "turkey": false
+   "turkey": false,
+   "scope": "tek_merkezli",
+   "scopeLabel": "Tek merkezli",
+   "disciplines": [
+    "Cerrahi onkoloji"
+   ],
+   "countries": [
+    "India"
+   ],
+   "multidisciplinary": false,
+   "international": false
   },
   {
    "id": "43062053",
@@ -1290,7 +1615,14 @@
     "College of Nursing, Chengdu University of Traditional Chinese Medicine",
     "Sichuan Nursing Vocational College"
    ],
-   "turkey": false
+   "turkey": false,
+   "scope": "",
+   "scopeLabel": "",
+   "disciplines": [
+    "Hemşirelik"
+   ],
+   "multidisciplinary": false,
+   "international": false
   },
   {
    "id": "43061927",
@@ -1323,7 +1655,17 @@
     "Hubei Provincial Clinical Research Centre for Stroke Rehabilitation of Integrated Traditional Chinese and Western Medicine, Wuhan, China",
     "Hubei University of Chinese Medicine, Wuhan, China"
    ],
-   "turkey": false
+   "turkey": false,
+   "scope": "",
+   "scopeLabel": "",
+   "disciplines": [
+    "Fizyoterapi ve rehabilitasyon"
+   ],
+   "countries": [
+    "China"
+   ],
+   "multidisciplinary": false,
+   "international": false
   },
   {
    "id": "43058367",
@@ -1355,7 +1697,15 @@
     "Kagoshima University, 890-, Japan",
     "Kagoshima City Hospital, Kagoshima, Japan"
    ],
-   "turkey": false
+   "turkey": false,
+   "scope": "",
+   "scopeLabel": "",
+   "disciplines": [],
+   "countries": [
+    "Japan"
+   ],
+   "multidisciplinary": false,
+   "international": false
   },
   {
    "id": "43056784",
@@ -1385,7 +1735,15 @@
    "institutions": [
     "Clinical Oncology School of Fujian Medical University, Fuzhou, China"
    ],
-   "turkey": false
+   "turkey": false,
+   "scope": "",
+   "scopeLabel": "",
+   "disciplines": [],
+   "countries": [
+    "China"
+   ],
+   "multidisciplinary": false,
+   "international": false
   },
   {
    "id": "43052859",
@@ -1417,7 +1775,19 @@
     "Lagos, Nigeria",
     "College of Health Sciences, Ogbomoso, Nigeria"
    ],
-   "turkey": false
+   "turkey": false,
+   "scope": "",
+   "scopeLabel": "",
+   "disciplines": [
+    "Biyoistatistik ve halk sağlığı",
+    "İç hastalıkları"
+   ],
+   "countries": [
+    "Nigeria",
+    "Uk"
+   ],
+   "multidisciplinary": true,
+   "international": true
   },
   {
    "id": "43051938",
@@ -1450,7 +1820,18 @@
     "Shangjin Hospital of West China Hospital, Chengdu, China",
     "West China Hospital, Chengdu, China"
    ],
-   "turkey": false
+   "turkey": false,
+   "scope": "",
+   "scopeLabel": "",
+   "disciplines": [
+    "Fizyoterapi ve rehabilitasyon",
+    "Göğüs cerrahisi"
+   ],
+   "countries": [
+    "China"
+   ],
+   "multidisciplinary": true,
+   "international": false
   },
   {
    "id": "43051254",
@@ -1483,7 +1864,15 @@
     "Bond University, Queensland, Australia",
     "Faculty of Health Sciences and Medicine, Queensland, Australia"
    ],
-   "turkey": false
+   "turkey": false,
+   "scope": "cok_merkezli",
+   "scopeLabel": "Çok merkezli",
+   "disciplines": [],
+   "countries": [
+    "Australia"
+   ],
+   "multidisciplinary": false,
+   "international": false
   },
   {
    "id": "43048093",
@@ -1515,7 +1904,17 @@
     "Marseille, France",
     "Toulon, France"
    ],
-   "turkey": false
+   "turkey": false,
+   "scope": "cok_merkezli",
+   "scopeLabel": "Çok merkezli",
+   "disciplines": [
+    "Göğüs cerrahisi"
+   ],
+   "countries": [
+    "France"
+   ],
+   "multidisciplinary": false,
+   "international": false
   },
   {
    "id": "43047868",
@@ -1547,7 +1946,15 @@
     "Weifang People's Hospital, Weifang, China",
     "Capital Medical University, Beijing, China"
    ],
-   "turkey": false
+   "turkey": false,
+   "scope": "",
+   "scopeLabel": "",
+   "disciplines": [],
+   "countries": [
+    "China"
+   ],
+   "multidisciplinary": false,
+   "international": false
   },
   {
    "id": "43046341",
@@ -1579,7 +1986,17 @@
     "Clinical Oncology School of Fujian Medical University, Fuzhou, China",
     "Department of Key Laboratory of the Ministry of Education for Gastrointestinal Cancer, Fuzhou, China"
    ],
-   "turkey": false
+   "turkey": false,
+   "scope": "",
+   "scopeLabel": "",
+   "disciplines": [
+    "Biyoistatistik ve halk sağlığı"
+   ],
+   "countries": [
+    "China"
+   ],
+   "multidisciplinary": false,
+   "international": false
   },
   {
    "id": "43044976",
@@ -1611,7 +2028,20 @@
     "Foch Hospital, Lausanne, Switzerland",
     "Foch Hospital, Suresnes, France"
    ],
-   "turkey": false
+   "turkey": false,
+   "scope": "tek_merkezli",
+   "scopeLabel": "Tek merkezli",
+   "disciplines": [
+    "Göğüs hastalıkları",
+    "Anesteziyoloji ve yoğun bakım",
+    "Göğüs cerrahisi"
+   ],
+   "countries": [
+    "France",
+    "Switzerland"
+   ],
+   "multidisciplinary": true,
+   "international": true
   },
   {
    "id": "43043466",
@@ -1642,7 +2072,17 @@
    "institutions": [
     "Clinical Center, Pécs, Hungary"
    ],
-   "turkey": false
+   "turkey": false,
+   "scope": "tek_merkezli",
+   "scopeLabel": "Tek merkezli",
+   "disciplines": [
+    "Genel cerrahi"
+   ],
+   "countries": [
+    "Hungary"
+   ],
+   "multidisciplinary": false,
+   "international": false
   },
   {
    "id": "43041513",
@@ -1673,7 +2113,17 @@
     "Missouri, USA",
     "Washington University School of Medicine in St Louis, Missouri, USA"
    ],
-   "turkey": false
+   "turkey": false,
+   "scope": "",
+   "scopeLabel": "",
+   "disciplines": [
+    "Anesteziyoloji ve yoğun bakım"
+   ],
+   "countries": [
+    "Usa"
+   ],
+   "multidisciplinary": false,
+   "international": false
   },
   {
    "id": "43039003",
@@ -1704,7 +2154,17 @@
     "Peking University People's Hospital, Beijing, China",
     "Tibet Autonomous Region People's Hospital, Lhasa, China"
    ],
-   "turkey": false
+   "turkey": false,
+   "scope": "",
+   "scopeLabel": "",
+   "disciplines": [
+    "Anesteziyoloji ve yoğun bakım"
+   ],
+   "countries": [
+    "China"
+   ],
+   "multidisciplinary": false,
+   "international": false
   },
   {
    "id": "43038074",
@@ -1736,7 +2196,17 @@
    "institutions": [
     "Atrium Health Wake Forest Baptist Medical Center, NC, USA"
    ],
-   "turkey": false
+   "turkey": false,
+   "scope": "tek_merkezli",
+   "scopeLabel": "Tek merkezli",
+   "disciplines": [
+    "Biyoistatistik ve halk sağlığı"
+   ],
+   "countries": [
+    "Usa"
+   ],
+   "multidisciplinary": false,
+   "international": false
   },
   {
    "id": "43037100",
@@ -1764,7 +2234,12 @@
    "note": "",
    "authors": "Filip B, Grigoras A, Scripcariu DV ve ark. (7 yazar)",
    "institutions": [],
-   "turkey": false
+   "turkey": false,
+   "scope": "tek_merkezli",
+   "scopeLabel": "Tek merkezli",
+   "disciplines": [],
+   "multidisciplinary": false,
+   "international": false
   },
   {
    "id": "43036783",
@@ -1797,7 +2272,24 @@
     "University of Perugia, Perugia, Italy",
     "Maggiore Hospital- Azienda Unità Sanitaria Locale Bologna, Bologna, Italy"
    ],
-   "turkey": false
+   "turkey": false,
+   "scope": "",
+   "scopeLabel": "",
+   "disciplines": [
+    "Moleküler ve translasyonel bilimler",
+    "Patoloji",
+    "Medikal onkoloji",
+    "Radyasyon onkolojisi",
+    "Göğüs cerrahisi",
+    "Biyoistatistik ve halk sağlığı",
+    "Genel cerrahi",
+    "Göğüs hastalıkları"
+   ],
+   "countries": [
+    "Italy"
+   ],
+   "multidisciplinary": true,
+   "international": false
   },
   {
    "id": "43036736",
@@ -1829,7 +2321,15 @@
     "Department of Veterinary Clinical Sciences, CO, USA",
     "CO, USA"
    ],
-   "turkey": false
+   "turkey": false,
+   "scope": "",
+   "scopeLabel": "",
+   "disciplines": [],
+   "countries": [
+    "Usa"
+   ],
+   "multidisciplinary": false,
+   "international": false
   },
   {
    "id": "43033141",
@@ -1859,7 +2359,17 @@
    "institutions": [
     "Juntendo University, Tokyo, Japan"
    ],
-   "turkey": false
+   "turkey": false,
+   "scope": "",
+   "scopeLabel": "",
+   "disciplines": [
+    "Anesteziyoloji ve yoğun bakım"
+   ],
+   "countries": [
+    "Japan"
+   ],
+   "multidisciplinary": false,
+   "international": false
   },
   {
    "id": "43032216",
@@ -1892,7 +2402,19 @@
     "Innovation Center for Cancer Research, Fuzhou, China",
     "Fujian Cancer Hospital, Fuzhou, China"
    ],
-   "turkey": false
+   "turkey": false,
+   "scope": "tek_merkezli",
+   "scopeLabel": "Tek merkezli",
+   "disciplines": [
+    "Radyasyon onkolojisi",
+    "Medikal onkoloji",
+    "Göğüs cerrahisi"
+   ],
+   "countries": [
+    "China"
+   ],
+   "multidisciplinary": true,
+   "international": false
   }
  ],
  "trials": [
@@ -1975,7 +2497,19 @@
     "Champalimaud Clinical Center, Lisboa, Portugal",
     "Research Center of IPO Porto Health Research Network - Portuguese Oncology Institute of Porto (IPO Porto)/Porto Comprehensive Cancer Center Raquel Seruca (Porto"
    ],
-   "turkey": false
+   "turkey": false,
+   "scope": "",
+   "scopeLabel": "",
+   "disciplines": [
+    "Moleküler ve translasyonel bilimler",
+    "Patoloji"
+   ],
+   "countries": [
+    "Portugal",
+    "Sweden"
+   ],
+   "multidisciplinary": true,
+   "international": true
   },
   {
    "id": "43051950",
@@ -1994,7 +2528,19 @@
     "Nottingham University Hospitals NHS Trust, England, UK",
     "Manchester University NHS Foundation Trust, England, UK"
    ],
-   "turkey": false
+   "turkey": false,
+   "scope": "",
+   "scopeLabel": "",
+   "disciplines": [
+    "Göğüs hastalıkları",
+    "Göğüs cerrahisi"
+   ],
+   "countries": [
+    "England",
+    "Uk"
+   ],
+   "multidisciplinary": true,
+   "international": true
   },
   {
    "id": "43039166",
@@ -2011,7 +2557,15 @@
     "Rush University Medical Center, Chicago, IL",
     "Yale School of Medicine, New Haven, CT"
    ],
-   "turkey": false
+   "turkey": false,
+   "scope": "",
+   "scopeLabel": "",
+   "disciplines": [
+    "Göğüs cerrahisi",
+    "Kalp ve damar cerrahisi"
+   ],
+   "multidisciplinary": true,
+   "international": false
   },
   {
    "id": "43064238",
@@ -2030,7 +2584,31 @@
     "Department of Pathology and Clinical Bioinformatics, Rotterdam, The Netherlands",
     "Lausanne University Hospital and University of Lausanne, Lausanne, Switzerland"
    ],
-   "turkey": false
+   "turkey": false,
+   "scope": "",
+   "scopeLabel": "",
+   "disciplines": [
+    "Patoloji",
+    "Moleküler ve translasyonel bilimler"
+   ],
+   "countries": [
+    "Scotland",
+    "Uk",
+    "Netherlands",
+    "Switzerland",
+    "Taiwan",
+    "China",
+    "France",
+    "Canada",
+    "India",
+    "Korea",
+    "Japan",
+    "Usa",
+    "Australia",
+    "Spain"
+   ],
+   "multidisciplinary": true,
+   "international": true
   },
   {
    "id": "43064237",
@@ -2049,7 +2627,19 @@
     "Yale School of Medicine, New Haven, USA",
     "The University of Texas MD Anderson Cancer Center, Houston, USA"
    ],
-   "turkey": false
+   "turkey": false,
+   "scope": "",
+   "scopeLabel": "",
+   "disciplines": [
+    "Patoloji"
+   ],
+   "countries": [
+    "Switzerland",
+    "Usa",
+    "Australia"
+   ],
+   "multidisciplinary": false,
+   "international": true
   },
   {
    "id": "43064236",
@@ -2068,7 +2658,34 @@
     "Magna Graecia University, Catanzaro, Italy",
     "Massachusetts General Hospital, MA, USA"
    ],
-   "turkey": false
+   "turkey": false,
+   "scope": "",
+   "scopeLabel": "",
+   "disciplines": [
+    "Patoloji",
+    "Göğüs cerrahisi",
+    "Radyoloji",
+    "Radyasyon onkolojisi",
+    "İç hastalıkları",
+    "Göğüs hastalıkları",
+    "Genel cerrahi"
+   ],
+   "countries": [
+    "Usa",
+    "Italy",
+    "Israel",
+    "Iran",
+    "Netherlands",
+    "Canada",
+    "India",
+    "Poland",
+    "France",
+    "Uk",
+    "Japan",
+    "Germany"
+   ],
+   "multidisciplinary": true,
+   "international": true
   },
   {
    "id": "43033550",
@@ -2085,7 +2702,20 @@
     "Binzhou People's Hospital, Binzhou, China",
     "Shandong Cancer Hospital and Institute, Jinan, China"
    ],
-   "turkey": false
+   "turkey": false,
+   "scope": "",
+   "scopeLabel": "",
+   "disciplines": [
+    "Nükleer tıp",
+    "Moleküler ve translasyonel bilimler",
+    "Medikal onkoloji",
+    "Radyasyon onkolojisi"
+   ],
+   "countries": [
+    "China"
+   ],
+   "multidisciplinary": true,
+   "international": false
   },
   {
    "id": "43044045",
@@ -2102,7 +2732,25 @@
     "Hemer, Germany",
     "West German Cancer Center, Essen, Germany"
    ],
-   "turkey": false
+   "turkey": false,
+   "scope": "",
+   "scopeLabel": "",
+   "disciplines": [
+    "Göğüs hastalıkları",
+    "Göğüs cerrahisi",
+    "Medikal onkoloji",
+    "Radyasyon onkolojisi",
+    "Radyoloji",
+    "Nükleer tıp",
+    "Anesteziyoloji ve yoğun bakım"
+   ],
+   "countries": [
+    "Germany",
+    "Usa",
+    "Korea"
+   ],
+   "multidisciplinary": true,
+   "international": true
   },
   {
    "id": "43044044",
@@ -2119,7 +2767,18 @@
     "Translational Lung Research Center Heidelberg (TLRC), Heidelberg, Germany",
     "University Hospital Heidelberg, Heidelberg, Germany"
    ],
-   "turkey": false
+   "turkey": false,
+   "scope": "",
+   "scopeLabel": "",
+   "disciplines": [
+    "Anesteziyoloji ve yoğun bakım",
+    "Radyoloji"
+   ],
+   "countries": [
+    "Germany"
+   ],
+   "multidisciplinary": true,
+   "international": false
   },
   {
    "id": "43037522",
@@ -2134,7 +2793,12 @@
    ],
    "authors": "Bezzi M, Ing AJ, Egenod T ve ark. (29 yazar)",
    "institutions": [],
-   "turkey": false
+   "turkey": false,
+   "scope": "",
+   "scopeLabel": "",
+   "disciplines": [],
+   "multidisciplinary": false,
+   "international": false
   },
   {
    "id": "43033426",
@@ -2147,7 +2811,12 @@
    "tags": [],
    "authors": "van Heumen S, Mets OM, de Bruin DM ve ark. (7 yazar)",
    "institutions": [],
-   "turkey": false
+   "turkey": false,
+   "scope": "",
+   "scopeLabel": "",
+   "disciplines": [],
+   "multidisciplinary": false,
+   "international": false
   },
   {
    "id": "43034221",
@@ -2166,7 +2835,19 @@
     "Kanagawa Cancer Center, Yokohama, Japan",
     "Tokyo Medical University, Tokyo, Japan"
    ],
-   "turkey": false
+   "turkey": false,
+   "scope": "",
+   "scopeLabel": "",
+   "disciplines": [
+    "Cerrahi onkoloji",
+    "Göğüs cerrahisi",
+    "Genel cerrahi"
+   ],
+   "countries": [
+    "Japan"
+   ],
+   "multidisciplinary": true,
+   "international": false
   }
  ],
  "videoCase": [
