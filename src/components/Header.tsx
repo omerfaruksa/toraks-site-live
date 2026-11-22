@@ -1,5 +1,25 @@
+import { useMemo } from 'react'
 import type { IssueSummary } from '../data'
 import { formatDate } from '../data'
+
+/** Sayıları ay bazında gruplar; seçici bir yıldan sonra da taranabilir kalır. */
+function groupByMonth(issues: IssueSummary[]) {
+  const groups: { key: string; label: string; items: IssueSummary[] }[] = []
+  for (const issue of issues) {
+    const key = issue.date.slice(0, 7)
+    const last = groups[groups.length - 1]
+    if (last && last.key === key) {
+      last.items.push(issue)
+    } else {
+      const label = new Date(`${key}-01T00:00:00`).toLocaleDateString('tr-TR', {
+        month: 'long',
+        year: 'numeric',
+      })
+      groups.push({ key, label, items: [issue] })
+    }
+  }
+  return groups
+}
 
 interface Props {
   issues: IssueSummary[]
@@ -10,6 +30,7 @@ interface Props {
 }
 
 export default function Header({ issues, currentDate, onSelect, theme, onToggleTheme }: Props) {
+  const months = useMemo(() => groupByMonth(issues), [issues])
   return (
     <header className="site-header">
       <div className="shell header-inner">
@@ -20,7 +41,6 @@ export default function Header({ issues, currentDate, onSelect, theme, onToggleT
           </svg>
           <span className="wordmark-text">
             <span className="wordmark-title">Göğüs Cerrahisi Literatürü</span>
-            <span className="wordmark-sub">günlük takip</span>
           </span>
         </a>
 
@@ -28,10 +48,14 @@ export default function Header({ issues, currentDate, onSelect, theme, onToggleT
           <label className="issue-picker">
             <span className="issue-picker-label">Sayı</span>
             <select value={currentDate} onChange={(e) => onSelect(e.target.value)} aria-label="Sayı seç">
-              {issues.map((i) => (
-                <option key={i.date} value={i.date}>
-                  {formatDate(i.date)}
-                </option>
+              {months.map((m) => (
+                <optgroup key={m.key} label={m.label}>
+                  {m.items.map((i) => (
+                    <option key={i.date} value={i.date}>
+                      {formatDate(i.date)}
+                    </option>
+                  ))}
+                </optgroup>
               ))}
             </select>
           </label>

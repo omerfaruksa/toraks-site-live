@@ -3,7 +3,7 @@
  * Çalıştırma: node --experimental-strip-types tests/search.test.mts
  */
 import assert from 'node:assert/strict'
-import { fold, matchesTokens, searchText, tokenize } from '../src/search.ts'
+import { fold, highlight, matchesTokens, searchText, tokenize } from '../src/search.ts'
 
 let passed = 0
 const test = (name: string, fn: () => void) => {
@@ -47,6 +47,31 @@ test('Kayıt metni nesne başına bir kez hesaplanır', () => {
 test('Tanımsız ve boş alanlar metne karışmaz', () => {
   const record = {}
   assert.equal(searchText(record, [undefined, null, '', [], 'Akciğer']), 'akciger')
+})
+
+test('Tırnak içindeki ifade tek terim olarak korunur', () => {
+  const tokens = tokenize('"toraks travması" kot')
+  assert.deepEqual(tokens, ['toraks travmasi', 'kot'])
+  assert.equal(matchesTokens('toraks ve travma sonrasi kot frakturu', tokens), false)
+  assert.equal(matchesTokens('toraks travmasi sonrasi kot frakturu', tokens), true)
+})
+
+test('Eşleşen aralıklar kaynak metinde işaretlenir', () => {
+  const segments = highlight('Göğüs Cerrahisi', tokenize('gogus'))
+  assert.deepEqual(segments, [
+    { text: 'Göğüs', match: true },
+    { text: ' Cerrahisi', match: false },
+  ])
+})
+
+test('Vurgulama Türkçe büyük harf ve aksanla da çalışır', () => {
+  const segments = highlight('İZMİR Göğüs Hastanesi', tokenize('izmir gogus'))
+  assert.equal(segments.filter((s) => s.match).map((s) => s.text).join('|'), 'İZMİR|Göğüs')
+})
+
+test('Eşleşme yoksa metin tek parça döner', () => {
+  assert.deepEqual(highlight('Akciğer', tokenize('ozofagus')), [{ text: 'Akciğer', match: false }])
+  assert.deepEqual(highlight('', tokenize('x')), [])
 })
 
 console.log(`\n${passed} test geçti`)

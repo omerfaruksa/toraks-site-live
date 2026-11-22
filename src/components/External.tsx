@@ -1,14 +1,29 @@
+import { useMemo } from 'react'
 import type { ExternalItem } from '../types'
 import { shortDate } from '../data'
+import { matchesTokens, searchText } from '../search'
+import Highlight from './Highlight'
 
-export default function External({ items }: { items: ExternalItem[] }) {
-  const sorted = items
+export default function External({ items, tokens = [] }: { items: ExternalItem[]; tokens?: string[] }) {
+  const matched = useMemo(() => {
+    if (tokens.length === 0) return items
+    return items.filter((item) =>
+      matchesTokens(
+        searchText(item, [item.titleTr, item.title, item.journal, item.authors, item.oneLiner, item.doi]),
+        tokens,
+      ),
+    )
+  }, [items, tokens])
+  const sorted = matched
     .map((item, i) => ({ item, i, key: item.date || '' }))
     .sort((a, b) => (a.key === b.key ? a.i - b.i : a.key < b.key ? 1 : -1))
     .map((x) => x.item)
 
   if (items.length === 0) {
     return <p className="empty">Bu dönemde PubMed dışı kaynaklardan yeni kayıt gelmedi.</p>
+  }
+  if (matched.length === 0) {
+    return <p className="empty">Bu listede aramaya uyan kayıt yok.</p>
   }
   return (
     <ul className="external-list">
@@ -19,11 +34,15 @@ export default function External({ items }: { items: ExternalItem[] }) {
               <span className={`interest-mark interest-${it.interest}`}>{it.interestLabel}</span>
             )}
             <a href={it.url} target="_blank" rel="noreferrer" className="external-title">
-              {it.titleTr || it.title}
+              <Highlight text={it.titleTr || it.title} tokens={tokens} />
             </a>
             {it.turkey && <span className="tr-badge tr-badge-sm">Türkiye'den</span>}
           </div>
-          {it.titleTr && <p className="external-orig">{it.title}</p>}
+          {it.titleTr && (
+            <p className="external-orig">
+              <Highlight text={it.title} tokens={tokens} />
+            </p>
+          )}
           <p className="external-meta">
             {it.journal}
             {it.date ? ` · ${shortDate(it.date)}` : ''}

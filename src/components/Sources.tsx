@@ -1,4 +1,4 @@
-import { useDeferredValue, useMemo, useState } from 'react'
+import { useDeferredValue, useEffect, useMemo, useRef, useState } from 'react'
 import type { Coverage, Issue } from '../types'
 import { fold, matchesTokens, searchText, tokenize } from '../search'
 
@@ -22,10 +22,22 @@ export default function Sources({ issue }: { issue: Issue }) {
   const withRecords = useMemo(() => journals.filter((j) => j.count > 0), [journals])
   const [query, setQuery] = useState('')
   const [status, setStatus] = useState<StatusFilter>('')
+  const [journalOpen, setJournalOpen] = useState(false)
+  const [coverageOpen, setCoverageOpen] = useState(false)
+  const wasActive = useRef(false)
   const deferredQuery = useDeferredValue(query)
 
   const tokens = useMemo(() => tokenize(deferredQuery), [deferredQuery])
   const active = tokens.length > 0 || status !== ''
+
+  // Süzgeç ilk kez devreye girdiğinde iki liste açılır; sonrasında kullanıcı istediği gibi kapatabilir.
+  useEffect(() => {
+    if (active && !wasActive.current) {
+      setJournalOpen(true)
+      setCoverageOpen(true)
+    }
+    wasActive.current = active
+  }, [active])
 
   const coverageRows = useMemo(() => {
     if (!coverage) return []
@@ -52,8 +64,8 @@ export default function Sources({ issue }: { issue: Issue }) {
   const hideJournalList = (status === 'zero' || status === 'missing') && journalRows.length === 0
 
   const countParts: string[] = []
-  if (!hideJournalList) countParts.push(`${journalRows.length} / ${withRecords.length} kayıtlı dergi`)
-  if (coverage) countParts.push(`${coverageRows.length} / ${coverage.length} kapsama satırı`)
+  if (!hideJournalList) countParts.push(`Kayıtlı dergi ${journalRows.length}/${withRecords.length}`)
+  if (coverage) countParts.push(`Taranan dergi ${coverageRows.length}/${coverage.length}`)
   if (countParts.length === 0) countParts.push('Kapsama verisi yok')
 
   const clear = () => {
@@ -132,7 +144,11 @@ export default function Sources({ issue }: { issue: Issue }) {
       </div>
 
       {!hideJournalList && (
-        <details className="sources-wide journal-details" open={active || undefined}>
+        <details
+          className="sources-wide journal-details"
+          open={journalOpen}
+          onToggle={(e) => setJournalOpen(e.currentTarget.open)}
+        >
           <summary>Dergi bazında kayıt sayıları ({journalRows.length})</summary>
           {journalRows.length === 0 ? (
             <p className="empty">Eşleşen dergi yok.</p>
@@ -151,7 +167,11 @@ export default function Sources({ issue }: { issue: Issue }) {
       )}
 
       {coverage && coverage.length > 0 && (
-        <details className="sources-wide journal-details" open={active || undefined}>
+        <details
+          className="sources-wide journal-details"
+          open={coverageOpen}
+          onToggle={(e) => setCoverageOpen(e.currentTarget.open)}
+        >
           <summary>Dergi kapsama tablosu ({coverageRows.length})</summary>
           <div className="coverage-wrap">
             <table className="coverage">

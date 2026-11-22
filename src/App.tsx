@@ -1,4 +1,4 @@
-import { useDeferredValue, useEffect, useMemo, useState } from 'react'
+import { useDeferredValue, useEffect, useMemo, useRef, useState } from 'react'
 import Header from './components/Header'
 import Hero from './components/Hero'
 import Filters, { type BranchOption, type SectionOption } from './components/Filters'
@@ -7,6 +7,7 @@ import Trials from './components/Trials'
 import TitleList from './components/TitleList'
 import Sources from './components/Sources'
 import External from './components/External'
+import Highlight from './components/Highlight'
 import SectionGroup from './components/SectionGroup'
 import { DESIGN_ORDER, TAG_ORDER, issueIndex, loadIssue, shortDate } from './data'
 import type { Design, Indirect, Issue, Scope, Study } from './types'
@@ -22,6 +23,27 @@ function byDateDesc<T extends { entryDate?: string; date?: string }>(items: T[])
 
 function readDetails(): boolean {
   return new URLSearchParams(window.location.search).get('sayfa') === 'kaynaklar'
+}
+
+/** Filtre durumunu adresten okur; paylaşılan bağlantı aynı süzgeçle açılır. */
+function readFilters() {
+  const p = new URLSearchParams(window.location.search)
+  const interest = p.get('ilgi')
+  const scope = p.get('kapsam')
+  return {
+    query: p.get('q') ?? '',
+    tag: p.get('konu') ?? '',
+    interest: (interest === 'direct' || interest === 'indirect' ? interest : 'all') as
+      | 'all'
+      | 'direct'
+      | 'indirect',
+    turkeyOnly: p.get('tr') === '1',
+    scope: (scope === 'tek_merkezli' || scope === 'cok_merkezli' ? scope : '') as Scope,
+    multiOnly: p.get('cok') === '1',
+    intlOnly: p.get('ulus') === '1',
+    branches: (p.get('brans') ?? '').split(',').map((b) => b.trim()).filter(Boolean),
+    section: p.get('bolum') ?? '',
+  }
 }
 
 interface Filterable {
@@ -73,15 +95,16 @@ export default function App() {
   const [theme, setTheme] = useState<'light' | 'dark'>(
     () => (document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light'),
   )
-  const [query, setQuery] = useState('')
-  const [tag, setTag] = useState('')
-  const [interest, setInterest] = useState<'all' | 'direct' | 'indirect'>('all')
-  const [turkeyOnly, setTurkeyOnly] = useState(false)
-  const [scope, setScope] = useState<Scope>('')
-  const [multiOnly, setMultiOnly] = useState(false)
-  const [intlOnly, setIntlOnly] = useState(false)
-  const [branches, setBranches] = useState<string[]>([])
-  const [section, setSection] = useState('')
+  const initialFilters = useMemo(readFilters, [])
+  const [query, setQuery] = useState(initialFilters.query)
+  const [tag, setTag] = useState(initialFilters.tag)
+  const [interest, setInterest] = useState<'all' | 'direct' | 'indirect'>(initialFilters.interest)
+  const [turkeyOnly, setTurkeyOnly] = useState(initialFilters.turkeyOnly)
+  const [scope, setScope] = useState<Scope>(initialFilters.scope)
+  const [multiOnly, setMultiOnly] = useState(initialFilters.multiOnly)
+  const [intlOnly, setIntlOnly] = useState(initialFilters.intlOnly)
+  const [branches, setBranches] = useState<string[]>(initialFilters.branches)
+  const [section, setSection] = useState(initialFilters.section)
 
   useEffect(() => {
     document.documentElement.dataset.theme = theme
@@ -101,14 +124,48 @@ export default function App() {
 
   useEffect(() => {
     const url = new URL(window.location.href)
-    if (date) url.searchParams.set('sayi', date)
-    else url.searchParams.delete('sayi')
-    if (detailsOpen) url.searchParams.set('sayfa', 'kaynaklar')
-    else url.searchParams.delete('sayfa')
+    const put = (key: string, value: string) => {
+      if (value) url.searchParams.set(key, value)
+      else url.searchParams.delete(key)
+    }
+    put('sayi', date)
+    put('sayfa', detailsOpen ? 'kaynaklar' : '')
+    put('q', query.trim())
+    put('konu', tag)
+    put('ilgi', interest === 'all' ? '' : interest)
+    put('tr', turkeyOnly ? '1' : '')
+    put('kapsam', scope)
+    put('cok', multiOnly ? '1' : '')
+    put('ulus', intlOnly ? '1' : '')
+    put('brans', branches.join(','))
+    put('bolum', section)
     window.history.replaceState({}, '', url)
-  }, [date, detailsOpen])
+  }, [date, detailsOpen, query, tag, interest, turkeyOnly, scope, multiOnly, intlOnly, branches, section])
 
+  // Geri/ileri tuşları ve paylaşılan bağlantılar filtreleri geri yükler.
   useEffect(() => {
+    const onPop = () => {
+      const f = readFilters()
+      setQuery(f.query)
+      setTag(f.tag)
+      setInterest(f.interest)
+      setTurkeyOnly(f.turkeyOnly)
+      setScope(f.scope)
+      setMultiOnly(f.multiOnly)
+      setIntlOnly(f.intlOnly)
+      setBranches(f.branches)
+      setSection(f.section)
+      setDetailsOpen(readDetails())
+    }
+    window.addEventListener('popstate', onPop)
+    return () => window.removeEventListener('popstate', onPop)
+  }, [])
+
+  const prevDate = useRef(date)
+  useEffect(() => {
+    // İlk açılışta adresten gelen filtreler korunur; sıfırlama yalnızca sayı değişince yapılır.
+    if (prevDate.current === date) return
+    prevDate.current = date
     setQuery('')
     setTag('')
     setInterest('all')
@@ -322,7 +379,7 @@ export default function App() {
                     <span className="count">{g.items.length}</span>
                   </h3>
                   {byDateDesc(g.items).map((s) => (
-                    <StudyCard key={s.pmid} study={s} />
+                    <StudyCard key={s.pmid} study={s} tokens={tokens} />
                   ))}
                 </div>
               ))
@@ -331,7 +388,7 @@ export default function App() {
             {showDirect && issue.unavailable && issue.unavailable.length > 0 && (
               <div className="unavailable">
                 <p className="tag-label">Tam metne erişilemedi (kart yazılmadı)</p>
-                <TitleList items={byDateDesc(issue.unavailable)} empty="" limit={6} />
+                <TitleList items={byDateDesc(issue.unavailable)} empty="" limit={6} tokens={tokens} />
               </div>
             )}
           </section>
@@ -351,7 +408,7 @@ export default function App() {
                 {filtered.indirect.map((s) => (
                   <li key={s.pmid}>
                     <a href={s.url} target="_blank" rel="noreferrer" className="indirect-title">
-                      {s.title}
+                      <Highlight text={s.title} tokens={tokens} />
                     </a>
                     {s.turkey && <span className="tr-badge tr-badge-sm">Türkiye'den</span>}
                     {s.scopeLabel && <span className="scope-badge scope-badge-sm">{s.scopeLabel}</span>}
@@ -387,7 +444,7 @@ export default function App() {
               open={section === 'pubmed-disi'}
               onToggle={(open) => setSection(open ? 'pubmed-disi' : '')}
             >
-              <External items={issue.external} />
+              <External items={issue.external} tokens={tokens} />
             </SectionGroup>
           )}
 
@@ -410,7 +467,13 @@ export default function App() {
             open={section === 'video-olgu'}
             onToggle={(open) => setSection(open ? 'video-olgu' : '')}
           >
-            <TitleList items={byDateDesc(issue.videoCase)} empty="Bu dönemde video veya olgu kaydı bulunmadı." limit={12} showAuthors />
+            <TitleList
+              items={byDateDesc(issue.videoCase)}
+              empty="Bu dönemde video veya olgu kaydı bulunmadı."
+              limit={12}
+              showAuthors
+              tokens={tokens}
+            />
           </SectionGroup>
 
           {issue.cardiac.length > 0 && (
@@ -422,7 +485,7 @@ export default function App() {
               open={section === 'kardiyak'}
               onToggle={(open) => setSection(open ? 'kardiyak' : '')}
             >
-              <TitleList items={byDateDesc(issue.cardiac)} empty="Kardiyak içerikli kayıt bulunmadı." limit={8} />
+              <TitleList items={byDateDesc(issue.cardiac)} empty="Kardiyak içerikli kayıt bulunmadı." limit={8} tokens={tokens} />
             </SectionGroup>
           )}
 
@@ -434,7 +497,7 @@ export default function App() {
             open={section === 'konu-disi'}
             onToggle={(open) => setSection(open ? 'konu-disi' : '')}
           >
-            <TitleList items={byDateDesc(issue.offTopic)} empty="Konu dışı kayıt bulunmadı." limit={10} />
+            <TitleList items={byDateDesc(issue.offTopic)} empty="Konu dışı kayıt bulunmadı." limit={10} tokens={tokens} />
           </SectionGroup>
 
           <footer className="site-footer">

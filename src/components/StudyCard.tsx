@@ -1,7 +1,8 @@
 import type { Study } from '../types'
 import { formatDate } from '../data'
+import Highlight from './Highlight'
 
-export default function StudyCard({ study }: { study: Study }) {
+export default function StudyCard({ study, tokens }: { study: Study; tokens?: string[] }) {
   const detailRows: [string, string][] = [
     ['Tasarım', study.designLabel],
     ['Örneklem', study.sample],
@@ -13,8 +14,14 @@ export default function StudyCard({ study }: { study: Study }) {
 
   return (
     <article className="card" id={`pmid-${study.pmid}`}>
-      <h4 className="card-title">{study.titleTr}</h4>
-      {study.titleOrig && <p className="card-orig">{study.titleOrig}</p>}
+      <h4 className="card-title">
+        <Highlight text={study.titleTr} tokens={tokens} />
+      </h4>
+      {study.titleOrig && (
+        <p className="card-orig">
+          <Highlight text={study.titleOrig} tokens={tokens} />
+        </p>
+      )}
 
       <p className="card-meta">
         <span className="card-journal">{study.journal}</span>
