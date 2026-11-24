@@ -55,7 +55,9 @@ def _title_item(rec: dict) -> dict:
     }
 
 
-def build_lists(records: list[dict], cls: dict, cards: dict, pmc: dict) -> dict:
+def build_lists(records: list[dict], cls: dict, cards: dict, pmc: dict,
+                briefs: dict | None = None) -> dict:
+    briefs = briefs or {}
     direct, indirect, video_case, off_topic, cardiac, unavailable = [], [], [], [], [], []
     by_pmid = {r["pmid"]: r for r in records}
     # Liste her kayıt için yeniden kurulmasın: küme bir kez hazırlanır.
@@ -136,12 +138,26 @@ def build_lists(records: list[dict], cls: dict, cards: dict, pmc: dict) -> dict:
                 "tags": hit["tags"],
             })
         elif interest == "video_olgu":
+            # Olgu ve video kayıtları da göğüs cerrahisiyle ilgili olmalı: aksi hâlde
+            # akışta başka branşların olgu bildirimleri birikiyor.
+            if not rules.is_thoracic(text) or rules.is_animal_case(text):
+                off_topic.append(_title_item(rec))
+                continue
             item = _title_item(rec)
             types = " ".join(rec.get("pubtypes") or [])
             name = item["journal"]
             item["kind"] = "video" if ("Video-Audio Media" in types or "MMCTS" in name
                                        or "Visualized Surgery" in name
                                        or "Video-Assisted Thoracic Surgery" in name) else "case"
+            brief = briefs.get(pmid) or {}
+            title_tr = (brief.get("titleTr") or "").strip()
+            if title_tr and not title_tr.lower().startswith("belirtilmemi"):
+                item["titleTr"] = title_tr
+            summary = (brief.get("summary") or "").strip()
+            if summary:
+                item["summary"] = summary
+            if brief.get("designLabel"):
+                item["designLabel"] = brief["designLabel"]
             video_case.append(item)
         else:
             off_topic.append(_title_item(rec))
@@ -243,6 +259,7 @@ def build_trials(rows: list[dict], limit: int = 18) -> list[dict]:
             "phase": PHASE_TR.get((trial.get("phase") or "").split(",")[0].strip(),
                                   trial.get("phase") or "belirtilmemiş"),
             "status": STATUS_TR.get(trial.get("status"), trial.get("status") or "belirtilmemiş"),
+            "date": trial.get("resultsPost") or trial.get("firstPost") or "",
             "dates": f"İlk kayıt {trial.get('firstPost') or 'belirtilmemiş'}"
                      + (f" · sonuç {trial['resultsPost']}" if trial.get("resultsPost") else ""),
             "enrollment": trial.get("enrollment") or "belirtilmemiş",
@@ -289,7 +306,8 @@ def coverage_table(issue_date: str, counts: dict[str, int], use_cache: bool) -> 
     return table
 
 
-def sources_manifest(records_count: int, failed: list[str]) -> dict:
+def sources_manifest(records_count: int, failed: list[str], scan_start: str = "",
+                     start: str = "", end: str = "") -> dict:
     issn_total = sum(len(journals.issns_of(row)) for row in journals.rows())
     scanned = [
         f"PubMed — dergi bazlı tarama: {len(journals.rows())} derginin {issn_total} ISSN kaydı (basılı, e-ISSN, eski ISSN) + [edat]",
@@ -300,14 +318,45 @@ def sources_manifest(records_count: int, failed: list[str]) -> dict:
         "Dergi RSS — Elsevier akışları",
         "A grubu dergilerde kardiyak içerik ayrı listelendi",
     ]
+    if scan_start and start and scan_start != start:
+        scanned.insert(0, f"Günlük tarama: {scan_start} → {end} (son 24 saat); "
+                          f"kayıtlar {start} → {end} kayan penceresine eklenir")
     return {"scanned": scanned, "failed": failed, "empty": [], "note": ""}
 
 
+LIST_KEYS = ("direct", "indirect", "videoCase", "offTopic", "cardiac", "unavailable")
+
+
+def check_lists(lists: dict, records: list[dict], cls: dict) -> list[str]:
+    """Listelerin kayıt kümesini birebir böldüğünü doğrular.
+
+    Her kayıt tam olarak bir listeye düşmeli; sayılmadığı ya da iki kez
+    yazıldığı durum sessizce sayıyı bozuyordu. Sonuç boşsa dağıtım tutarlı.
+    """
+    known = {r["pmid"] for r in records}
+    expected = sum(1 for pmid in cls if pmid in known)
+    counted = sum(len(lists.get(key, [])) for key in LIST_KEYS)
+    problems: list[str] = []
+    if counted != expected:
+        problems.append(f"liste toplamı {counted}, sınıflandırılan kayıt {expected}")
+    seen: dict[str, str] = {}
+    for key in LIST_KEYS:
+        for item in lists.get(key, []):
+            pmid = str(item.get("pmid") or "")
+            if pmid in seen:
+                problems.append(f"PMID {pmid} hem {seen[pmid]} hem {key} listesinde")
+                break
+            seen[pmid] = key
+    return problems
+
+
 def build(issue_date: str, start: str, end: str, *, use_cache: bool = False,
-          cadence: str = 'weekly') -> dict:
+          cadence: str = 'weekly', scan_start: str = "", trials_start: str = "") -> dict:
     records = _load("pubmed.json", {}).get("records", [])
     cls = _load("final_cls.json", {})
     card_rows = {r["id"]: r for r in _load("cards.jsonl", []) if not r.get("error") and r.get("card")}
+    briefs = {r["id"]: r["brief"] for r in _load("briefs.jsonl", [])
+              if not r.get("error") and r.get("brief")}
     trials_raw = _load("trials_raw.json", [])
     external_cls = _load("external_cls.json", [])
     meta = _load("meta.json", {})
@@ -317,11 +366,14 @@ def build(issue_date: str, start: str, end: str, *, use_cache: bool = False,
                          if hit["interest"] == "dogrudan" and not hit["cardiac"]])
     affiliations = {pmid: (meta.get(pmid) or {}).get("affiliations", []) for pmid in pmids}
 
-    lists = build_lists(records, cls, card_rows, pmc)
+    lists = build_lists(records, cls, card_rows, pmc, briefs)
     enrich(lists, meta)
     tag_scope(lists, affiliations)
     external = merge_external(lists, external_cls)
     trials = build_trials(trials_raw)
+
+    for problem in check_lists(lists, records, cls):
+        print(f"  uyarı: liste tutarsızlığı — {problem}", flush=True)
 
     counts = Counter(journals.name_of(r) for r in records)
     listed = [row["journal"] for row in journals.rows()]
@@ -341,7 +393,7 @@ def build(issue_date: str, start: str, end: str, *, use_cache: bool = False,
     feed_errors = [f"{r['journal']} ({r['source']})" for r in report if r.get("error")]
     if feed_errors:
         failed.append("PubMed dışı akış hataları: " + ", ".join(sorted(feed_errors)))
-    sources = sources_manifest(len(records), failed)
+    sources = sources_manifest(len(records), failed, scan_start=scan_start, start=start, end=end)
     sources["empty"] = empty
     sources["note"] = ("PubMed'de indeksli olmayan ulusal dergiler bu sayıda taranamadı: "
                        + ", ".join(nonpubmed) + ".") if nonpubmed else ""

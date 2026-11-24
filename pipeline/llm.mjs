@@ -1,9 +1,10 @@
 /**
- * Tek LLM işçisi: sınıflandırma (triage) ve çalışma kartı (cards) modları.
+ * Tek LLM işçisi: sınıflandırma (triage), çalışma kartı (cards) ve kısa tanıtım (briefs) modları.
  *
  * Kullanım:
  *   manus-node pipeline/llm.mjs triage <input.json> <out.jsonl> [model]
  *   manus-node pipeline/llm.mjs cards  <input.json> <out.jsonl> [model]
+ *   manus-node pipeline/llm.mjs briefs <input.json> <out.jsonl> [model]
  *
  * Girdi: [{ id, ... }] dizisi. Çıktı: her satır { id, ...alanlar, error }.
  * Tamamlanmış kayıtlar atlanır; iş kesilirse aynı komut kaldığı yerden sürer.
@@ -16,7 +17,7 @@ const { LlmClient, messageText, mapLimit } = await import(pathToFileURL(`${SKILL
 
 const [, , MODE, IN, OUT, MODEL_ARG] = process.argv
 if (!MODE || !IN || !OUT) {
-  console.error('kullanım: llm.mjs <triage|cards> <input.json> <out.jsonl> [model]')
+  console.error('kullanım: llm.mjs <triage|cards|briefs> <input.json> <out.jsonl> [model]')
   process.exit(2)
 }
 
@@ -74,6 +75,15 @@ const VERIFY_SYSTEM = `Göğüs cerrahisi literatür doğrulama editörüsün. S
 - mismatches: yaptığın düzeltmelerin kısa listesi; düzeltme yoksa boş dizi.
 - Klinik öneri ekleme.`
 
+const BRIEF_SYSTEM = `Göğüs cerrahisi literatür asistanısın. Sana bir olgu sunumu veya video makalenin başlığı ile özeti veriliyor. Okuyucu göğüs cerrahisi öğretim üyesidir.
+
+Görevin kısa tanıtım üretmek:
+- titleTr: Başlığın Türkçe çevirisi. Yalnızca başlık; ekleme yok.
+- summary: En fazla 2 cümle. Ne yapıldığı ve sonucun yönü. Yalnızca verilen metne dayan.
+- designLabel: "Olgu sunumu", "Video makale" veya "Olgu serisi" gibi kısa tanım.
+
+Kurallar: metinde olmayan sayı, tanı veya sonuç ekleme; değerleri değiştirme; klinik öneri verme; metin yoksa summary alanına "belirtilmemiş" yaz.`
+
 const cardProps = {
   titleTr: { type: 'string' },
   designLabel: { type: 'string' },
@@ -102,6 +112,16 @@ const schemas = {
     additionalProperties: false,
   },
   card: { type: 'object', properties: cardProps, required: cardRequired, additionalProperties: false },
+  brief: {
+    type: 'object',
+    properties: {
+      titleTr: { type: 'string' },
+      summary: { type: 'string' },
+      designLabel: { type: 'string' },
+    },
+    required: ['titleTr', 'summary', 'designLabel'],
+    additionalProperties: false,
+  },
   verify: {
     type: 'object',
     properties: { ...cardProps, mismatches: { type: 'array', items: { type: 'string' } } },
@@ -164,10 +184,23 @@ async function card(rec) {
   return { card: verified, mismatches }
 }
 
+async function brief(rec) {
+  const resp = await llm.chat({
+    model: MODEL,
+    messages: [
+      { role: 'system', content: BRIEF_SYSTEM },
+      { role: 'user', content: JSON.stringify(rec.payload) },
+    ],
+    response_format: { type: 'json_schema', json_schema: { name: 'brief', strict: true, schema: schemas.brief } },
+    max_completion_tokens: 600,
+  })
+  return { brief: JSON.parse(messageText(resp)) }
+}
+
 const results = await mapLimit(pending, CONC, async (rec) => {
   if (fatal) return { id: rec.id, error: 'skipped' }
   try {
-    const out = MODE === 'cards' ? await card(rec) : await triage(rec)
+    const out = MODE === 'cards' ? await card(rec) : MODE === 'briefs' ? await brief(rec) : await triage(rec)
     doneCount += 1
     if (doneCount % 20 === 0) console.log(`  ${doneCount}/${pending.length}`)
     return { id: rec.id, ...out, error: null }

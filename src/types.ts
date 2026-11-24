@@ -46,6 +46,7 @@ export interface Trial {
   enrollment: string
   primary: string
   sponsor: string
+  date?: string
 }
 
 export interface Indirect {
@@ -71,6 +72,11 @@ export interface Indirect {
 
 export interface TitleOnly {
   title: string
+  pmid?: string
+  doi?: string
+  titleTr?: string
+  summary?: string
+  designLabel?: string
   journal: string
   date: string
   url: string

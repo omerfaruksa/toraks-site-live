@@ -4,23 +4,31 @@ Göğüs cerrahisi literatürünün günlük takibi için okuma odaklı, sade bi
 
 ## Sayfa yapısı
 
-Bir sayı şu bölümlerden oluşur:
+Sayfa tek akış: bölüm başlığı yok, kayıt türü kart üstünde etiket olarak duruyor.
 
-1. **Çalışma kartları (Doğrudan makaleler)** — tarihe göre yeniden eskiye tek akış halinde listelenir; tasarım türü (RCT → meta-analiz → kohort → olgu-kontrol → olgu serisi → klinik dışı) yalnızca filtre panelinden seçilir, sayfada varsayılan gruplama yapılmaz. Her kartta yazarlar ve kurumlar bulunur.
-2. **PubMed dışı kaynaklar** — Crossref DOI kayıtları ve dergi RSS akışlarından gelen, PubMed taramasına girmeyen kayıtlar; başlık düzeyinde, Türkçe başlıkla listelenir.
-3. **Klinik araştırmalar** — ClinicalTrials.gov kayıtları, tablo halinde.
-4. **Dolaylı makaleler** — başlık, dergi, PMID/DOI ve tek cümlelik ana sonuç.
-5. **Video ve olgu başlıkları** — yalnızca başlık düzeyinde.
-6. **Konu dışı başlıklar** ve **Kardiyak içerik (kapsam dışı)** — tek satır.
-7. **Kaynaklar ve detaylar** — üst çubuktaki "Kaynaklar" düğmesine basınca sayfa içinde açılan panel: genel bakış (dönem, taranan kayıt, Doğrudan / Dolaylı / Konu dışı dağılımı, klinik araştırma sayısı), tarama özeti, taranan ve erişilemeyen kaynaklar, kayıt bulunmayan dergiler ve dergi kapsama tablosu (bu sayı, son 30 gün, son giriş tarihi, kaynak, durum). Panelin altındaki "Kapat" düğmesi ya da üst çubuktaki düğme ile kapanır; adres çubuğu `sayfa=kaynaklar` parametresiyle panelin durumunu korur, böylece eski bağlantılar panel açık şekilde çalışır. Panelin içinde dergi listeleri ve kapsama tablosu için arama kutusu ile durum çipleri (Tümü / Bu sayıda kayıt var / Bu sayıda kayıt yok / PubMed'de yok) bulunur; sayaç satırı "Kayıtlı dergi 34/34 · Taranan dergi 58/58" biçiminde iki farklı kümeyi ayrı adlandırır, "Filtreyi temizle" düğmesini taşır ve süzgeç ilk kez devreye girdiğinde iki katlanır liste açılır. "Bu sayıda kayıt yok" ve "PubMed'de yok" süzgeçlerinde kayıt listesi tanımı gereği boş kaldığı için gizlenir, yalnızca kapsama tablosu sayılır.
+- Üstte başlık, tarama aralığı ve beş sayıdan oluşan genel bakış şeridi (taranan kayıt, doğrudan, dolaylı, olgu ve video, klinik araştırma).
+- Altında tarih yeniden eskiye sıralı kayıtlar. Aynı gün içinde tür sırası: doğrudan, olgu, video, yorum, klinik araştırma, dolaylı, liste dışı, kardiyak, erişilemedi.
+- Varsayılan görünüm son 24 saat. PubMed giriş tarihi bir gün geciktiği için sayı tarihinde çoğu gün kayıt olmuyor; son 24 saat, dünün girişlerini bugünün partisi sayar.
+- Klinik araştırmalar on beş günde bir tarandığı için tarih süzgecinden muaf tutulur; kayıt tarihleri son 24 saate düşmediğinden aksi hâlde akışta hiç görünmezlerdi.
+- Sayfalama 20 kayıt; süzgeç daralınca sayfa numarası kendiliğinden sınırlanır.
 
-Ana sayfada künye, ayrı bir içindekiler sütunu ve bölüm başlıkları yoktur; sayfa doğrudan üst çubukla başlar ve okuma bölümleri kesintisiz akar. Çalışma kartları ile dolaylı liste arasında yalnızca ince bir ayırıcı çizgi bulunur; kart grubu başlıkları da görünmez, grup sırası ekran okuyucu için `aria-label` ile korunur. Bölüm seçimi filtre panelindeki "Bölüm" satırından yapılır: klinik araştırmalar, PubMed dışı kaynaklar, video ve olgu, kardiyak içerik ve konu dışı listeler varsayılan olarak kapalıdır, seçilince açılır. Türkiye'deki bir kurum veya yazarın yer aldığı makaleler ayrı bir blok oluşturmaz; kart üzerindeki "Türkiye'den" rozeti ve filtre çubuğundaki çip ile işaretlenir. Üst çubuk mobilde iki satıra ayrılır: ilk satırda site adı, ikinci satırda "Kaynaklar", sayı seçici ve tema düğmesi.
+Kart kapalıyken tarih, tür ve tasarım etiketi, "Türkiye'den" ve "Açık tam metin" işaretleri, Türkçe başlık, varsa özgün başlık, dergi, yazar, konu etiketleri, "Detayı gör" ve "Makaleye git" görünür. Tıklanınca özet paragrafı ve ikonlu satırlar açılır: tasarım, örneklem, karşılaştırma, sonlanım, ana sonuç, takip, veri dönemi. Klinik araştırmada faz, durum, hedef kayıt, birincil sonlanım ve sponsor; liste dışı kayıtta ilgi sınıfı ve kaynak. Aynı anda tek kart açık kalır. Detayı olmayan kayıtta başlık düğme değildir, `belirtilmemiş` dönen alan karta hiç yazılmaz.
 
-Filtre çubuğu varsayılan olarak kompakt: yalnızca arama kutusu ve "Filtreler" düğmesi görünür; düğme açılınca ilgi sınıfı, "Türkiye'den", konu etiketi, çalışma kapsamı (tek merkezli / çok merkezli / multidisipliner / uluslararası), ortak branş ve bölüm seçicisi tek panelde toplanır. Etkin filtre sayısı düğmede rozet olarak görünür; panel kapalıyken eşleşme sayısı ve "Filtreyi temizle" satırı kalır. Tüm listeler (doğrudan kartlar, dolaylı kayıtlar, başlık listeleri, PubMed dışı kayıtlar) tarihe göre yeniden eskiye sıralanır. Kapsam ve branş etiketleri PubMed kurum satırları ile kart metninden türetilir; kaynakta bulunmayan bilgi etiketlenmez.
+Olgu, vaka bildirimi ve videolar akışın içinde; Türkçe başlık ve iki cümlelik tanıtım `pipeline/briefs.py` tarafından üretilir. Editöryal, yorum ve mektuplar "Yorum" etiketiyle ayrılır. Göğüs cerrahisi dışı olgu bildirimleri ve hayvan hastası olgular konu dışına atılır.
 
-Arama, Türkçe ve İngilizce başlıkların karışık olduğu metinde harf eşleşmesini kaçırmamak için katlanmış metin üzerinde çalışır: büyük/küçük harf, Türkçe I/ı/İ/i ayrımı ve aksanlar (ö→o, ğ→g, ü→u, ş→s, ç→c, ı→i) eşitlenir; "gogus" araması "Göğüs" kaydını bulur. Sorgu boşlukla terimlere bölünür ve tüm terimlerin geçmesi gerekir (VE mantığı); tırnak içindeki ifade tek terim sayılır ("toraks travması") ve kelimelerin yan yana gelmesi istenir. Eşleşen yerler kart ve liste başlıklarında `<mark>` ile işaretlenir. Arama yalnızca doğrudan ve dolaylı listeleri değil, video/olgu, kardiyak, konu dışı, erişilemeyen ve PubMed dışı kaynak listelerini de süzer. Kayıtların aranabilir metni nesne başına bir kez hesaplanıp önbelleğe alınır, sorgu ise `useDeferredValue` ile ertelenir; böylece yazarken liste süzme maliyeti kayıt sayısıyla doğrusal artsa da tuş başına yeniden metin kurma yükü oluşmaz. Birim testleri: `pnpm test:search`.
+Filtreler "Filtreler" düğmesinin arkasında: tarih (son 24 saat, son 7 gün, tümü, özel aralık), tür (dokuz tür, sayılarıyla), konu (on bir etiket), Türkiye'den ve açık tam metin onay kutuları, sıfırlama. Konu dışı türü varsayılan olarak kapalı.
 
-Filtre durumu adres çubuğuna yazılır (`q`, `konu`, `ilgi`, `tr`, `kapsam`, `cok`, `ulus`, `brans`, `bolum`); böylece süzülmüş görünüm paylaşılabilir, sayfa yenilendiğinde korunur ve geri/ileri tuşlarıyla geri yüklenir. Sayı değiştirildiğinde filtreler sıfırlanır. Kaynaklar panelindeki iki katlanır liste, süzgeç ilk kez devreye girdiğinde açılır; sonrasında kullanıcı kapatabilir ve yazmaya devam etse de kapalı kalır. Sayı seçici ay bazında gruplanır.
+Arama, Türkçe ve İngilizce başlıkların karışık olduğu metinde harf eşleşmesini kaçırmamak için katlanmış metin üzerinde çalışır: büyük/küçük harf, Türkçe I/ı/İ/i ayrımı ve aksanlar eşitlenir; "gogus" araması "Göğüs" kaydını bulur. Sorgu boşlukla terimlere bölünür, tüm terimlerin geçmesi gerekir; tırnak içindeki ifade tek terim sayılır. Kart metni sayı yüklenirken bir kez katlanır (`composeSearchText`), sorgu da aynı katlamadan geçer; böylece tuş başına yeniden katlama yapılmaz. Arama başlık, özgün başlık, yazar, dergi, etiket, özet ve not alanlarını kapsar; girdi `useDeferredValue` ile ertelenir. Birim testleri: `pnpm test:search`.
+
+## Okuma araçları
+
+Site tek kullanıcılı bir okuma aracı; sunucu, oturum veya hesap yok.
+
+- **Tema.** Düğme üç durumu dolaşır: sistem, koyu, açık. Tercih yoksa sistem teması izlenir ve işletim sistemi teması değişince sayfa kendiliğinden uyar (`src/prefs.ts`).
+- **Klavye.** `/` arama alanına odaklanır, `Esc` filtreleri temizler.
+- **Bağlantı kopyalama.** Kart altındaki "Bağlantı" düğmesi makale adresini panoya kopyalar.
+- **Erişilebilirlik.** "Kayıtlara geç" bağlantısı, `lang="tr"`, kart başlığında `aria-expanded` ve `aria-controls`, `dl` tabanlı detay yapısı, 44 px üstü dokunma hedefleri. Ayrıntılar `docs/arayuz.md`.
+- **Bülten.** `src/site.ts` içindeki `subscribeEmail` doldurulduğunda altbilgide "E-posta ile abone ol" düğmesi görünür. Otomatik liste ve toplu gönderim için `docs/yayin-ve-alan-adi.md`.
 
 ## Teknoloji
 
@@ -31,10 +39,13 @@ content/
   index.json            # sayı dizini (tarih, dönem, sayılar)
   issues/YYYY-MM-DD.json # sayı içeriği
 src/
-  App.tsx               # sayfa düzeni, filtreler, bölümler
+  App.tsx               # sayfa düzeni: başlık, genel bakış, akış, alt bilgi
+  entries.ts            # sayıyı tek akışa indirger (tür etiketi, satırlar, arama metni)
   data.ts               # sayı dizini ve tembel yükleme
   types.ts              # veri şeması
-  components/           # üst çubuk, filtreler, kart, tablo, kaynaklar
+  prefs.ts              # tema tercihi (localStorage)
+  site.ts               # bülten adresi ve depo bağlantısı
+  components/           # üst çubuk, akış, kart, en üste git
   styles.css            # tipografi ve duyarlı yerleşim
 pipeline/               # günlük tarama ve sayı üretimi
 ```
@@ -51,7 +62,9 @@ pipeline/               # günlük tarama ve sayı üretimi
 | `direct` | Çalışma kartları (başlık, künye, etiketler, özet, tasarım, örneklem, karşılaştırma, sonlanımlar, ana sonuç, takip, veri dönemi, yazarlar, kurumlar, Türkiye işareti, kapsam, branşlar, uluslararası bayrağı) |
 | `trials` | NCT kayıtları |
 | `indirect` | Dolaylı makaleler (tek cümlelik sonuç) |
-| `videoCase`, `offTopic`, `cardiac`, `unavailable` | Yalnızca başlıkla listelenen kayıtlar |
+| `trials[].date` | Kayıt veya sonuç bildirim tarihi; akış sıralaması bu alanı kullanır |
+| `videoCase` | Olgu, video ve yorumlar: `titleTr`, `summary`, `designLabel`, `kind` alanlarıyla |
+| `offTopic`, `cardiac`, `unavailable` | Başlık düzeyinde listelenen kayıtlar |
 | `external` | PubMed dışı kaynaklardan gelen kayıtlar (Türkçe ve orijinal başlık, dergi, tarih, DOI, yazarlar, kurumlar, ilgi sınıfı) |
 | `indirect[].entryDate` | Dolaylı kaydın PubMed'e giriş tarihi ([edat]); liste bu alana göre sıralanır |
 | `coverage` | 58 dergi için kapsama tablosu: bu sayı, son 30 gün, son giriş tarihi, kaynak, durum |
@@ -62,7 +75,8 @@ Yeni bir sayı eklemek için dosyayı `content/issues/` altına koyup `content/i
 ## Haftalık üretim
 
 ```bash
-bash pipeline/run_daily.sh                  # günlük sayı, yuvarlanan son 7 gün
+bash pipeline/run_daily.sh                  # günlük sayı: son 24 saat taranır, 7 günlük kayan pencereye eklenir
+bash pipeline/run_daily.sh --scan-window 7  # pencereyi baştan kur (tarama 7 gün)
 bash pipeline/run_daily.sh --date 2026-11-28
 bash pipeline/run_weekly_report.sh          # son 7 günlük sayıyı birleştiren haftalık rapor
 python3 pipeline/run.py --stages issue --report   # yalnızca montaj + rapor
@@ -75,6 +89,8 @@ Hat tek giriş noktasından (`pipeline/run.py`) çalışır: PubMed dergi tarama
 
 Dergi listesi `pipeline/dergi_listesi.csv` dosyasındadır; tarama bu listenin tek doğru kaynağı olduğunu varsayar.
 
+Koşu çıktısı `pipeline/.work/run.log` dosyasına da yazılır (2 MB üstünde son 2000 satır tutulur). Model belleği (`cls_memo.json`, `cards_memo.json`) koşu sonunda `content/memo/` altına kopyalanır; `.work` silinirse bir sonraki koşu belleği oradan geri yükler ve kayıtlar yeniden sınıflandırılmaz. Sayı montajı, listelerin kayıt kümesini birebir böldüğünü `check_lists` ile doğrular; tutarsızlık varsa koşu günlüğe uyarı yazar.
+
 ## Dokümanlar
 
 | Dosya | İçerik |
@@ -83,6 +99,10 @@ Dergi listesi `pipeline/dergi_listesi.csv` dosyasındadır; tarama bu listenin t
 | `docs/mimari.md` | Hat akışı, modül sorumlulukları, memo kuralı, darboğaz tablosu, sınırlılıklar |
 | `docs/zamanlanmis-gorevler.md` | Günlük 12:00 görevinin metni ve cumartesi haftalık rapor dalı |
 | `docs/kod-denetimi.md` | Üç kaynaklı kod denetimi, ölçümler, uygulanan ve uygulanmayan öneriler |
+| `docs/arayuz.md` | Arayüz kararları: tek akış, kart katmanları, süzgeçler, mobil ve erişilebilirlik ölçümleri |
+| `docs/kaynak-kapsama.md` | Erişilemeyen dergiler için RSS, TR Dizin, DergiPark ve Crossref ölçümleri |
+| `docs/ux-onerileri.md` | QxMD, BrowZine, 2 Minute Medicine gibi ürünlerden çıkarılan öneriler ve uygulananlar |
+| `docs/yayin-ve-alan-adi.md` | toraks.manus.space durumu, GitHub/Vercel karşılaştırması, e-posta aboneliği yolları |
 
 ## Geliştirme
 

@@ -29,6 +29,12 @@ HTTP_WORKERS = int(os.environ.get("HTTP_WORKERS", "6"))
 # hafta). Böylece ana sayfa her gün tazelenir, kapsam proje talimatındaki gibi
 # kalır; tekrar eden kayıtlar LLM belleğinden (cls_memo/cards_memo) okunur.
 CADENCE_DAYS = {"daily": 7, "weekly": 7, "biweekly": 14, "monthly": 30}
+# Sayının kapsadığı pencere ile taranan pencere ayrıdır: günlük kadans her gün
+# yalnızca son 24 saati tarar, bulunanlar 7 günlük kayan pencereye eklenir.
+SCAN_DAYS = {"daily": 1, "weekly": 7, "biweekly": 14, "monthly": 30}
+# ClinicalTrials.gov her gün taranmaz: kayıt ve sonuç bildirimleri seyrek düşer,
+# on beş günlük pencere hem taze kalır hem de gereksiz istek üretmez.
+TRIALS_DAYS = int(os.environ.get("TRIALS_DAYS", "15"))
 DEFAULT_CADENCE = os.environ.get("CADENCE", "daily")
 CACHE_TTL = int(os.environ.get("CACHE_TTL", str(6 * 3600)))
 

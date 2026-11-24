@@ -42,6 +42,14 @@ export function fold(value: string): string {
   return value.toLocaleLowerCase('tr').replace(FOLD_RE, (ch) => FOLD_MAP[ch] ?? ch)
 }
 
+/**
+ * Kart metnini aranabilir hâle getirir: parçaları birleştirip katlar.
+ * Katlama burada yapılmalı; aksi hâlde "gogus" sorgusu "Göğüs" kaydını bulmaz.
+ */
+export function composeSearchText(parts: Array<string | undefined | null>): string {
+  return fold(parts.filter(Boolean).join(' '))
+}
+
 const cache = new WeakMap<object, string>()
 
 /**

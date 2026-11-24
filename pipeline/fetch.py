@@ -14,6 +14,7 @@ from email.utils import parsedate_to_datetime
 import affil
 import journals
 import net
+import rolling
 import rules
 from config import WORK
 
@@ -126,8 +127,14 @@ def _parse_articles(root: ET.Element) -> list[dict]:
     return records
 
 
-def pubmed(start: str, end: str) -> dict:
-    """Dergi ISSN taraması + liste dışı konu sorgusu; kayıtlar tekilleştirilir."""
+def pubmed(start: str, end: str, keep_start: str = "") -> dict:
+    """Dergi ISSN taraması + liste dışı konu sorgusu; kayıtlar tekilleştirilir.
+
+    Günlük kadansta `start` son 24 saati gösterir, `keep_start` ise sayının
+    kapsadığı 7 günlük pencerenin başıdır. Önceki koşunun kayıtları bu
+    pencerede tutulur, yeni kayıtlar üzerine eklenir; böylece her gün bir
+    hafta yeniden taranmaz.
+    """
     window = f'("{start}"[edat] : "{end}"[edat])'
 
     def scan(row):
@@ -160,13 +167,23 @@ def pubmed(start: str, end: str) -> dict:
         rec["from_journal_list"] = rec["pmid"] in listed_ids
         rec["list_journal"] = owner.get(rec["pmid"], "")
 
-    payload = {"window": [start, end], "per_journal": per_journal, "records": records}
+    previous = []
+    if keep_start and (WORK / "pubmed.json").exists():
+        try:
+            previous = json.loads((WORK / "pubmed.json").read_text(encoding="utf-8")).get("records", [])
+        except (ValueError, OSError):
+            previous = []
+    records = rolling.merge(previous, records, "pmid",
+                            lambda r: r.get("entry_date") or r.get("pubdate") or "",
+                            keep_start, buffer_days=1)
+    payload = {"window": [keep_start or start, end], "scanWindow": [start, end],
+               "per_journal": per_journal, "records": records}
     (WORK / "pubmed.json").write_text(json.dumps(payload, ensure_ascii=False, indent=1), encoding="utf-8")
     return payload
 
 
 # ---------------------------------------------------------------- ClinicalTrials.gov
-def trials(start: str, end: str) -> list[dict]:
+def trials(start: str, end: str, keep_start: str = "") -> list[dict]:
     def query(advanced: str, trigger: str):
         params = {"query.term": TRIAL_TERMS, "filter.advanced": advanced,
                   "pageSize": "200", "fields": TRIAL_FIELDS}
@@ -206,7 +223,15 @@ def trials(start: str, end: str) -> list[dict]:
     ]):
         for item in batch:
             merged.setdefault(item["nct"], item)
-    result = list(merged.values())
+    previous = []
+    if keep_start and (WORK / "trials_raw.json").exists():
+        try:
+            previous = json.loads((WORK / "trials_raw.json").read_text(encoding="utf-8"))
+        except (ValueError, OSError):
+            previous = []
+    result = rolling.merge(previous, list(merged.values()), "nct",
+                           lambda t: max(t.get("firstPost") or "", t.get("resultsPost") or ""),
+                           keep_start, buffer_days=1)
     (WORK / "trials_raw.json").write_text(json.dumps(result, ensure_ascii=False, indent=1), encoding="utf-8")
     return result
 
@@ -294,7 +319,7 @@ def _rss(row: dict, start: str, end: str) -> list[dict]:
     return out
 
 
-def external(start: str, end: str) -> dict:
+def external(start: str, end: str, keep_start: str = "") -> dict:
     rows = [r for r in journals.source_map().values() if r.get("source") in ("crossref", "rss")]
 
     def one(row):
@@ -316,7 +341,16 @@ def external(start: str, end: str) -> dict:
             continue
         seen.add(key)
         unique.append(rec)
-    payload = {"window": [start, end], "records": unique, "report": report}
+    previous = []
+    if keep_start and (WORK / "external.json").exists():
+        try:
+            previous = json.loads((WORK / "external.json").read_text(encoding="utf-8")).get("records", [])
+        except (ValueError, OSError):
+            previous = []
+    unique = rolling.merge(previous, unique, "id", lambda r: r.get("date") or "",
+                           keep_start, buffer_days=1)
+    payload = {"window": [keep_start or start, end], "scanWindow": [start, end],
+               "records": unique, "report": report}
     (WORK / "external.json").write_text(json.dumps(payload, ensure_ascii=False, indent=1), encoding="utf-8")
     return payload
 

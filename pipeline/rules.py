@@ -99,6 +99,29 @@ SINGLE_TEXT = re.compile(r"tek merkezli|tek merkez|single[- ]cent|single institu
 SCOPE_TR = {"tek_merkezli": "Tek merkezli", "cok_merkezli": "Çok merkezli"}
 
 NUM = re.compile(r"\d+(?:[.,]\d+)?")
+# "%95 GA", "95% CI", "95 GA" gibi güven aralığı kalıpları kart şablonundan gelir.
+CI_MARK = re.compile(r"%?\s*95\s*%?\s*(?:GA|CI|Güven\s*aralığı|güven\s*aralığı)\b\.?", re.IGNORECASE)
+
+_ONES = ["", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine",
+         "ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen",
+         "seventeen", "eighteen", "nineteen"]
+_TENS = ["", "", "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety"]
+
+
+def _word(n: int) -> str:
+    if n < 20:
+        return _ONES[n]
+    if n < 100:
+        return _TENS[n // 10] + ("-" + _ONES[n % 10] if n % 10 else "")
+    if n < 1000:
+        head = _ONES[n // 100] + " hundred"
+        rest = _word(n % 100) if n % 100 else ""
+        return f"{head} {rest}".strip()
+    return ""
+
+
+# Özetlerde sayı bazen yazıyla geçiyor ("Thirteen studies"); bu biçim de kabul edilir.
+NUM_WORDS = {str(n): _word(n) for n in range(1, 1000) if _word(n)}
 
 
 def clean(text: str) -> str:
@@ -112,6 +135,16 @@ def iso_or_empty(value: str) -> str:
         return value
     m = re.match(r"^(\d{4}-\d{2}-\d{2})T", value)
     return m.group(1) if m else ""
+
+
+# Olgu bildirimlerinde hayvan hastası insan göğüs cerrahisi akışına girmemeli.
+ANIMAL = re.compile(
+    r"\b(cat|dog|feline|canine|puppy|kitten|equine|horse|bovine|cattle|rabbit|ferret)\b",
+    re.IGNORECASE)
+
+
+def is_animal_case(text: str) -> bool:
+    return bool(ANIMAL.search(text or ""))
 
 
 def is_thoracic(text: str) -> bool:
@@ -173,11 +206,14 @@ def scope_of(card: dict) -> str:
 def numbers_missing(card: dict, abstract: str) -> list[str]:
     """Karttaki sayılardan özette bulunmayanları döndürür (Türkçe ondalık dahil)."""
     norm = (abstract or "").replace(",", ".").replace(" ", "")
+    words = " " + re.sub(r"[^a-z\-]+", " ", (abstract or "").lower()) + " "
     missing = []
     for field in ("sample", "comparison", "outcomes", "mainResult", "followUp", "dataPeriod"):
         value = str(card.get(field) or "")
         if value.strip().lower().startswith("belirtilmemi"):
             continue
+        # "%95 GA" şablonun kendi parçası, kaynaktan gelen bir sayı değil.
+        value = CI_MARK.sub(" ", value)
         for token in NUM.findall(value):
             if len(token.replace(".", "")) <= 1 and token not in "012345":
                 continue
@@ -189,5 +225,11 @@ def numbers_missing(card: dict, abstract: str) -> list[str]:
                 elif v.startswith("."):
                     variants.add("0" + v)
             if not any(v.replace(" ", "") in norm for v in variants):
+                word = NUM_WORDS.get(token.lstrip("0"))
+                if word:
+                    # "fifty-three", "fifty three" ve "one hundred and five" biçimleri kabul.
+                    forms = {word, word.replace("-", " "), word.replace(" hundred ", " hundred and ")}
+                    if any(f" {form} " in words for form in forms):
+                        continue
                 missing.append(f"{field}:{token}")
     return missing

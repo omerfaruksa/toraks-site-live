@@ -1,7 +1,9 @@
 """Kural katmanı birim testleri: python3 -m unittest discover -s pipeline/tests"""
 from __future__ import annotations
 
+import shutil
 import sys
+import tempfile
 import unittest
 from datetime import date
 from pathlib import Path
@@ -10,8 +12,11 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 import config  # noqa: E402
 import fetch  # noqa: E402
+import issue  # noqa: E402
 import journals  # noqa: E402
+import memo_seed  # noqa: E402
 import report  # noqa: E402
+import rolling
 import rules  # noqa: E402
 
 
@@ -60,6 +65,20 @@ class TestNumbers(unittest.TestCase):
     def test_unspecified_is_ignored(self):
         card = {"followUp": "belirtilmemiş", "dataPeriod": "belirtilmemiş"}
         self.assertEqual(rules.numbers_missing(card, "no follow-up reported"), [])
+
+    def test_ci_marker_is_not_a_source_number(self):
+        card = {"mainResult": "OR 9,04; %95 GA 1,2-3,4; p < 0,001."}
+        self.assertEqual(rules.numbers_missing(card, "OR 9.04 (1.2 to 3.4), p < 0.001"), [])
+
+    def test_spelled_out_number_accepted(self):
+        card = {"sample": "13 çalışmada 55 çocuk."}
+        self.assertEqual(rules.numbers_missing(card, "Thirteen studies comprising 55 children"), [])
+
+    def test_spelled_hundreds_accepted(self):
+        card = {"sample": "453 olgu değerlendirildi."}
+        abstract = "Four hundred fifty-three cases were assessed."
+        self.assertEqual(rules.numbers_missing(card, abstract), [])
+        self.assertEqual(rules.numbers_missing(card, "Four hundred and fifty-three cases."), [])
 
 
 class TestScope(unittest.TestCase):
@@ -122,3 +141,77 @@ class TestWeeklyMerge(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class TestListCheck(unittest.TestCase):
+    """Sayı montajındaki dağıtım değişmezleri."""
+
+    def _lists(self, **overrides):
+        base = {key: [] for key in ("direct", "indirect", "videoCase", "offTopic", "cardiac", "unavailable")}
+        base.update(overrides)
+        return base
+
+    def test_balanced_split_passes(self):
+        records = [{"pmid": "1"}, {"pmid": "2"}]
+        cls = {"1": {"interest": "dogrudan"}, "2": {"interest": "dolayli"}}
+        lists = self._lists(direct=[{"pmid": "1"}], indirect=[{"pmid": "2"}])
+        self.assertEqual(issue.check_lists(lists, records, cls), [])
+
+    def test_missing_record_is_reported(self):
+        records = [{"pmid": "1"}, {"pmid": "2"}]
+        cls = {"1": {"interest": "dogrudan"}, "2": {"interest": "dolayli"}}
+        lists = self._lists(direct=[{"pmid": "1"}])
+        problems = issue.check_lists(lists, records, cls)
+        self.assertTrue(problems)
+        self.assertIn("liste toplamı 1", problems[0])
+
+    def test_duplicate_record_is_reported(self):
+        records = [{"pmid": "1"}]
+        cls = {"1": {"interest": "dogrudan"}}
+        lists = self._lists(direct=[{"pmid": "1"}], offTopic=[{"pmid": "1"}])
+        problems = issue.check_lists(lists, records, cls)
+        self.assertTrue(any("hem" in p for p in problems))
+
+
+class TestMemoSeed(unittest.TestCase):
+    """Belleğin depoya yazılıp .work boşken geri gelmesi."""
+
+    def test_persist_and_restore(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            work = Path(tmp) / "work"
+            seed = Path(tmp) / "seed"
+            original = (memo_seed.WORK, memo_seed.SEED)
+            memo_seed.WORK, memo_seed.SEED = work, seed
+            try:
+                work.mkdir()
+                (work / "cls_memo.json").write_text('{"1": {}}', encoding="utf-8")
+                self.assertEqual(memo_seed.persist(), ["cls_memo.json"])
+                shutil.rmtree(work)
+                work.mkdir()
+                self.assertEqual(memo_seed.restore(), ["cls_memo.json"])
+                self.assertTrue((work / "cls_memo.json").exists())
+                # İkinci çağrı mevcut dosyayı ezmez.
+                self.assertEqual(memo_seed.restore(), [])
+            finally:
+                memo_seed.WORK, memo_seed.SEED = original
+
+
+class TestRolling(unittest.TestCase):
+    def test_old_records_inside_window_kept(self):
+        old = [{"pmid": "1", "entry_date": "2026-11-20"}, {"pmid": "2", "entry_date": "2026-11-10"}]
+        new = [{"pmid": "3", "entry_date": "2026-11-23"}]
+        merged = rolling.merge(old, new, "pmid", lambda r: r["entry_date"], "2026-11-16")
+        self.assertEqual([r["pmid"] for r in merged], ["1", "3"])
+
+    def test_new_record_wins_on_same_key(self):
+        old = [{"pmid": "1", "entry_date": "2026-11-20", "title": "eski"}]
+        new = [{"pmid": "1", "entry_date": "2026-11-20", "title": "yeni"}]
+        merged = rolling.merge(old, new, "pmid", lambda r: r["entry_date"], "2026-11-16")
+        self.assertEqual(merged[0]["title"], "yeni")
+
+    def test_month_only_date_compared_as_first_day(self):
+        self.assertEqual(rolling.norm_date("2026-11"), "2026-11-01")
+        self.assertEqual(rolling.norm_date("2026"), "2026-01-01")
+        old = [{"id": "x", "date": "2026-11"}]
+        merged = rolling.merge(old, [], "id", lambda r: r["date"], "2026-11-16")
+        self.assertEqual(merged, [])

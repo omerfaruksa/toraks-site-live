@@ -1,11 +1,11 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import App from './App'
+import { applyTheme, readTheme } from './prefs'
 import './styles.css'
 
-const stored = localStorage.getItem('gclt-theme')
-const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
-document.documentElement.dataset.theme = stored ?? (prefersDark ? 'dark' : 'light')
+// İlk boyamadan önce tema uygulanır: kayıtlı tercih yoksa sistem teması izlenir.
+applyTheme(readTheme())
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

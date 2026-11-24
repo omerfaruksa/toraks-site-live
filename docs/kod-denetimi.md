@@ -126,7 +126,29 @@ isteniyorsa `classify.py` içindeki kural tek satırda genişletilebilir.
 dosyadan tohumlandı (1019 sınıflandırma, 63 kart). Böylece ilk günlük koşu tüm kayıtları
 yeniden sınıflandırmak zorunda kalmıyor.
 
-## 6. Kalan riskler
+## 6. Üçüncü tur: arayüz
+
+Kod denetiminden sonra arayüz ayrı bir tur olarak ölçüldü: 1440 px masaüstü, 1200 px orta
+genişlik, 390 px mobil, açık ve koyu tema, filtre paneli ve kart ayrıntıları açık halde
+ekran görüntüleri alındı; sayfa yüksekliği, kontrast, dokunma hedefi ve DOM yapısı tarayıcıda
+ölçüldü.
+
+Bulunan başlıca sorunlar: tüm kartların tek bölümde toplanması (36.835 px masaüstü, 52.251 px
+mobil), mobilde ilk ekranın yarısının krom olması, filtre çiplerinin sağ kenarda kesilmesi,
+künye satırında asılı ayraç, etiketsiz DOI bağlantısı, kartta tasarım türünün görünmemesi,
+11-12 px metinde 4,34:1 kontrast ve 27 px "Ayrıntılar" hedefi.
+
+Uygulananlar: yapışkan sayı içindekiler şeridi ve sağ sütun, bölüm başlıkları, başa dön,
+tek satırlık mobil üst çubuk, tek satır arama ve filtre düğmesi, çiplerin sarılması, "Durum"
+filtresi, tasarım ve örneklem etiketi, künye ayraçlarının düzeltilmesi, erişim/özellik
+ayrımı, boş ana sonucun hafifletilmesi, üç durumlu tema, okundu/kaydedildi işaretleri,
+klavye kısayolları, `aria-live` duyurusu, Markdown dışa aktarma, `og:image` ve canonical.
+Ayrıntı ve sonrası ölçümler: `docs/arayuz.md`.
+
+Hat tarafında üç küçük sağlamlaştırma yapıldı: bellek `content/memo/` altında saklanıyor,
+sayı montajı liste dağıtımını `check_lists` ile doğruluyor, günlük koşu `run.log` yazıyor.
+
+## 7. Kalan riskler
 
 - Bellek dosyaları büyümeye devam eder: içerik değişen kayıt için yeni anahtar eklenir, eski
   anahtar silinmez. Yılda bir `pipeline/.work/*_memo.json` dosyalarını temizlemek yeterli.
@@ -137,3 +159,83 @@ yeniden sınıflandırmak zorunda kalmıyor.
   dosyaya taşınmalı.
 - Model denetimi dilimler halinde yapıldı; dosyalar arası akış (örneğin `run.py` içindeki aşama
   sırası) yalnızca kendi incelememle değerlendirildi.
+
+## 8. Dördüncü tur: tek akış arayüzü ve tanıtım hattı
+24 Kasım 2026. Dosyalar iki modelle ayrı ayrı incelendi, bulgular tek tek kaynak kodla karşılaştırıldı, uygulanabilir olanlar düzeltildi.
+
+### İnceleme kapsamı
+
+| Dosya | OpenAI ailesi (gpt-6-sol, yerleşik köprü) | Gemini |
+|---|---|---|
+| src/App.tsx | İncelendi | İncelendi (gemini-3.5-flash) |
+| src/entries.ts | İncelendi | İncelendi |
+| src/components/EntryCard.tsx | İncelendi | 503 (kapasite) |
+| src/components/Flow.tsx | Tek çağrı bütçesini aştı, elle incelendi | İncelendi |
+| pipeline/issue.py | Tek çağrı bütçesini aştı, elle incelendi | 503 (kapasite) |
+| pipeline/briefs.py | İncelendi | 503 (kapasite) |
+| pipeline/run.py | İncelendi | 503 (kapasite) |
+
+Not: OpenAI anahtarı bu ortamda kredi bitimi nedeniyle doğrudan kullanılamadı; OpenAI ailesi, hattın kullandığı yerleşik model köprüsü (gpt-6-sol) üzerinden çalıştırıldı. Gemini tarafında `gemini-2.5-pro` yeni kullanıcılara kapalı, `gemini-3.1-pro-preview` de API sürümünde bulunamadı; çalışan model `gemini-3.5-flash` oldu, kalan dosyalar yoğunluk nedeniyle 503 döndürdü.
+
+### Uygulanan düzeltmeler
+
+Ön yüz:
+
+1. Sayı değişirken eski sayı ekranda kalmıyor; yükleme sırasında özet ve istatistikler karışmıyor (`setIssue(null)`), yükleme reddedilirse hata durumu gösteriliyor.
+2. `loadIssue` boş tarihle çağrılmıyor; tarih yoksa doğrudan "sayı bulunamadı" durumuna geçiliyor.
+3. Giriş metni yükleme ve hata durumlarını ayırıyor.
+4. Tema tercihi her render'da değil, tembel başlatmayla bir kez okunuyor.
+5. Kartta kopyalama zamanlayıcısı iptal edilip bileşen kaldırılırken temizleniyor; "Kopyalandı" erken kaybolmuyor.
+6. Detayı olmayan kayıtta başlık artık düğme değil, düz paragraf; `aria-expanded` yalnız gerçek etkileşimde var.
+7. Açık görünüm `open && hasDetail` ile tek değere bağlandı; kenarlık boş yere açılmıyor.
+8. `yesterday` hesabı geçersiz tarihte çökmüyor.
+9. "Tümü" çipi ve filtre rozeti uzunluk yerine küme karşılaştırmasıyla çalışıyor.
+10. Süzgeç daralınca sayfa numarası aralık dışında kalmıyor.
+11. Tarih aralığında başlangıç bitişi geçerse diğer uç otomatik eşitleniyor, sessiz boş liste oluşmuyor.
+12. `sortEntries` gereksiz nesne sarmalamıyor; tür sırası bir kez hesaplanan `Map` ile bakılıyor.
+13. Aynı yayın iki listede birden gelirse ön ek atılarak ham kimlikle tekilleştiriliyor.
+14. Kayıt kimliklerinde PMID yoksa URL'ye düşülüyor; `v-undefined` üretilmiyor.
+15. `COMMENT` düzenli ifadesi modül düzeyine taşındı, her çağrıda yeniden derlenmiyor.
+16. Arama metni `note` alanını da kapsıyor.
+17. "Erişilemedi" kayıtları kardiyak sayılmıyor, kendi türüyle gösteriliyor.
+18. `"belirtilmemiş"` dönen özet ve satır değerleri kartta yer tutmuyor.
+
+Hat:
+
+19. Olgu ve video kayıtları göğüs cerrahisi dışıysa konu dışına düşüyor; hayvan hastası olgu bildirimleri de eleniyor (`rules.is_animal_case`). Bu kural yalnız olgu dalında çalışır, doğrudan makalelere uygulanmaz.
+20. `briefs` aşaması özeti olmayan olgularda da başlık çevirisi istiyor; tanıtım sayacı yalnız bu koşunun hedeflerini sayıyor.
+21. Klinik araştırmalar on beş günlük pencerede taranıyor (`config.TRIALS_DAYS`), arayüzde tarih süzgecinden muaf tutuluyor ki akışta görünür kalsınlar.
+22. `build_trials` kayıt tarihini ayrı alanda veriyor; arayüz tarih sıralamasını metinden ayrıştırmıyor.
+
+### Uygulanmayanlar
+
+- `issue.py` ve `Flow.tsx` için model çağrısı tek çağrı bütçesini aştı; bu iki dosya elle incelendi ve yukarıdaki 9, 10, 11, 19, 21, 22 maddeleri bu incelemeden çıktı.
+- `sortEntries` içinde dil duyarlı `localeCompare` çağrısı her karşılaştırmada yapılıyor; 1200 kayıtta ölçülebilir maliyet görülmedi, ön ek olarak `Intl.Collator` eklenmedi.
+
+## 9. Beşinci tur: arama katlaması ve sabit tekrarı
+
+24 Kasım 2026. Bu tur model çağrısıyla değil, tarayıcıda uçtan uca doğrulama sırasında yapıldı: Playwright ile sayfa yüklendi, konsol ve ağ hataları toplandı, arama kutusuna sırayla `gogus`, `akciger`, `ozofagus`, `GÖĞÜS` yazıldı.
+
+### Bulgu
+
+Arama her sorguda sıfır kart döndürüyordu. Neden: `entries.ts` içindeki `searchOf` metni yalnız `toLowerCase()` ile küçültüyor, `matchesTokens` ise katlanmış metin bekliyor; sorgu `tokenize` ile katlandığı için "gogus" ile "Göğüs" hiç eşleşmiyordu. Birim testleri `searchText` ve `fold` davranışını doğruladığı için hata görünmüyordu; kart metnini üreten yol test edilmiyordu.
+
+### Düzeltme
+
+1. `search.ts` içine `composeSearchText` eklendi: parçaları birleştirip `fold` uyguluyor. Kart metni artık bu yardımcıdan geçiyor.
+2. `entries.ts` içindeki `searchOf` bu yardımcıyı çağırıyor; katlama tek yerde tanımlı.
+3. `Flow.tsx` içindeki yerel tür listesi kaldırıldı, `entries.ts` içindeki `FLOW_KINDS` kullanılıyor. Aynı liste iki yerde tutulmuyor.
+4. `tests/search.test.mts` içine kart metninin katlandığını doğrulayan test eklendi; test sayısı 10'dan 11'e çıktı.
+
+### Doğrulama
+
+| Kontrol | Sonuç |
+| --- | --- |
+| `gogus` (son 24 saat) | 1 kart, "Göğüs duvarı" etiketli kayıt |
+| `akciger` (son 24 saat) | 7 kart |
+| `ozofagus` (son 24 saat) | 1 kart |
+| `GÖĞÜS` (büyük harf) | 1 kart |
+| Tümü + `gogus` | 12 kayıt |
+| Konsol hatası, başarısız istek | 0, 0 |
+| Mobil yatay taşma | 0 px |
+| `pnpm check` | 11 arama testi, 28 Python testi, derleme temiz |

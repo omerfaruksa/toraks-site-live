@@ -3,7 +3,7 @@
  * Çalıştırma: node --experimental-strip-types tests/search.test.mts
  */
 import assert from 'node:assert/strict'
-import { fold, highlight, matchesTokens, searchText, tokenize } from '../src/search.ts'
+import { composeSearchText, fold, highlight, matchesTokens, searchText, tokenize } from '../src/search.ts'
 
 let passed = 0
 const test = (name: string, fn: () => void) => {
@@ -74,4 +74,13 @@ test('Eşleşme yoksa metin tek parça döner', () => {
   assert.deepEqual(highlight('', tokenize('x')), [])
 })
 
+test('Kart arama metni katlanır, Türkçe harf araması eşleşir', () => {
+  const metin = composeSearchText(['Göğüs duvarı tümöründe rezeksiyon', 'Göğüs duvarı',
+    'Annals of Thoracic Surgery', 'Retrospektif kohort', '42 hasta'])
+  assert.equal(metin.includes('gogus'), true)
+  assert.equal(metin.includes('göğüs'), false)
+  assert.equal(matchesTokens(metin, tokenize('gogus')), true)
+  assert.equal(matchesTokens(metin, tokenize('GÖĞÜS rezeksiyon')), true)
+  assert.equal(matchesTokens(metin, tokenize('ozofagus')), false)
+})
 console.log(`\n${passed} test geçti`)

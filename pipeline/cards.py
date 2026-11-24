@@ -38,13 +38,20 @@ def targets(records: list[dict], cls: dict) -> list[dict]:
 
 def verify(rows: list[dict], records: dict[str, dict]) -> list[dict]:
     """Sayı karşılaştırması: özette bulunmayan sayılar `numberMismatches` alanına yazılır."""
-    checked = flagged = 0
+    checked = flagged = untranslated = 0
     for row in rows:
         if row.get("error") or not row.get("card"):
             continue
         rec = records.get(row["id"])
         if not rec:
             continue
+        card = row["card"]
+        # Kural: Türkçe başlık zorunlu. Model başlığı çevirmeden bırakırsa görünür olsun.
+        same_title = (str(card.get("titleTr") or "").strip().lower()
+                      == str(card.get("titleOrig") or "").strip().lower())
+        row["titleUntranslated"] = bool(card.get("titleTr")) and same_title
+        if row["titleUntranslated"]:
+            untranslated += 1
         missing = rules.numbers_missing(row["card"], rec.get("abstract") or "")
         row["numberMismatches"] = missing
         row["mismatches"] = []
@@ -53,6 +60,8 @@ def verify(rows: list[dict], records: dict[str, dict]) -> list[dict]:
             flagged += 1
             row.setdefault("mismatches", []).extend(f"özette yok: {m}" for m in missing)
     print(f"  sayı denetimi: {checked} kart, {flagged} uyarı")
+    if untranslated:
+        print(f"  çeviri denetimi: {untranslated} kart başlığı çevrilmemiş")
     return rows
 
 
@@ -68,6 +77,10 @@ def run(records: list[dict], cls: dict) -> dict[str, dict]:
     if cached:
         print(f"  bellekten: {len(cached)}/{len(items)} kart")
     fresh = llm.run_worker("cards", todo, "cards.jsonl", MODEL_DEEP) if todo else []
+    # Pencere dışına çıkan kayıtların kartları dosyada kalmasın: işçi dosyayı
+    # baştan okuduğu için eski satırlar denetim sayısını şişiriyordu.
+    keep = {item["id"] for item in items}
+    fresh = [row for row in fresh if (row.get("id") or row.get("pmid")) in keep]
     by_pmid = {r["pmid"]: r for r in records}
     rows = verify(list(cached.values()) + fresh, by_pmid)
     (WORK / "cards.jsonl").write_text(

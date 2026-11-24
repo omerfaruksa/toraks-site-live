@@ -36,6 +36,17 @@ export const DESIGN_ORDER: { key: Design; label: string }[] = [
   { key: 'other', label: 'Diğer' },
 ]
 
+/** Kart üstündeki kısa tasarım etiketi; ayrıntı açmadan okunur. */
+export const SHORT_DESIGN: Record<Design, string> = {
+  rct: 'RCT',
+  meta: 'Meta-analiz',
+  cohort: 'Kohort',
+  casecontrol: 'Olgu-kontrol',
+  caseseries: 'Olgu serisi',
+  nonclinical: 'Klinik dışı',
+  other: 'Diğer',
+}
+
 export const TAG_ORDER = [
   'Akciğer kanseri cerrahisi',
   'Mediasten',
