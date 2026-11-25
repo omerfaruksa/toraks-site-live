@@ -76,7 +76,8 @@ def run(records: list[dict], cls: dict) -> dict[str, dict]:
     todo, cached = memo.partition(items, memory)
     if cached:
         print(f"  bellekten: {len(cached)}/{len(items)} kart")
-    fresh = llm.run_worker("cards", todo, "cards.jsonl", MODEL_DEEP) if todo else []
+    fresh = llm.run_worker_reliable("cards", todo, "cards.jsonl", MODEL_DEEP,
+                                 "kart") if todo else []
     # Pencere dışına çıkan kayıtların kartları dosyada kalmasın: işçi dosyayı
     # baştan okuduğu için eski satırlar denetim sayısını şişiriyordu.
     keep = {item["id"] for item in items}

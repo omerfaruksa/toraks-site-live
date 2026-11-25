@@ -35,7 +35,8 @@ def run(window_records: list[dict]) -> list[dict]:
             "yayin_turleri": rec.get("pubtypes") or [],
         },
     } for rec in pool]
-    rows = llm.run_worker("triage", items, "external_cls_raw.jsonl", MODEL_FAST)
+    rows = llm.run_worker_reliable("triage", items, "external_cls_raw.jsonl", MODEL_FAST,
+                                   "liste dışı")
     verdict = {r["id"]: r for r in rows if not r.get("error")}
 
     out = []

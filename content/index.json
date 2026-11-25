@@ -1,5 +1,14 @@
 [
  {
+  "date": "2026-11-25",
+  "cadence": "daily",
+  "periodLabel": "18–25 Kasım 2026",
+  "direct": 51,
+  "indirect": 12,
+  "scanned": 1145,
+  "trials": 10
+ },
+ {
   "date": "2026-11-24",
   "cadence": "daily",
   "periodLabel": "17–24 Kasım 2026",

@@ -46,7 +46,8 @@ def run(records: list[dict], cls: dict) -> dict[str, dict]:
     todo, cached = memo.partition(items, memory)
     if cached:
         print(f"  bellekten: {len(cached)}/{len(items)} tanıtım")
-    fresh = llm.run_worker("briefs", todo, "briefs_raw.jsonl", MODEL_FAST) if todo else []
+    fresh = llm.run_worker_reliable("briefs", todo, "briefs_raw.jsonl", MODEL_FAST,
+                                  "tanıtım") if todo else []
     keep = {item["id"] for item in items}
     fresh = [row for row in fresh if (row.get("id") or row.get("pmid")) in keep]
     rows = list(cached.values()) + fresh

@@ -362,6 +362,13 @@ def build(issue_date: str, start: str, end: str, *, use_cache: bool = False,
     meta = _load("meta.json", {})
 
     pmids = [r["pmid"] for r in records]
+    unclassified = [pmid for pmid in pmids if pmid not in cls]
+    if unclassified:
+        # Sınıflandırılamayan kayıt listelere girmez; sayı sessizce eksik kalır.
+        # Sayıyı yazmak yerine durup nedeni bildiriyoruz.
+        raise RuntimeError(
+            f"{len(unclassified)} kayıt sınıflandırılmamış (ör. {', '.join(unclassified[:5])}); "
+            "sayı yazılmadı, classify aşamasını yeniden çalıştırın")
     pmc = fetch.pmc_ids([p for p, hit in cls.items()
                          if hit["interest"] == "dogrudan" and not hit["cardiac"]])
     affiliations = {pmid: (meta.get(pmid) or {}).get("affiliations", []) for pmid in pmids}

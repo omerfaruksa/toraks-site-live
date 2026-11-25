@@ -31,6 +31,11 @@ def _payload(rec: dict) -> dict:
 MEMO = "cls_memo.json"
 
 
+def _triage(items: list[dict], out_name: str, model: str, label: str) -> dict[str, dict]:
+    rows = llm.run_worker_reliable("triage", items, out_name, model, label)
+    return {r["id"]: r for r in rows if not r.get("error")}
+
+
 def _candidates(records: list[dict], first: dict[str, dict],
                 payloads: dict[str, dict]) -> list[dict]:
     """İkinci geçiş yalnızca Doğrudan/Dolaylı ve cerrahi anahtar sözcüklü kayıtlara."""
@@ -57,13 +62,11 @@ def run(records: list[dict]) -> dict:
     if cached:
         print(f"  bellekten: {len(cached)}/{len(records)} kayıt")
 
-    first_rows = llm.run_worker("triage", todo, "classify_pass1.jsonl", MODEL_FAST)
-    first = {r["id"]: r for r in first_rows if not r.get("error")}
+    first = _triage(todo, "classify_pass1.jsonl", MODEL_FAST, "birinci geçiş")
     print(f"  birinci geçiş: {len(first)}/{len(todo)}")
 
     second_items = _candidates([r for r in records if r["pmid"] in first], first, payloads)
-    second_rows = llm.run_worker("triage", second_items, "classify_pass2.jsonl", MODEL_DEEP)
-    second = {r["id"]: r for r in second_rows if not r.get("error")}
+    second = _triage(second_items, "classify_pass2.jsonl", MODEL_DEEP, "ikinci geçiş")
     print(f"  ikinci geçiş: {len(second)}/{len(second_items)}")
 
     final = dict(cached)
