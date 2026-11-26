@@ -2,6 +2,8 @@
 
 Göğüs cerrahisi literatürünün günlük takibi için okuma odaklı, sade bir yayın sitesi. Her gün yeni bir "sayı" eklenir; sayı, tarama protokolünün çıktısını okunabilir bir düzene çevirir.
 
+Yayın adresleri: `https://omerfaruksa.github.io/toraks-site-live/` (GitHub Pages, ayrı ağ) ve `https://toraks.manus.space/` (Manus). İki adres de aynı derlemeyi gösterir; ayrıntı `docs/yayin.md`.
+
 ## Sayfa yapısı
 
 Sayfa tek akış: bölüm başlığı yok, kayıt türü kart üstünde etiket olarak duruyor.
