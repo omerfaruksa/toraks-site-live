@@ -67,6 +67,8 @@ export const AREA_ORDER = [
   'Toraks Travması',
   'Akciğer Nakli ve ECMO/ECLS',
   'Pediyatrik Göğüs Cerrahisi',
+  'Perioperatif Bakım, Analjezi ve ERAS',
+  'Genel Torasik Cerrahi',
 ]
 
 /** Eksen 4: cerrahi yaklaşım ve teknoloji. */
@@ -114,4 +116,3 @@ export function shortDate(iso: string): string {
   if (!y || !m || !d) return iso
   return trDate(y, m, d, { day: 'numeric', month: 'short', year: 'numeric' })
 }
-
