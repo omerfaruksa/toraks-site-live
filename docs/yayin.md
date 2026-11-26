@@ -53,3 +53,9 @@ pnpm check        # tür denetimi, arama testleri, Python testleri, derleme
 ```
 
 Gereksinimler: Node 22, pnpm 10, Python 3.12.
+
+## Sürüm paketi ve dağıtımı
+
+Paket, deponun o günkü hâlini tek zip içinde verir; `node_modules`, `dist`, `.git` ve önbellekler girmez. Üretmek için `bash tools/paket.sh` çalıştırılır; betik dosya sayısını, boyutu ve sha256 özetini yazar. Aynı iş `Sürüm` iş akışıyla her cuma 09:00 UTC'de (12:00 Istanbul) kendiliğinden yapılır ve GitHub Sürümler sayfasına eklenir; etiket biçimi `vYYYY.MM.DD`.
+
+Sürümler: `https://github.com/omerfaruksa/toraks-site-live/releases`. Elle sürüm çıkarmak için Actions > Sürüm > Run workflow, istenirse etiket adı verilir. Paket, site yayınından bağımsızdır: yayın `gh-pages` dalından, paket `main` dalından üretilir.
