@@ -21,14 +21,13 @@ Site statik bir paketdir (`pnpm build` → `dist/`). Sunucu, veri tabanı veya o
 
 Not: Manus barındırması (`*.manus.space`) ile Cloudflare Pages aynı CDN ağını kullanır. Bir ağ veya DNS filtresi Cloudflare aralıklarını engelliyorsa ikisi de açılmaz; GitHub Pages ayrı bir ağdadır (`*.github.io`). Erişim sorunu yaşıyorsanız önce GitHub Pages'i deneyin.
 
-## GitHub Pages kurulumu (bir kez, ~3 dakika)
+## GitHub Pages (kurulu)
 
-1. Depo ayarları > General > en altta **Change visibility > Public** (ücretsiz hesapta Pages için gerekli). Depoda anahtar veya hasta verisi yoktur; yalnız herkese açık literatür başlıkları ve kod vardır.
-2. Settings > Pages > **Source: GitHub Actions**.
-3. `main` dalına bir itme yapın veya Actions > Pages > **Run workflow**.
-4. Adres: `https://<kullanıcı>.github.io/<depo>/`
+Yayın deposu `omerfaruksa/toraks-site-live` (herkese açık). Adres: `https://omerfaruksa.github.io/toraks-site-live/`
 
-Derleme bitince `VITE_SITE_URL` otomatik bu adrese ayarlanır (kanonik bağlantı ve paylaşım görseli).
+Çalışma biçimi: `main` dalına her itmede `.github/workflows/pages.yml` depoyu kurar, `pnpm check` benzeri adımları çalıştırır, `dist` klasörünü derler ve `gh-pages` dalına gönderir. Pages bu depoda **Deploy from a branch: gh-pages** olarak ayarlıdır; dal itildiğinde GitHub kendisi yayımlar. İş akışı `VITE_SITE_URL` değerini kendi adresine çevirir, kanonik bağlantı ve paylaşım görseli bu adresi gösterir.
+
+Yeni bir depoda sıfırdan kurmak gerekirse: depoyu herkese açık yapın, `main` dalını itin, ardından derlenmiş siteyi `gh-pages` dalına bir kez itin. GitHub bu dalda Pages'i kendiliğinden açar (denendi ve doğrulandı). Pages'in kapalı kaldığı durumda Settings > Pages > Source: **Deploy from a branch**, dal: `gh-pages`, klasör: `/ (root)` seçilir. GitHub entegrasyonunun Pages açma izni yoktur; `enablement` bayrağı bu nedenle kullanılmaz.
 
 ## Cloudflare Pages kurulumu
 

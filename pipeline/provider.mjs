@@ -98,8 +98,10 @@ class HttpClient {
     }
     const body = JSON.stringify(this.#adapt(request))
     let last
+    let crowd = false
     for (let attempt = 0; attempt <= this.#maxRetries; attempt += 1) {
-      if (attempt) await sleep(Math.min(30000, 1000 * 2 ** attempt) + Math.random() * 500)
+      // Eşzamanlılık sınırı aşıldığında kısa beklemeler işe yaramaz: istekler yeniden yığılır.
+      if (attempt) await sleep(Math.min(30000, 1000 * 2 ** attempt) + (crowd ? 3000 : 0) + Math.random() * 500)
       try {
         const res = await fetch(`${this.#base}/chat/completions`, {
           method: 'POST',
@@ -110,6 +112,7 @@ class HttpClient {
         const text = await res.text()
         if (res.ok) return JSON.parse(text)
         const detail = text.slice(0, 300).replace(/\s+/g, ' ')
+        crowd = /concurrent|too many requests in flight|rate.?limit/i.test(text)
         // Kota ve yetki hataları her istekte tekrarlanır; hattı durdurmak için fatal işaretlenir.
         const quota = res.status === 429 && /insufficient_quota|no credits|billing|exceeded your current quota/i.test(text)
         const fatal = [400, 401, 403, 404].includes(res.status) || quota

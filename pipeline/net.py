@@ -61,6 +61,7 @@ def pmap(fn, items, workers: int | None = None):
 
 
 MAX_PMIDS = 5000
+EFETCH_CHUNK = 200
 
 
 def esearch(term: str, retmax: int = 400, **extra) -> list[str]:
@@ -89,14 +90,22 @@ def esearch_count(term: str, **extra) -> int:
 
 
 def efetch(pmids) -> ET.Element | None:
+    """PMID listesini parçalara bölerek getirir; tek istekte yüzlerce kimlik 414 hatası verir."""
     pmids = [p for p in pmids if p]
     if not pmids:
         return None
-    xml = get(f"{EUTILS}/efetch.fcgi", {"db": "pubmed", "id": ",".join(pmids), "retmode": "xml"})
-    try:
-        return ET.fromstring(xml)
-    except ET.ParseError:
-        return None
+    root = None
+    for group in chunks(pmids, EFETCH_CHUNK):
+        xml = get(f"{EUTILS}/efetch.fcgi", {"db": "pubmed", "id": ",".join(group), "retmode": "xml"})
+        try:
+            part = ET.fromstring(xml)
+        except ET.ParseError:
+            continue
+        if root is None:
+            root = part
+        else:
+            root.extend(list(part))
+    return root
 
 
 def chunks(items, size):

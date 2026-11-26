@@ -22,7 +22,7 @@ if (!MODE || !IN || !OUT) {
   process.exit(2)
 }
 
-const CONC = Number(process.env.CONC || 6)
+const CONC = Number(process.env.CONC || 4)
 const MODEL = MODEL_ARG || process.env.LLM_MODEL || (MODE === 'cards' ? 'gpt-6-sol' : 'gpt-6-luna')
 let llm
 try {

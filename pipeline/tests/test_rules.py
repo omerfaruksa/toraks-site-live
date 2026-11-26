@@ -15,6 +15,7 @@ import fetch  # noqa: E402
 import issue  # noqa: E402
 import journals  # noqa: E402
 import memo_seed  # noqa: E402
+import net  # noqa: E402
 import report  # noqa: E402
 import rolling
 import rules  # noqa: E402
@@ -247,3 +248,26 @@ class NodeBinaryTests(unittest.TestCase):
         import llm
         os.environ["LLM_NODE"] = "/opt/node"
         self.assertEqual(llm.node_binary(), "/opt/node")
+
+
+class EfetchChunkTests(unittest.TestCase):
+    """Tek istekte yüzlerce PMID göndermek 414 veriyordu; efetch parçalamalı."""
+
+    def test_parcalara_boler_ve_birlestirir(self):
+        calls = []
+        original = net.get
+
+        def fake_get(url, params=None, **kwargs):
+            calls.append(len(params["id"].split(",")))
+            ids = params["id"].split(",")
+            body = "".join(f"<PubmedArticle><PMID>{i}</PMID></PubmedArticle>" for i in ids)
+            return f"<PubmedArticleSet>{body}</PubmedArticleSet>"
+
+        net.get = fake_get
+        try:
+            root = net.efetch([str(1000 + i) for i in range(450)])
+        finally:
+            net.get = original
+        self.assertEqual(calls, [200, 200, 50])
+        self.assertEqual(len(list(root)), 450)
+
