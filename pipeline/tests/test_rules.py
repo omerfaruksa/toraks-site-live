@@ -220,3 +220,30 @@ class IssueDateTests(unittest.TestCase):
         from datetime import datetime
         from zoneinfo import ZoneInfo
         self.assertEqual(config.issue_date_for(), datetime.now(ZoneInfo("Europe/Istanbul")).date())
+
+
+class NodeBinaryTests(unittest.TestCase):
+    def setUp(self):
+        import os
+        self.env = {k: os.environ.get(k) for k in ("LLM_PROVIDER", "LLM_NODE")}
+
+    def tearDown(self):
+        import os
+        for k, v in self.env.items():
+            if v is None:
+                os.environ.pop(k, None)
+            else:
+                os.environ[k] = v
+
+    def test_external_provider_uses_plain_node(self):
+        import os
+        import llm
+        os.environ.pop("LLM_NODE", None)
+        os.environ["LLM_PROVIDER"] = "gemini"
+        self.assertNotIn("manus-node", llm.node_binary())
+
+    def test_explicit_node_wins(self):
+        import os
+        import llm
+        os.environ["LLM_NODE"] = "/opt/node"
+        self.assertEqual(llm.node_binary(), "/opt/node")

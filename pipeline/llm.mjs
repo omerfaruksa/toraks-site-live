@@ -3,19 +3,18 @@
  * ve klinik araştırma başlığı çevirisi (trials) modları.
  *
  * Kullanım:
- *   manus-node pipeline/llm.mjs triage <input.json> <out.jsonl> [model]
- *   manus-node pipeline/llm.mjs cards  <input.json> <out.jsonl> [model]
- *   manus-node pipeline/llm.mjs briefs <input.json> <out.jsonl> [model]
- *   manus-node pipeline/llm.mjs trials <input.json> <out.jsonl> [model]
+ *   node pipeline/llm.mjs triage <input.json> <out.jsonl> [model]
+ *   node pipeline/llm.mjs cards  <input.json> <out.jsonl> [model]
+ *   node pipeline/llm.mjs briefs <input.json> <out.jsonl> [model]
+ *   node pipeline/llm.mjs trials <input.json> <out.jsonl> [model]
  *
  * Girdi: [{ id, ... }] dizisi. Çıktı: her satır { id, ...alanlar, error }.
  * Tamamlanmış kayıtlar atlanır; iş kesilirse aynı komut kaldığı yerden sürer.
  */
-import { pathToFileURL } from 'node:url'
 import { readFile, writeFile } from 'node:fs/promises'
 
-const SKILL = '/home/ubuntu/skills/builtin-llm-models'
-const { LlmClient, messageText, mapLimit } = await import(pathToFileURL(`${SKILL}/lib/llm.mjs`).href)
+// Sağlayıcı (Manus geçidi, OpenAI, Gemini, OpenAI uyumlu sunucu) provider.mjs içinde seçilir.
+import { LlmClient, messageText, mapLimit } from './provider.mjs'
 
 const [, , MODE, IN, OUT, MODEL_ARG] = process.argv
 if (!MODE || !IN || !OUT) {
@@ -24,8 +23,14 @@ if (!MODE || !IN || !OUT) {
 }
 
 const CONC = Number(process.env.CONC || 6)
-const MODEL = MODEL_ARG || (MODE === 'cards' ? 'gpt-6-sol' : 'gpt-6-luna')
-const llm = new LlmClient({ timeoutMs: 240000, maxRetries: 6 })
+const MODEL = MODEL_ARG || process.env.LLM_MODEL || (MODE === 'cards' ? 'gpt-6-sol' : 'gpt-6-luna')
+let llm
+try {
+  llm = new LlmClient({ timeoutMs: 240000, maxRetries: 6 })
+} catch (e) {
+  console.error(`LLM sağlayıcı hatası: ${e.message}`)
+  process.exit(2)
+}
 
 const TAGS = ['Akciğer kanseri cerrahisi', 'Mediasten', 'Özofagus', 'Göğüs duvarı', 'Plevra', 'Akciğer nakli',
   'Minimal invaziv ve robotik cerrahi', 'Toraks travması', 'Trakea ve hava yolu', 'Diyafram', 'Perioperatif bakım/ERAS']

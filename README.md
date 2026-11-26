@@ -98,6 +98,7 @@ Koşu çıktısı `pipeline/.work/run.log` dosyasına da yazılır (2 MB üstün
 | `docs/zamanlanmis-gorevler.md` | Günlük 12:00 görevinin metni ve cumartesi haftalık rapor dalı |
 | `docs/arayuz.md` | Arayüz kararları: tek akış, kart katmanları, süzgeçler, mobil ve erişilebilirlik ölçümleri |
 | `docs/kaynak-kapsama.md` | Erişilemeyen dergiler için RSS, TR Dizin, DergiPark ve Crossref ölçümleri |
+| `docs/llm-saglayici.md` | OpenAI, Gemini veya OpenAI uyumlu sunucuyla hattı çalıştırma; değişkenler, hata davranışı |
 | `docs/yayin.md` | GitHub Pages, Cloudflare Pages, Vercel karşılaştırması; kurulum ve günlük güncelleme akışı |
 
 ## Geliştirme

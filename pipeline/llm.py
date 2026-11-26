@@ -1,8 +1,9 @@
-"""manus-node LLM işçisini Python'dan çağıran ince köprü."""
+"""LLM işçisini (llm.mjs) Python'dan çağıran ince köprü. Sağlayıcı seçimi provider.mjs içindedir."""
 from __future__ import annotations
 
 import json
 import os
+import shutil
 import subprocess
 import sys
 import time
@@ -10,6 +11,17 @@ import time
 from config import PIPELINE, WORK
 
 WORKER = PIPELINE / "llm.mjs"
+
+
+def node_binary() -> str:
+    """Manus ortamında manus-node, başka yerde düz node (Node 18+)."""
+    explicit = os.environ.get("LLM_NODE")
+    if explicit:
+        return explicit
+    provider = os.environ.get("LLM_PROVIDER", "").strip().lower()
+    if provider in ("openai", "gemini", "custom"):
+        return shutil.which("node") or "node"
+    return shutil.which("manus-node") or shutil.which("node") or "node"
 
 
 def run_worker(mode: str, items: list[dict], out_name: str, model: str,
@@ -23,7 +35,7 @@ def run_worker(mode: str, items: list[dict], out_name: str, model: str,
     in_path = WORK / f"{mode}_input.json"
     out_path = WORK / out_name
     in_path.write_text(json.dumps(items, ensure_ascii=False), encoding="utf-8")
-    cmd = ["manus-node", str(WORKER), mode, str(in_path), str(out_path), model]
+    cmd = [node_binary(), str(WORKER), mode, str(in_path), str(out_path), model]
     print(f"  $ {' '.join(cmd[1:])}", flush=True)
     env = dict(os.environ)
     if conc:

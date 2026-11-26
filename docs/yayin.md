@@ -36,13 +36,13 @@ Workers & Pages > Create > Pages > Connect to Git > depoyu seçin. Build command
 
 ## Günlük güncelleme akışı
 
-Veri hattı (`pipeline/`) Manus çalışma ortamının LLM geçidine bağlıdır (`manus-node`); GitHub Actions içinde çalışmaz. Akış:
+Veri hattı (`pipeline/`) varsayılan olarak Manus çalışma ortamının LLM geçidini kullanır; kendi OpenAI veya Gemini anahtarınızla da çalışır (`docs/llm-saglayici.md`). Site derlemesinden bağımsızdır. Akış:
 
 1. Planlı görev her gün 12:00'de hattı çalıştırır (`pipeline/run_daily.sh`).
 2. Yeni `content/` dosyaları `main` dalına itilir.
 3. İtme, Pages iş akışını tetikler; site birkaç dakikada güncellenir.
 
-Hattı kendi bilgisayarınızda çalıştırmak isterseniz `pipeline/llm.mjs` içindeki istemci çağrılarını kendi sağlayıcınıza çevirmeniz gerekir (`docs/mimari.md`).
+Hattı kendi bilgisayarınızda çalıştırmak için `docs/llm-saglayici.md` içindeki değişkenleri tanımlamanız yeterlidir.
 
 ## Yerel geliştirme (VS Code)
 
