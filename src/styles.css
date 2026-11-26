@@ -178,12 +178,6 @@ summary:focus-visible {
   cursor: pointer;
 }
 .icon-btn:hover { background: var(--paper-2); color: var(--ink); }
-.filters-toggle.is-open {
-  border-color: var(--accent);
-  background: var(--accent-wash);
-  color: var(--accent-ink);
-  font-weight: 600;
-}
 
 @media (max-width: 860px) {
   .filters.is-open { position: static; }}
@@ -268,14 +262,8 @@ mark {
 
 /* başlık: kaydırırken yalnızca işaret kalır, yükseklik değişmez */
 .site-header.is-compact .wordmark-title { display: none; }
-.card-tool.is-on {
-  background: var(--accent-wash);
-  border-color: color-mix(in srgb, var(--accent) 55%, var(--rule));
-  color: var(--accent-ink);
-  font-weight: 600;
-}
 @supports not (border-color: color-mix(in srgb, red 50%, blue)) {
-  .card-tool.is-on { border-color: var(--accent); }}
+  }
 
 /* ---------- alt bilgi eylemleri ---------- */
 .footer-actions {
@@ -360,7 +348,7 @@ mark {
   }}
 
 @media print {
-  .issue-map, .side-rail, .to-top, .skip-link, .card-tools, .footer-actions { display: none; }}
+  .issue-map, .side-rail, .to-top, .skip-link, .footer-actions { display: none; }}
 
 /* ---------- tek akış: süzgeç, kart, sayfalama ---------- */
 

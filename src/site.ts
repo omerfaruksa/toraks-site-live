@@ -5,5 +5,4 @@
  */
 export const SITE = {
   subscribeEmail: '',
-  repo: 'https://github.com/omerfaruksa/Thorax-site',
 }

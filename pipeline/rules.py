@@ -224,7 +224,9 @@ def numbers_missing(card: dict, abstract: str) -> list[str]:
                     variants.add(v[1:])
                 elif v.startswith("."):
                     variants.add("0" + v)
-            if not any(v.replace(" ", "") in norm for v in variants):
+            # Alt dize değil, tam sayı eşleşmesi: özetteki "1500" kartta yazan "15" veya "50" için kanıt sayılmaz.
+            if not any(re.search(r"(?<![\d.])" + re.escape(v.replace(" ", "")) + r"(?!\d)", norm)
+                       for v in variants):
                 word = NUM_WORDS.get(token.lstrip("0"))
                 if word:
                     # "fifty-three", "fifty three" ve "one hundred and five" biçimleri kabul.

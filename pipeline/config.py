@@ -6,8 +6,9 @@ yalnızca bu modülden okur.
 from __future__ import annotations
 
 import os
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 ROOT = Path(__file__).resolve().parent.parent
 PIPELINE = ROOT / "pipeline"
@@ -28,10 +29,10 @@ HTTP_WORKERS = int(os.environ.get("HTTP_WORKERS", "6"))
 # Günlük kadans: sayı her gün üretilir, pencere yine son 7 gündür (yuvarlanan
 # hafta). Böylece ana sayfa her gün tazelenir; tekrar eden kayıtlar LLM
 # belleğinden (cls_memo/cards_memo) okunur.
-CADENCE_DAYS = {"daily": 7, "weekly": 7, "biweekly": 14, "monthly": 30}
+CADENCE_DAYS = {"daily": 7}
 # Sayının kapsadığı pencere ile taranan pencere ayrıdır: günlük kadans her gün
 # yalnızca son 24 saati tarar, bulunanlar 7 günlük kayan pencereye eklenir.
-SCAN_DAYS = {"daily": 1, "weekly": 7, "biweekly": 14, "monthly": 30}
+SCAN_DAYS = {"daily": 1}
 # ClinicalTrials.gov iki haftada bir taranır: kayıt ve sonuç bildirimleri seyrek
 # düşer; on dört günlük pencere taze kalır, gereksiz istek üretmez.
 TRIALS_DAYS = int(os.environ.get("TRIALS_DAYS", "14"))
@@ -50,7 +51,8 @@ def window(issue_date: date, days: int) -> tuple[str, str]:
 def issue_date_for(cadence: str = DEFAULT_CADENCE, today: date | None = None) -> date:
     """Sayı tarihi: çalıştırma günü. Günlük görev her gün koştuğu için tarihler
     kendiliğinden yerine oturur; ayrı haftalık rapor görevi yoktur."""
-    return today or date.today()
+    # Sandbox UTC'de çalışır; gece yarısı çevresinde sayı tarihi bir gün kaymasın diye Türkiye saati.
+    return today or datetime.now(ZoneInfo("Europe/Istanbul")).date()
 
 
 def period_label(start: str, end: str) -> str:

@@ -4,7 +4,7 @@
 
 ## 1. Sayfa düzeni
 
-- Üstte başlık, pencere aralığı ve beş sayıdan oluşan genel bakış şeridi (taranan kayıt, doğrudan, dolaylı, olgu ve video, klinik araştırma).
+- Üstte yalnız başlık ve tarih seçici; istatistik şeridi ve giriş metni kaldırıldı.
 - Altında tek akış: tarih yeniden eskiye sıralı kayıtlar. Aynı gün içinde tür sırası (doğrudan, olgu, video, yorum, klinik araştırma, dolaylı, liste dışı, kardiyak, erişilemedi), sonra başlık.
 - Varsayılan görünüm son 24 saat. PubMed giriş tarihi bir gün geciktiği için sayı tarihinde çoğu gün kayıt olmuyor; son 24 saat, dünün girişlerini bugünün partisi sayar.
 - Klinik araştırmalar tarih süzgecinden muaf: on beş günde bir tarandıkları için kayıt tarihleri son 24 saate düşmez, muafiyet olmadan akışta hiç görünmezlerdi.

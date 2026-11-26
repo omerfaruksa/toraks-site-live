@@ -6,7 +6,7 @@ Göğüs cerrahisi literatürünün günlük takibi için okuma odaklı, sade bi
 
 Sayfa tek akış: bölüm başlığı yok, kayıt türü kart üstünde etiket olarak duruyor.
 
-- Üstte başlık, tarama aralığı ve beş sayıdan oluşan genel bakış şeridi (taranan kayıt, doğrudan, dolaylı, olgu ve video, klinik araştırma).
+- Üstte yalnız başlık ve tarih seçici; istatistik şeridi ve giriş metni yok.
 - Altında tarih yeniden eskiye sıralı kayıtlar. Aynı gün içinde tür sırası: doğrudan, olgu, video, yorum, klinik araştırma, dolaylı, liste dışı, kardiyak, erişilemedi.
 - Varsayılan görünüm son 24 saat. PubMed giriş tarihi bir gün geciktiği için sayı tarihinde çoğu gün kayıt olmuyor; son 24 saat, dünün girişlerini bugünün partisi sayar.
 - Klinik araştırmalar on beş günde bir tarandığı için tarih süzgecinden muaf tutulur; kayıt tarihleri son 24 saate düşmediğinden aksi hâlde akışta hiç görünmezlerdi.
@@ -28,7 +28,7 @@ Site tek kullanıcılı bir okuma aracı; sunucu, oturum veya hesap yok.
 - **Klavye.** `/` arama alanına odaklanır, `Esc` filtreleri temizler.
 - **Bağlantı kopyalama.** Kart altındaki "Bağlantı" düğmesi makale adresini panoya kopyalar.
 - **Erişilebilirlik.** "Kayıtlara geç" bağlantısı, `lang="tr"`, kart başlığında `aria-expanded` ve `aria-controls`, `dl` tabanlı detay yapısı, 44 px üstü dokunma hedefleri. Ayrıntılar `docs/arayuz.md`.
-- **Bülten.** `src/site.ts` içindeki `subscribeEmail` doldurulduğunda altbilgide "E-posta ile abone ol" düğmesi görünür. Otomatik liste ve toplu gönderim için `docs/yayin-ve-alan-adi.md`.
+- **Bülten.** `src/site.ts` içindeki `subscribeEmail` doldurulduğunda altbilgide "E-posta ile abone ol" düğmesi görünür. Otomatik liste ve toplu gönderim için bir bülten hizmeti gerekir (`docs/yayin.md`).
 
 ## Teknoloji
 
@@ -44,7 +44,7 @@ src/
   data.ts               # sayı dizini ve tembel yükleme
   types.ts              # veri şeması
   prefs.ts              # tema tercihi (localStorage)
-  site.ts               # bülten adresi ve depo bağlantısı
+  site.ts               # bülten adresi (boşsa düğme gizli)
   components/           # üst çubuk, akış, kart, en üste git
   styles.css            # tipografi ve duyarlı yerleşim
 pipeline/               # günlük tarama ve sayı üretimi
@@ -78,11 +78,9 @@ Yeni bir sayı eklemek için dosyayı `content/issues/` altına koyup `content/i
 bash pipeline/run_daily.sh                  # günlük sayı: son 24 saat taranır, 7 günlük kayan pencereye eklenir
 bash pipeline/run_daily.sh --scan-window 7  # pencereyi baştan kur (tarama 7 gün)
 bash pipeline/run_daily.sh --date 2026-11-28
-bash pipeline/run_weekly_report.sh          # son 7 günlük sayıyı birleştiren haftalık rapor
 python3 pipeline/run.py --stages issue --report   # yalnızca montaj + rapor
 pnpm check                                  # tip denetimi + testler + derleme
 pnpm pipeline:daily                         # run_daily.sh kısayolu
-pnpm pipeline:report                        # run_weekly_report.sh kısayolu
 ```
 
 Hat tek giriş noktasından (`pipeline/run.py`) çalışır: PubMed dergi taraması (tüm ISSN'ler + `[edat]`), konu sorgusu, iki geçişli sınıflandırma, çalışma kartı üretimi ve sayı denetimi, ClinicalTrials.gov, Crossref/RSS ile PubMed dışı kaynaklar, tek geçişte atomik sayı montajı ve aynı veriden üretilen haftalık Markdown raporu (`content/reports/`). Ayrıntı, darboğaz tablosu ve doğrulama notları için `docs/mimari.md`.
@@ -98,11 +96,9 @@ Koşu çıktısı `pipeline/.work/run.log` dosyasına da yazılır (2 MB üstün
 | `README.md` | Sayfa yapısı, veri şeması, komutlar, içerik ilkeleri |
 | `docs/mimari.md` | Hat akışı, modül sorumlulukları, memo kuralı, darboğaz tablosu, sınırlılıklar |
 | `docs/zamanlanmis-gorevler.md` | Günlük 12:00 görevinin metni ve cumartesi haftalık rapor dalı |
-| `docs/kod-denetimi.md` | Üç kaynaklı kod denetimi, ölçümler, uygulanan ve uygulanmayan öneriler |
 | `docs/arayuz.md` | Arayüz kararları: tek akış, kart katmanları, süzgeçler, mobil ve erişilebilirlik ölçümleri |
 | `docs/kaynak-kapsama.md` | Erişilemeyen dergiler için RSS, TR Dizin, DergiPark ve Crossref ölçümleri |
-| `docs/ux-onerileri.md` | QxMD, BrowZine, 2 Minute Medicine gibi ürünlerden çıkarılan öneriler ve uygulananlar |
-| `docs/yayin-ve-alan-adi.md` | toraks.manus.space durumu, GitHub/Vercel karşılaştırması, e-posta aboneliği yolları |
+| `docs/yayin.md` | GitHub Pages, Cloudflare Pages, Vercel karşılaştırması; kurulum ve günlük güncelleme akışı |
 
 ## Geliştirme
 

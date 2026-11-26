@@ -198,7 +198,7 @@ def themes(rec: dict) -> list[str]:
         ("egitim", r"simulation|training|learning curve|cusum|competence|workforce|burnout|"
                    r"education"),
         ("kalite", r"quality improvement|quality indicator|registry|database|patient-reported|"
-                   r"\bpros?\b|outcomes research|benchmark|audit"),
+                   r"\bproms?\b|outcomes research|benchmark|audit"),
     ]
     for code, pattern in table:
         if _has(pattern, text):

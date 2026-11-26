@@ -55,6 +55,9 @@ def main(argv=None) -> int:
     scan_start = config.window(issue_date, scan_days)[0]
     trials_start = config.window(issue_date, config.TRIALS_DAYS)[0]
     stages = STAGES if args.stages == "all" else [s.strip() for s in args.stages.split(",")]
+    unknown = [s for s in stages if s not in STAGES]
+    if unknown:
+        parser.error(f"bilinmeyen aşama: {', '.join(unknown)} (geçerli: {', '.join(STAGES)})")
 
     log(f"sayı {end} · pencere {start} → {end} · tarama {scan_start} → {end}"
         f" · aşamalar {', '.join(stages)}")

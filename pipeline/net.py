@@ -60,16 +60,24 @@ def pmap(fn, items, workers: int | None = None):
         return list(pool.map(fn, items))
 
 
+MAX_PMIDS = 5000
+
+
 def esearch(term: str, retmax: int = 400, **extra) -> list[str]:
-    params = {"db": "pubmed", "term": term, "retmax": retmax, "retmode": "json"}
-    params.update(extra)
-    data = json.loads(get(f"{EUTILS}/esearch.fcgi", params))
-    result = data["esearchresult"]
-    ids = result.get("idlist", [])
-    total = int(result.get("count", 0))
+    """PMID listesi. Sonuç retmax'tan çoksa retstart ile sayfalanır (üst sınır MAX_PMIDS)."""
+    ids: list[str] = []
+    total = 0
+    while True:
+        params = {"db": "pubmed", "term": term, "retmax": retmax, "retstart": len(ids), "retmode": "json"}
+        params.update(extra)
+        result = json.loads(get(f"{EUTILS}/esearch.fcgi", params))["esearchresult"]
+        page = result.get("idlist", [])
+        total = int(result.get("count", 0))
+        ids.extend(page)
+        if not page or len(ids) >= total or len(ids) >= MAX_PMIDS:
+            break
     if total > len(ids):
-        # Sessiz kesme yerine görünür uyarı: sorgu daraltılmalı ya da sayfalama eklenmeli.
-        print(f"  uyarı: sorgu {total} sonuç, {len(ids)} PMID alındı (retmax={retmax})")
+        print(f"  uyarı: sorgu {total} sonuç, {len(ids)} PMID alındı (üst sınır {MAX_PMIDS})")
     return ids
 
 

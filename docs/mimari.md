@@ -2,8 +2,8 @@
 
 Bu belge boru hattının güncel yapısını, modül sorumluluklarını, ölçülen darboğazları ve
 bilinen sınırlılıkları tek yerde toplar. Sitenin sayfa yapısı ve veri şeması `README.md`
-içindedir; zamanlanmış görev metni `docs/zamanlanmis-gorevler.md`, kod denetiminin ölçümleri
-ve kararları `docs/kod-denetimi.md` dosyasındadır.
+içindedir; zamanlanmış görev metni `docs/zamanlanmis-gorevler.md`, yayın ve barındırma
+`docs/yayin.md` dosyasındadır.
 
 ## 1. Akış
 
@@ -51,12 +51,10 @@ bash pipeline/run_daily.sh                        # bugünün sayısı: son 24 s
 bash pipeline/run_daily.sh --date 2026-11-28      # belirli sayı
 bash pipeline/run_daily.sh --window 30            # ilk çalıştırma, 30 gün
 bash pipeline/run_daily.sh --scan-window 7        # pencereyi baştan kur (tarama 7 gün)
-bash pipeline/run_weekly_report.sh                # son 7 sayıyı birleştiren haftalık rapor
 python3 pipeline/run.py --stages issue --report   # yalnızca montaj + rapor
 python3 pipeline/run.py --from-cache --out /tmp/x.json   # ağ ve LLM çağrısı yapmadan deneme
 pnpm check                                        # tip denetimi + iki test kümesi + derleme
 pnpm pipeline:daily                               # run_daily.sh kısayolu
-pnpm pipeline:report                              # run_weekly_report.sh kısayolu
 ```
 
 Ortam değişkenleri: `CADENCE` (daily/weekly/biweekly/monthly), `CONC` (LLM eşzamanlılığı,

@@ -10,16 +10,23 @@ export default function BackToTop() {
   const [visible, setVisible] = useState(false)
 
   useEffect(() => {
-    const onScroll = () => {
+    let frame = 0
+    const measure = () => {
+      frame = 0
       const doc = document.documentElement
       const max = doc.scrollHeight - window.innerHeight
       setProgress(max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)) : 0)
       setVisible(window.scrollY > 600)
     }
-    onScroll()
+    // Kaydırma olayı kare başına bir kez işlenir; sık olaylarda gereksiz render olmaz.
+    const onScroll = () => {
+      if (!frame) frame = window.requestAnimationFrame(measure)
+    }
+    measure()
     window.addEventListener('scroll', onScroll, { passive: true })
     window.addEventListener('resize', onScroll)
     return () => {
+      window.cancelAnimationFrame(frame)
       window.removeEventListener('scroll', onScroll)
       window.removeEventListener('resize', onScroll)
     }

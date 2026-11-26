@@ -26,16 +26,6 @@ export async function loadIssue(date: string): Promise<Issue | null> {
   }
 }
 
-export const DESIGN_ORDER: { key: Design; label: string }[] = [
-  { key: 'rct', label: 'Randomize kontrollü çalışma' },
-  { key: 'meta', label: 'Meta-analiz / sistematik derleme' },
-  { key: 'cohort', label: 'Kohort' },
-  { key: 'casecontrol', label: 'Olgu-kontrol' },
-  { key: 'caseseries', label: 'Olgu serisi' },
-  { key: 'nonclinical', label: 'Klinik dışı' },
-  { key: 'other', label: 'Diğer' },
-]
-
 /** Kart üstündeki kısa tasarım etiketi; ayrıntı açmadan okunur. */
 export const SHORT_DESIGN: Record<Design, string> = {
   rct: 'RCT',
@@ -46,20 +36,6 @@ export const SHORT_DESIGN: Record<Design, string> = {
   nonclinical: 'Klinik dışı',
   other: 'Diğer',
 }
-
-export const TAG_ORDER = [
-  'Akciğer kanseri cerrahisi',
-  'Mediasten',
-  'Özofagus',
-  'Göğüs duvarı',
-  'Plevra',
-  'Akciğer nakli',
-  'Minimal invaziv ve robotik cerrahi',
-  'Toraks travması',
-  'Trakea ve hava yolu',
-  'Diyafram',
-  'Perioperatif bakım/ERAS',
-]
 
 /** Eksen 2: yayın türü. Kartta kısa etiket, süzgeçte tam ad kullanılır. */
 export const PUB_ORDER: { key: string; label: string; short: string }[] = [
@@ -139,10 +115,3 @@ export function shortDate(iso: string): string {
   return trDate(y, m, d, { day: 'numeric', month: 'short', year: 'numeric' })
 }
 
-/** Tarihe göre yeniden eskiye; tarihi olmayan kayıtlar sona düşer, kendi aralarında sıra korunur. */
-export function byDateDesc<T extends { entryDate?: string; date?: string }>(items: T[]): T[] {
-  return items
-    .map((item, i) => ({ item, i, key: item.entryDate || item.date || '' }))
-    .sort((a, b) => (a.key === b.key ? a.i - b.i : a.key < b.key ? 1 : -1))
-    .map((x) => x.item)
-}

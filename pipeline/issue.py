@@ -147,16 +147,15 @@ def build_lists(records: list[dict], cls: dict, cards: dict, pmc: dict,
             if not rules.is_thoracic(text) or rules.is_animal_case(text):
                 off_topic.append({**_title_item(rec), **taxonomy.compact(tax)})
                 continue
-            item = {**_title_item(rec), **tax}
             types = " ".join(rec.get("pubtypes") or [])
-            name = item["journal"]
-            item["kind"] = "video" if ("Video-Audio Media" in types or "MMCTS" in name
-                                       or "Visualized Surgery" in name
-                                       or "Video-Assisted Thoracic Surgery" in name) else "case"
+            name = _title_item(rec)["journal"]
+            kind = "video" if ("Video-Audio Media" in types or "MMCTS" in name
+                               or "Visualized Surgery" in name
+                               or "Video-Assisted Thoracic Surgery" in name) else "case"
             brief = briefs.get(pmid) or {}
             # Tanıtım etiketi (olgu, video, editöryal) yayın türünü kesinleştirir.
             tax = taxonomy.describe(rec, hit, pmid in pmc, brief.get("designLabel") or "")
-            item = {**_title_item(rec), **tax}
+            item = {**_title_item(rec), **tax, "kind": kind}
             title_tr = (brief.get("titleTr") or "").strip()
             if title_tr and not title_tr.lower().startswith("belirtilmemi"):
                 item["titleTr"] = title_tr

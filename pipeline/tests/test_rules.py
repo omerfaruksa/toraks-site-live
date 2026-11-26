@@ -204,3 +204,19 @@ class TestRolling(unittest.TestCase):
         old = [{"id": "x", "date": "2026-11"}]
         merged = rolling.merge(old, [], "id", lambda r: r["date"], "2026-11-16")
         self.assertEqual(merged, [])
+
+class NumberBoundaryTests(unittest.TestCase):
+    def test_substring_of_larger_number_is_not_evidence(self):
+        card = {"sample": "15 hasta"}
+        self.assertEqual(rules.numbers_missing(card, "Toplam 1500 hasta alındı."), ["sample:15"])
+
+    def test_exact_number_and_decimal_match(self):
+        card = {"sample": "15 hasta", "mainResult": "HR 0,45"}
+        self.assertEqual(rules.numbers_missing(card, "n=15; HR 0.45 (95% CI 0.30-0.67)."), [])
+
+
+class IssueDateTests(unittest.TestCase):
+    def test_default_issue_date_uses_istanbul_calendar(self):
+        from datetime import datetime
+        from zoneinfo import ZoneInfo
+        self.assertEqual(config.issue_date_for(), datetime.now(ZoneInfo("Europe/Istanbul")).date())
