@@ -162,11 +162,13 @@ export default function Flow({ entries, issueDate, windowStart }: Props) {
     const bump = (map: Map<string, number>, key?: string) => {
       if (key) map.set(key, (map.get(key) || 0) + 1)
     }
+    // İlgi sayaçları tüm sayıyı kapsar: arşivdeki kardiyak ve konu dışı kayıtlar
+    // "0" görünürse kullanıcı arşivde kayıt olmadığını sanır.
+    for (const entry of entries) bump(byKind, entry.kind)
     // Sayaçlar seçili ilgi sınıflarına göre hesaplanır: arşivdeki 900 konu dışı
     // kayıt, "Gözlemsel 457" gibi yanıltıcı sayılar üretiyordu.
     for (const entry of entries) {
       if (!picked.has(entry.kind)) continue
-      bump(byKind, entry.kind)
       bump(byPub, entry.pubType)
       entry.areas.forEach((name) => bump(byArea, name))
       entry.approaches.forEach((name) => bump(byApproach, name))
