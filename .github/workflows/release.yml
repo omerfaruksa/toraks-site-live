@@ -1,0 +1,42 @@
+# Haftalık sürüm: her cuma 09:00 UTC (12:00 Istanbul) depoyu zip olarak paketleyip sürüm ekler.
+# Etiket biçimi vYYYY.MM.DD. Aynı etiket varsa yeniden yayımlamaz.
+name: Sürüm
+
+on:
+  schedule:
+    - cron: "0 9 * * 5"
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Etiket (boşsa tarih)"
+        required: false
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Paketle
+        run: |
+          TAG="${{ inputs.tag }}"
+          [ -z "$TAG" ] && TAG="v$(date -u +%Y.%m.%d)"
+          NAME="torakslit-${TAG#v}"
+          echo "TAG=$TAG" >> "$GITHUB_ENV"
+          echo "NAME=$NAME" >> "$GITHUB_ENV"
+          git archive --format=zip --prefix="$NAME/" -o "$NAME.zip" HEAD
+          sha256sum "$NAME.zip" | tee "$NAME.sha256"
+          echo "### $NAME" >> "$GITHUB_STEP_SUMMARY"
+          cat "$NAME.sha256" >> "$GITHUB_STEP_SUMMARY"
+      - name: Yayımla
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if gh release view "$TAG" -R "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            echo "$TAG zaten var, atlandı."
+            exit 0
+          fi
+          gh release create "$TAG" "$NAME.zip" "$NAME.sha256" -R "$GITHUB_REPOSITORY" \
+            --title "Sürüm ${TAG#v}" --generate-notes
