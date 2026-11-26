@@ -5,7 +5,7 @@
  "windowEnd": "2026-11-26",
  "scanStart": "2026-11-25",
  "periodLabel": "19–26 Kasım 2026",
- "generatedAt": "2026-11-26T23:11:24+03:00",
+ "generatedAt": "2026-11-26T23:28:29+03:00",
  "stats": {
   "scanned": 527,
   "direct": 30,
@@ -323,7 +323,8 @@
    "doi": "10.1016/j.athoracsur.2026.11.003",
    "url": "https://pubmed.ncbi.nlm.nih.gov/43085564/",
    "tags": [
-    "Özofagus"
+    "Özofagus",
+    "Genel Torasik Cerrahi"
    ],
    "access": "abstract",
    "design": "cohort",
@@ -343,11 +344,13 @@
    "pubTypeLabel": "Gözlemsel / Kayıt Çalışması",
    "evidence": "ozgun",
    "areas": [
-    "ozofagus"
+    "ozofagus",
+    "genel_torasik"
    ],
    "areaLabel": "Özofagus",
    "areaLabels": [
-    "Özofagus"
+    "Özofagus",
+    "Genel Torasik Cerrahi"
    ],
    "approaches": [],
    "approachLabels": [],
@@ -391,7 +394,8 @@
    "doi": "10.1016/j.jtcvs.2026.11.007",
    "url": "https://pubmed.ncbi.nlm.nih.gov/43078308/",
    "tags": [
-    "Akciğer kanseri cerrahisi"
+    "Akciğer Kanseri ve Torasik Onkoloji",
+    "Genel Torasik Cerrahi"
    ],
    "access": "abstract",
    "design": "cohort",
@@ -411,11 +415,13 @@
    "pubTypeLabel": "Gözlemsel / Kayıt Çalışması",
    "evidence": "ozgun",
    "areas": [
-    "akciger_kanseri"
+    "akciger_kanseri",
+    "genel_torasik"
    ],
    "areaLabel": "Akciğer Kanseri ve Torasik Onkoloji",
    "areaLabels": [
-    "Akciğer Kanseri ve Torasik Onkoloji"
+    "Akciğer Kanseri ve Torasik Onkoloji",
+    "Genel Torasik Cerrahi"
    ],
    "approaches": [
     "bronkoskopi"
@@ -461,7 +467,8 @@
    "doi": "10.1016/j.athoracsur.2005.05.006",
    "url": "https://pubmed.ncbi.nlm.nih.gov/43084228/",
    "tags": [
-    "Perioperatif bakım/ERAS"
+    "Perioperatif Bakım, Analjezi ve ERAS",
+    "Genel Torasik Cerrahi"
    ],
    "access": "open",
    "design": "cohort",
@@ -480,9 +487,15 @@
    "pubType": "gozlemsel",
    "pubTypeLabel": "Gözlemsel / Kayıt Çalışması",
    "evidence": "ozgun",
-   "areas": [],
-   "areaLabel": "",
-   "areaLabels": [],
+   "areas": [
+    "perioperatif",
+    "genel_torasik"
+   ],
+   "areaLabel": "Perioperatif Bakım, Analjezi ve ERAS",
+   "areaLabels": [
+    "Perioperatif Bakım, Analjezi ve ERAS",
+    "Genel Torasik Cerrahi"
+   ],
    "approaches": [],
    "approachLabels": [],
    "themes": [
@@ -519,8 +532,8 @@
    "doi": "10.1111/1759-7714.70412",
    "url": "https://pubmed.ncbi.nlm.nih.gov/43085424/",
    "tags": [
-    "Akciğer kanseri cerrahisi",
-    "Minimal invaziv ve robotik cerrahi"
+    "Akciğer Kanseri ve Torasik Onkoloji",
+    "Genel Torasik Cerrahi"
    ],
    "access": "abstract",
    "design": "cohort",
@@ -540,11 +553,13 @@
    "pubTypeLabel": "Gözlemsel / Kayıt Çalışması",
    "evidence": "ozgun",
    "areas": [
-    "akciger_kanseri"
+    "akciger_kanseri",
+    "genel_torasik"
    ],
    "areaLabel": "Akciğer Kanseri ve Torasik Onkoloji",
    "areaLabels": [
-    "Akciğer Kanseri ve Torasik Onkoloji"
+    "Akciğer Kanseri ve Torasik Onkoloji",
+    "Genel Torasik Cerrahi"
    ],
    "approaches": [
     "vats",
@@ -591,7 +606,8 @@
    "doi": "10.1111/ajt.15167",
    "url": "https://pubmed.ncbi.nlm.nih.gov/43084057/",
    "tags": [
-    "Akciğer nakli"
+    "Akciğer Nakli ve ECMO/ECLS",
+    "Plevra ve Mezotelyoma"
    ],
    "access": "open",
    "design": "nonclinical",
@@ -657,7 +673,8 @@
    "doi": "10.1111/ctr.70765",
    "url": "https://pubmed.ncbi.nlm.nih.gov/43084372/",
    "tags": [
-    "Akciğer nakli"
+    "Akciğer Nakli ve ECMO/ECLS",
+    "Genel Torasik Cerrahi"
    ],
    "access": "abstract",
    "design": "cohort",
@@ -677,11 +694,13 @@
    "pubTypeLabel": "Gözlemsel / Kayıt Çalışması",
    "evidence": "ozgun",
    "areas": [
-    "nakil"
+    "nakil",
+    "genel_torasik"
    ],
    "areaLabel": "Akciğer Nakli ve ECMO/ECLS",
    "areaLabels": [
-    "Akciğer Nakli ve ECMO/ECLS"
+    "Akciğer Nakli ve ECMO/ECLS",
+    "Genel Torasik Cerrahi"
    ],
    "approaches": [],
    "approachLabels": [],
@@ -716,7 +735,8 @@
    "doi": "10.1111/ctr.70752",
    "url": "https://pubmed.ncbi.nlm.nih.gov/43084364/",
    "tags": [
-    "Akciğer nakli"
+    "Akciğer Nakli ve ECMO/ECLS",
+    "Pediyatrik Göğüs Cerrahisi"
    ],
    "access": "abstract",
    "design": "cohort",
@@ -780,8 +800,8 @@
    "doi": "10.1016/j.surg.2023.12.010",
    "url": "https://pubmed.ncbi.nlm.nih.gov/43082793/",
    "tags": [
-    "Akciğer kanseri cerrahisi",
-    "Minimal invaziv ve robotik cerrahi"
+    "Akciğer Kanseri ve Torasik Onkoloji",
+    "Toraks Travması"
    ],
    "access": "open",
    "design": "other",
@@ -856,7 +876,7 @@
    "url": "https://pubmed.ncbi.nlm.nih.gov/43082457/",
    "tags": [
     "Özofagus",
-    "Perioperatif bakım/ERAS"
+    "Perioperatif Bakım, Analjezi ve ERAS"
    ],
    "access": "open",
    "design": "other",
@@ -876,11 +896,13 @@
    "pubTypeLabel": "Gözlemsel / Kayıt Çalışması",
    "evidence": "ozgun",
    "areas": [
-    "ozofagus"
+    "ozofagus",
+    "perioperatif"
    ],
    "areaLabel": "Özofagus",
    "areaLabels": [
-    "Özofagus"
+    "Özofagus",
+    "Perioperatif Bakım, Analjezi ve ERAS"
    ],
    "approaches": [],
    "approachLabels": [],
@@ -913,7 +935,9 @@
    "pmid": "43082426",
    "doi": "10.1016/s1470-2045(19)30798-3",
    "url": "https://pubmed.ncbi.nlm.nih.gov/43082426/",
-   "tags": [],
+   "tags": [
+    "Akciğer Kanseri ve Torasik Onkoloji"
+   ],
    "access": "open",
    "design": "cohort",
    "designLabel": "Çok merkezli retrospektif çalışma",
@@ -974,8 +998,8 @@
    "doi": "10.1016/j.healun.2025.07.033",
    "url": "https://pubmed.ncbi.nlm.nih.gov/43080999/",
    "tags": [
-    "Akciğer nakli",
-    "Perioperatif bakım/ERAS"
+    "Akciğer Nakli ve ECMO/ECLS",
+    "Perioperatif Bakım, Analjezi ve ERAS"
    ],
    "access": "open",
    "design": "other",
@@ -995,11 +1019,13 @@
    "pubTypeLabel": "Gözlemsel / Kayıt Çalışması",
    "evidence": "ozgun",
    "areas": [
-    "nakil"
+    "nakil",
+    "perioperatif"
    ],
    "areaLabel": "Akciğer Nakli ve ECMO/ECLS",
    "areaLabels": [
-    "Akciğer Nakli ve ECMO/ECLS"
+    "Akciğer Nakli ve ECMO/ECLS",
+    "Perioperatif Bakım, Analjezi ve ERAS"
    ],
    "approaches": [
     "genisletilmis"
@@ -1040,7 +1066,8 @@
    "doi": "10.1001/jamasurg.2018.1039",
    "url": "https://pubmed.ncbi.nlm.nih.gov/43080820/",
    "tags": [
-    "Perioperatif bakım/ERAS"
+    "Perioperatif Bakım, Analjezi ve ERAS",
+    "Genel Torasik Cerrahi"
    ],
    "access": "open",
    "design": "cohort",
@@ -1059,9 +1086,15 @@
    "pubType": "gozlemsel",
    "pubTypeLabel": "Gözlemsel / Kayıt Çalışması",
    "evidence": "ozgun",
-   "areas": [],
-   "areaLabel": "",
-   "areaLabels": [],
+   "areas": [
+    "perioperatif",
+    "genel_torasik"
+   ],
+   "areaLabel": "Perioperatif Bakım, Analjezi ve ERAS",
+   "areaLabels": [
+    "Perioperatif Bakım, Analjezi ve ERAS",
+    "Genel Torasik Cerrahi"
+   ],
    "approaches": [
     "vats"
    ],
@@ -1104,7 +1137,8 @@
    "doi": "10.1016/j.transproceed.2021.04.011",
    "url": "https://pubmed.ncbi.nlm.nih.gov/43080772/",
    "tags": [
-    "Akciğer nakli"
+    "Akciğer Nakli ve ECMO/ECLS",
+    "Genel Torasik Cerrahi"
    ],
    "access": "open",
    "design": "casecontrol",
@@ -1124,11 +1158,13 @@
    "pubTypeLabel": "Gözlemsel / Kayıt Çalışması",
    "evidence": "ozgun",
    "areas": [
-    "nakil"
+    "nakil",
+    "genel_torasik"
    ],
    "areaLabel": "Akciğer Nakli ve ECMO/ECLS",
    "areaLabels": [
-    "Akciğer Nakli ve ECMO/ECLS"
+    "Akciğer Nakli ve ECMO/ECLS",
+    "Genel Torasik Cerrahi"
    ],
    "approaches": [],
    "approachLabels": [],
@@ -1165,7 +1201,8 @@
    "doi": "10.1517/14656566.2013.844791",
    "url": "https://pubmed.ncbi.nlm.nih.gov/43080769/",
    "tags": [
-    "Perioperatif bakım/ERAS"
+    "Perioperatif Bakım, Analjezi ve ERAS",
+    "Genel Torasik Cerrahi"
    ],
    "access": "open",
    "design": "meta",
@@ -1184,9 +1221,15 @@
    "pubType": "derleme",
    "pubTypeLabel": "Anlatımsal Derleme",
    "evidence": "derleme",
-   "areas": [],
-   "areaLabel": "",
-   "areaLabels": [],
+   "areas": [
+    "perioperatif",
+    "genel_torasik"
+   ],
+   "areaLabel": "Perioperatif Bakım, Analjezi ve ERAS",
+   "areaLabels": [
+    "Perioperatif Bakım, Analjezi ve ERAS",
+    "Genel Torasik Cerrahi"
+   ],
    "approaches": [
     "vats"
    ],
@@ -1228,7 +1271,8 @@
    "doi": "10.21053/ceo.2026-00215",
    "url": "https://pubmed.ncbi.nlm.nih.gov/43080120/",
    "tags": [
-    "Perioperatif bakım/ERAS"
+    "Perioperatif Bakım, Analjezi ve ERAS",
+    "Akciğer Kanseri ve Torasik Onkoloji"
    ],
    "access": "abstract",
    "design": "cohort",
@@ -1248,10 +1292,12 @@
    "pubTypeLabel": "Gözlemsel / Kayıt Çalışması",
    "evidence": "ozgun",
    "areas": [
+    "perioperatif",
     "akciger_kanseri"
    ],
-   "areaLabel": "Akciğer Kanseri ve Torasik Onkoloji",
+   "areaLabel": "Perioperatif Bakım, Analjezi ve ERAS",
    "areaLabels": [
+    "Perioperatif Bakım, Analjezi ve ERAS",
     "Akciğer Kanseri ve Torasik Onkoloji"
    ],
    "approaches": [
@@ -1296,8 +1342,8 @@
    "doi": "10.1177/03000605231169901",
    "url": "https://pubmed.ncbi.nlm.nih.gov/43079309/",
    "tags": [
-    "Plevra",
-    "Minimal invaziv ve robotik cerrahi"
+    "Plevra ve Mezotelyoma",
+    "Benign Akciğer ve Torasik Enfeksiyonlar"
    ],
    "access": "open",
    "design": "cohort",
@@ -1364,7 +1410,8 @@
    "doi": "10.3390/jcm15228773",
    "url": "https://pubmed.ncbi.nlm.nih.gov/43090805/",
    "tags": [
-    "Göğüs duvarı"
+    "Göğüs Duvarı, Deformite ve TOS",
+    "Genel Torasik Cerrahi"
    ],
    "access": "abstract",
    "design": "caseseries",
@@ -1384,11 +1431,13 @@
    "pubTypeLabel": "Olgu Sunumu / Küçük Seri",
    "evidence": "olgu",
    "areas": [
-    "gogus_duvari"
+    "gogus_duvari",
+    "genel_torasik"
    ],
    "areaLabel": "Göğüs Duvarı, Deformite ve TOS",
    "areaLabels": [
-    "Göğüs Duvarı, Deformite ve TOS"
+    "Göğüs Duvarı, Deformite ve TOS",
+    "Genel Torasik Cerrahi"
    ],
    "approaches": [],
    "approachLabels": [],
@@ -1425,8 +1474,8 @@
    "doi": "10.3390/life16111772",
    "url": "https://pubmed.ncbi.nlm.nih.gov/43090593/",
    "tags": [
-    "Trakea ve hava yolu",
-    "Akciğer kanseri cerrahisi"
+    "Trakea ve Hava Yolu",
+    "Akciğer Kanseri ve Torasik Onkoloji"
    ],
    "access": "abstract",
    "design": "other",
@@ -1494,7 +1543,7 @@
    "url": "https://pubmed.ncbi.nlm.nih.gov/43094502/",
    "tags": [
     "Özofagus",
-    "Perioperatif bakım/ERAS"
+    "Perioperatif Bakım, Analjezi ve ERAS"
    ],
    "access": "open",
    "design": "cohort",
@@ -1514,11 +1563,13 @@
    "pubTypeLabel": "Gözlemsel / Kayıt Çalışması",
    "evidence": "ozgun",
    "areas": [
-    "ozofagus"
+    "ozofagus",
+    "perioperatif"
    ],
    "areaLabel": "Özofagus",
    "areaLabels": [
-    "Özofagus"
+    "Özofagus",
+    "Perioperatif Bakım, Analjezi ve ERAS"
    ],
    "approaches": [],
    "approachLabels": [],
@@ -1557,8 +1608,8 @@
    "doi": "10.3390/ijms272210275",
    "url": "https://pubmed.ncbi.nlm.nih.gov/43091900/",
    "tags": [
-    "Akciğer nakli",
-    "Perioperatif bakım/ERAS"
+    "Akciğer Nakli ve ECMO/ECLS",
+    "Perioperatif Bakım, Analjezi ve ERAS"
    ],
    "access": "abstract",
    "design": "nonclinical",
@@ -1578,11 +1629,13 @@
    "pubTypeLabel": "Temel / Translasyonel / Deneysel",
    "evidence": "temel",
    "areas": [
-    "nakil"
+    "nakil",
+    "perioperatif"
    ],
    "areaLabel": "Akciğer Nakli ve ECMO/ECLS",
    "areaLabels": [
-    "Akciğer Nakli ve ECMO/ECLS"
+    "Akciğer Nakli ve ECMO/ECLS",
+    "Perioperatif Bakım, Analjezi ve ERAS"
    ],
    "approaches": [
     "robotik"
@@ -1621,7 +1674,7 @@
    "url": "https://pubmed.ncbi.nlm.nih.gov/43091557/",
    "tags": [
     "Özofagus",
-    "Perioperatif bakım/ERAS"
+    "Perioperatif Bakım, Analjezi ve ERAS"
    ],
    "access": "abstract",
    "design": "cohort",
@@ -1641,11 +1694,13 @@
    "pubTypeLabel": "Gözlemsel / Kayıt Çalışması",
    "evidence": "ozgun",
    "areas": [
-    "ozofagus"
+    "ozofagus",
+    "perioperatif"
    ],
    "areaLabel": "Özofagus",
    "areaLabels": [
-    "Özofagus"
+    "Özofagus",
+    "Perioperatif Bakım, Analjezi ve ERAS"
    ],
    "approaches": [],
    "approachLabels": [],
@@ -1683,7 +1738,8 @@
    "doi": "10.3390/medicina62112118",
    "url": "https://pubmed.ncbi.nlm.nih.gov/43091515/",
    "tags": [
-    "Akciğer nakli"
+    "Akciğer Nakli ve ECMO/ECLS",
+    "Benign Akciğer ve Torasik Enfeksiyonlar"
    ],
    "access": "abstract",
    "design": "other",
@@ -1741,7 +1797,8 @@
    "doi": "10.3390/medicina62112078",
    "url": "https://pubmed.ncbi.nlm.nih.gov/43091475/",
    "tags": [
-    "Perioperatif bakım/ERAS"
+    "Perioperatif Bakım, Analjezi ve ERAS",
+    "Genel Torasik Cerrahi"
    ],
    "access": "abstract",
    "design": "cohort",
@@ -1760,9 +1817,15 @@
    "pubType": "gozlemsel",
    "pubTypeLabel": "Gözlemsel / Kayıt Çalışması",
    "evidence": "ozgun",
-   "areas": [],
-   "areaLabel": "",
-   "areaLabels": [],
+   "areas": [
+    "perioperatif",
+    "genel_torasik"
+   ],
+   "areaLabel": "Perioperatif Bakım, Analjezi ve ERAS",
+   "areaLabels": [
+    "Perioperatif Bakım, Analjezi ve ERAS",
+    "Genel Torasik Cerrahi"
+   ],
    "approaches": [
     "vats",
     "acik"
@@ -1809,7 +1872,8 @@
    "doi": "10.3390/medicina62112049",
    "url": "https://pubmed.ncbi.nlm.nih.gov/43091447/",
    "tags": [
-    "Perioperatif bakım/ERAS"
+    "Perioperatif Bakım, Analjezi ve ERAS",
+    "Genel Torasik Cerrahi"
    ],
    "access": "abstract",
    "design": "cohort",
@@ -1828,9 +1892,15 @@
    "pubType": "gozlemsel",
    "pubTypeLabel": "Gözlemsel / Kayıt Çalışması",
    "evidence": "ozgun",
-   "areas": [],
-   "areaLabel": "",
-   "areaLabels": [],
+   "areas": [
+    "perioperatif",
+    "genel_torasik"
+   ],
+   "areaLabel": "Perioperatif Bakım, Analjezi ve ERAS",
+   "areaLabels": [
+    "Perioperatif Bakım, Analjezi ve ERAS",
+    "Genel Torasik Cerrahi"
+   ],
    "approaches": [
     "vats",
     "acik"
@@ -1874,7 +1944,10 @@
    "pmid": "43091133",
    "doi": "10.3390/jcm15229101",
    "url": "https://pubmed.ncbi.nlm.nih.gov/43091133/",
-   "tags": [],
+   "tags": [
+    "Benign Akciğer ve Torasik Enfeksiyonlar",
+    "Akciğer Kanseri ve Torasik Onkoloji"
+   ],
    "access": "abstract",
    "design": "cohort",
    "designLabel": "Retrospektif inceleme",
@@ -1894,12 +1967,14 @@
    "evidence": "ozgun",
    "areas": [
     "benign_akciger",
-    "akciger_kanseri"
+    "akciger_kanseri",
+    "perioperatif"
    ],
    "areaLabel": "Benign Akciğer ve Torasik Enfeksiyonlar",
    "areaLabels": [
     "Benign Akciğer ve Torasik Enfeksiyonlar",
-    "Akciğer Kanseri ve Torasik Onkoloji"
+    "Akciğer Kanseri ve Torasik Onkoloji",
+    "Perioperatif Bakım, Analjezi ve ERAS"
    ],
    "approaches": [],
    "approachLabels": [],
@@ -1934,7 +2009,8 @@
    "doi": "10.3390/jcm15229053",
    "url": "https://pubmed.ncbi.nlm.nih.gov/43091087/",
    "tags": [
-    "Minimal invaziv ve robotik cerrahi"
+    "Akciğer Kanseri ve Torasik Onkoloji",
+    "Genel Torasik Cerrahi"
    ],
    "access": "abstract",
    "design": "cohort",
@@ -1954,11 +2030,13 @@
    "pubTypeLabel": "Gözlemsel / Kayıt Çalışması",
    "evidence": "ozgun",
    "areas": [
-    "akciger_kanseri"
+    "akciger_kanseri",
+    "genel_torasik"
    ],
    "areaLabel": "Akciğer Kanseri ve Torasik Onkoloji",
    "areaLabels": [
-    "Akciğer Kanseri ve Torasik Onkoloji"
+    "Akciğer Kanseri ve Torasik Onkoloji",
+    "Genel Torasik Cerrahi"
    ],
    "approaches": [],
    "approachLabels": [],
@@ -1995,9 +2073,8 @@
    "doi": "10.3390/life16111789",
    "url": "https://pubmed.ncbi.nlm.nih.gov/43090609/",
    "tags": [
-    "Plevra",
-    "Akciğer kanseri cerrahisi",
-    "Minimal invaziv ve robotik cerrahi"
+    "Plevra ve Mezotelyoma",
+    "Akciğer Kanseri ve Torasik Onkoloji"
    ],
    "access": "abstract",
    "design": "other",
@@ -2070,7 +2147,8 @@
    "doi": "10.3390/cancers18223670",
    "url": "https://pubmed.ncbi.nlm.nih.gov/43088199/",
    "tags": [
-    "Akciğer kanseri cerrahisi"
+    "Akciğer Kanseri ve Torasik Onkoloji",
+    "Genel Torasik Cerrahi"
    ],
    "access": "abstract",
    "design": "other",
@@ -2090,11 +2168,13 @@
    "pubTypeLabel": "Anlatımsal Derleme",
    "evidence": "derleme",
    "areas": [
-    "akciger_kanseri"
+    "akciger_kanseri",
+    "genel_torasik"
    ],
    "areaLabel": "Akciğer Kanseri ve Torasik Onkoloji",
    "areaLabels": [
-    "Akciğer Kanseri ve Torasik Onkoloji"
+    "Akciğer Kanseri ve Torasik Onkoloji",
+    "Genel Torasik Cerrahi"
    ],
    "approaches": [],
    "approachLabels": [],
@@ -2128,7 +2208,8 @@
    "doi": "10.3390/cancers18223669",
    "url": "https://pubmed.ncbi.nlm.nih.gov/43088198/",
    "tags": [
-    "Perioperatif bakım/ERAS"
+    "Perioperatif Bakım, Analjezi ve ERAS",
+    "Genel Torasik Cerrahi"
    ],
    "access": "abstract",
    "design": "cohort",
@@ -2147,9 +2228,15 @@
    "pubType": "gozlemsel",
    "pubTypeLabel": "Gözlemsel / Kayıt Çalışması",
    "evidence": "ozgun",
-   "areas": [],
-   "areaLabel": "",
-   "areaLabels": [],
+   "areas": [
+    "perioperatif",
+    "genel_torasik"
+   ],
+   "areaLabel": "Perioperatif Bakım, Analjezi ve ERAS",
+   "areaLabels": [
+    "Perioperatif Bakım, Analjezi ve ERAS",
+    "Genel Torasik Cerrahi"
+   ],
    "approaches": [
     "vats"
    ],
@@ -2191,8 +2278,8 @@
    "doi": "10.1016/j.xjtc.2021.07.006",
    "url": "https://pubmed.ncbi.nlm.nih.gov/43086825/",
    "tags": [
-    "Trakea ve hava yolu",
-    "Minimal invaziv ve robotik cerrahi"
+    "Trakea ve Hava Yolu",
+    "Perioperatif Bakım, Analjezi ve ERAS"
    ],
    "access": "open",
    "design": "caseseries",
@@ -2212,11 +2299,13 @@
    "pubTypeLabel": "Olgu Sunumu / Küçük Seri",
    "evidence": "olgu",
    "areas": [
-    "trakea"
+    "trakea",
+    "perioperatif"
    ],
    "areaLabel": "Trakea ve Hava Yolu",
    "areaLabels": [
-    "Trakea ve Hava Yolu"
+    "Trakea ve Hava Yolu",
+    "Perioperatif Bakım, Analjezi ve ERAS"
    ],
    "approaches": [
     "vats",
@@ -2278,7 +2367,7 @@
    "url": "https://pubmed.ncbi.nlm.nih.gov/43077896/",
    "oneLiner": "Beyin metastazı gelişen grupta primer tümörde mast hücresi gen imzası, tümör infiltrasyon bölgelerinde CD14, FOXP3 ve BCL-2 ekspresyonu daha yüksekti.",
    "tags": [
-    "Akciğer kanseri cerrahisi"
+    "Akciğer Kanseri ve Torasik Onkoloji"
    ],
    "interest": "dolayli",
    "interestLabel": "Dolaylı",
@@ -2331,8 +2420,8 @@
    "url": "https://pubmed.ncbi.nlm.nih.gov/43084055/",
    "oneLiner": "Travma cerrahının BT’yi yeniden değerlendirmesinde 943 hastanın 415’inde (%44) en az bir atlanmış kot kırığı saptandı; kırıkların %24,6’sı ilk raporda yer almıyordu.",
    "tags": [
-    "Toraks travması",
-    "Göğüs duvarı"
+    "Toraks Travması",
+    "Göğüs Duvarı, Deformite ve TOS"
    ],
    "interest": "dolayli",
    "interestLabel": "Dolaylı",
@@ -2384,7 +2473,8 @@
    "url": "https://pubmed.ncbi.nlm.nih.gov/43096899/",
    "oneLiner": "Endobronşiyal kapak tedavisinden 6 hafta sonra nöral uyarı ve solunum kası eforu azalarak kontrol değerlerine yaklaştı.",
    "tags": [
-    "Diyafram"
+    "Diyafram",
+    "Benign Akciğer ve Torasik Enfeksiyonlar"
    ],
    "interest": "dolayli",
    "interestLabel": "Dolaylı",
@@ -2436,7 +2526,7 @@
    "oneLiner": "Travmatik ve travmatik olmayan diyafram hernileri ile kist ve tümörlerin akciğer grafisi ve BT bulguları ele alınıyor.",
    "tags": [
     "Diyafram",
-    "Toraks travması"
+    "Toraks Travması"
    ],
    "interest": "dolayli",
    "interestLabel": "Dolaylı",
@@ -2487,9 +2577,16 @@
    "pubType": "olgu",
    "pubTypeLabel": "Olgu Sunumu / Küçük Seri",
    "evidence": "olgu",
-   "areas": [],
-   "areaLabel": "",
-   "areaLabels": [],
+   "areas": [
+    "genel_torasik"
+   ],
+   "areaLabel": "Genel Torasik Cerrahi",
+   "areaLabels": [
+    "Genel Torasik Cerrahi"
+   ],
+   "tags": [
+    "Genel Torasik Cerrahi"
+   ],
    "approaches": [],
    "approachLabels": [],
    "themes": [],
@@ -2514,9 +2611,16 @@
    "pubType": "editorial",
    "pubTypeLabel": "Editöryal / Yorum / Mektup",
    "evidence": "editorial",
-   "areas": [],
-   "areaLabel": "",
-   "areaLabels": [],
+   "areas": [
+    "genel_torasik"
+   ],
+   "areaLabel": "Genel Torasik Cerrahi",
+   "areaLabels": [
+    "Genel Torasik Cerrahi"
+   ],
+   "tags": [
+    "Genel Torasik Cerrahi"
+   ],
    "approaches": [],
    "approachLabels": [],
    "themes": [],
@@ -2542,11 +2646,17 @@
    "pubTypeLabel": "Sistematik Derleme / Meta-Analiz",
    "evidence": "yuksek",
    "areas": [
-    "akciger_kanseri"
+    "akciger_kanseri",
+    "genel_torasik"
    ],
    "areaLabel": "Akciğer Kanseri ve Torasik Onkoloji",
    "areaLabels": [
-    "Akciğer Kanseri ve Torasik Onkoloji"
+    "Akciğer Kanseri ve Torasik Onkoloji",
+    "Genel Torasik Cerrahi"
+   ],
+   "tags": [
+    "Akciğer Kanseri ve Torasik Onkoloji",
+    "Genel Torasik Cerrahi"
    ],
    "approaches": [
     "vats",
@@ -2591,6 +2701,9 @@
    "areaLabels": [
     "Trakea ve Hava Yolu"
    ],
+   "tags": [
+    "Trakea ve Hava Yolu"
+   ],
    "approaches": [
     "bronkoskopi"
    ],
@@ -2620,11 +2733,17 @@
    "pubTypeLabel": "Cerrahi Teknik / Video",
    "evidence": "teknik",
    "areas": [
-    "ozofagus"
+    "ozofagus",
+    "genel_torasik"
    ],
    "areaLabel": "Özofagus",
    "areaLabels": [
-    "Özofagus"
+    "Özofagus",
+    "Genel Torasik Cerrahi"
+   ],
+   "tags": [
+    "Özofagus",
+    "Genel Torasik Cerrahi"
    ],
    "approaches": [
     "genisletilmis",
@@ -2663,6 +2782,9 @@
    "areaLabels": [
     "Akciğer Kanseri ve Torasik Onkoloji"
    ],
+   "tags": [
+    "Akciğer Kanseri ve Torasik Onkoloji"
+   ],
    "approaches": [],
    "approachLabels": [],
    "themes": [],
@@ -2687,9 +2809,16 @@
    "pubType": "olgu",
    "pubTypeLabel": "Olgu Sunumu / Küçük Seri",
    "evidence": "olgu",
-   "areas": [],
-   "areaLabel": "",
-   "areaLabels": [],
+   "areas": [
+    "genel_torasik"
+   ],
+   "areaLabel": "Genel Torasik Cerrahi",
+   "areaLabels": [
+    "Genel Torasik Cerrahi"
+   ],
+   "tags": [
+    "Genel Torasik Cerrahi"
+   ],
    "approaches": [],
    "approachLabels": [],
    "themes": [],
@@ -2716,10 +2845,16 @@
    "evidence": "olgu",
    "areas": [
     "plevra",
-    "trakea"
+    "trakea",
+    "genel_torasik"
    ],
    "areaLabel": "Plevra ve Mezotelyoma",
    "areaLabels": [
+    "Plevra ve Mezotelyoma",
+    "Trakea ve Hava Yolu",
+    "Genel Torasik Cerrahi"
+   ],
+   "tags": [
     "Plevra ve Mezotelyoma",
     "Trakea ve Hava Yolu"
    ],
@@ -2754,11 +2889,17 @@
    "pubTypeLabel": "Editöryal / Yorum / Mektup",
    "evidence": "editorial",
    "areas": [
-    "ozofagus"
+    "ozofagus",
+    "genel_torasik"
    ],
    "areaLabel": "Özofagus",
    "areaLabels": [
-    "Özofagus"
+    "Özofagus",
+    "Genel Torasik Cerrahi"
+   ],
+   "tags": [
+    "Özofagus",
+    "Genel Torasik Cerrahi"
    ],
    "approaches": [
     "vats"
@@ -2797,6 +2938,10 @@
     "Mediasten ve Timus",
     "Diyafram"
    ],
+   "tags": [
+    "Mediasten ve Timus",
+    "Diyafram"
+   ],
    "approaches": [],
    "approachLabels": [],
    "themes": [
@@ -2831,6 +2976,10 @@
    ],
    "areaLabel": "Akciğer Kanseri ve Torasik Onkoloji",
    "areaLabels": [
+    "Akciğer Kanseri ve Torasik Onkoloji",
+    "Mediasten ve Timus"
+   ],
+   "tags": [
     "Akciğer Kanseri ve Torasik Onkoloji",
     "Mediasten ve Timus"
    ],
@@ -2879,6 +3028,10 @@
     "Diyafram",
     "Toraks Travması"
    ],
+   "tags": [
+    "Diyafram",
+    "Toraks Travması"
+   ],
    "approaches": [],
    "approachLabels": [],
    "themes": [],
@@ -2904,11 +3057,17 @@
    "pubTypeLabel": "Olgu Sunumu / Küçük Seri",
    "evidence": "olgu",
    "areas": [
-    "mediasten"
+    "mediasten",
+    "perioperatif"
    ],
    "areaLabel": "Mediasten ve Timus",
    "areaLabels": [
-    "Mediasten ve Timus"
+    "Mediasten ve Timus",
+    "Perioperatif Bakım, Analjezi ve ERAS"
+   ],
+   "tags": [
+    "Mediasten ve Timus",
+    "Perioperatif Bakım, Analjezi ve ERAS"
    ],
    "approaches": [
     "vats"
@@ -2943,11 +3102,17 @@
    "pubTypeLabel": "Olgu Sunumu / Küçük Seri",
    "evidence": "olgu",
    "areas": [
-    "akciger_kanseri"
+    "akciger_kanseri",
+    "genel_torasik"
    ],
    "areaLabel": "Akciğer Kanseri ve Torasik Onkoloji",
    "areaLabels": [
-    "Akciğer Kanseri ve Torasik Onkoloji"
+    "Akciğer Kanseri ve Torasik Onkoloji",
+    "Genel Torasik Cerrahi"
+   ],
+   "tags": [
+    "Akciğer Kanseri ve Torasik Onkoloji",
+    "Genel Torasik Cerrahi"
    ],
    "approaches": [
     "vats"
@@ -2990,6 +3155,10 @@
     "Plevra ve Mezotelyoma",
     "Benign Akciğer ve Torasik Enfeksiyonlar"
    ],
+   "tags": [
+    "Plevra ve Mezotelyoma",
+    "Benign Akciğer ve Torasik Enfeksiyonlar"
+   ],
    "approaches": [],
    "approachLabels": [],
    "themes": [],
@@ -3023,6 +3192,10 @@
     "Plevra ve Mezotelyoma",
     "Benign Akciğer ve Torasik Enfeksiyonlar"
    ],
+   "tags": [
+    "Plevra ve Mezotelyoma",
+    "Benign Akciğer ve Torasik Enfeksiyonlar"
+   ],
    "approaches": [],
    "approachLabels": [],
    "themes": [],
@@ -3048,11 +3221,17 @@
    "pubTypeLabel": "Olgu Sunumu / Küçük Seri",
    "evidence": "olgu",
    "areas": [
-    "akciger_kanseri"
+    "akciger_kanseri",
+    "genel_torasik"
    ],
    "areaLabel": "Akciğer Kanseri ve Torasik Onkoloji",
    "areaLabels": [
-    "Akciğer Kanseri ve Torasik Onkoloji"
+    "Akciğer Kanseri ve Torasik Onkoloji",
+    "Genel Torasik Cerrahi"
+   ],
+   "tags": [
+    "Akciğer Kanseri ve Torasik Onkoloji",
+    "Genel Torasik Cerrahi"
    ],
    "approaches": [],
    "approachLabels": [],
@@ -3079,11 +3258,17 @@
    "pubTypeLabel": "Olgu Sunumu / Küçük Seri",
    "evidence": "olgu",
    "areas": [
-    "trakea"
+    "trakea",
+    "genel_torasik"
    ],
    "areaLabel": "Trakea ve Hava Yolu",
    "areaLabels": [
-    "Trakea ve Hava Yolu"
+    "Trakea ve Hava Yolu",
+    "Genel Torasik Cerrahi"
+   ],
+   "tags": [
+    "Trakea ve Hava Yolu",
+    "Genel Torasik Cerrahi"
    ],
    "approaches": [
     "bronkoskopi"
@@ -3122,6 +3307,10 @@
     "Trakea ve Hava Yolu",
     "Mediasten ve Timus"
    ],
+   "tags": [
+    "Trakea ve Hava Yolu",
+    "Mediasten ve Timus"
+   ],
    "approaches": [
     "bronkoskopi"
    ],
@@ -3152,10 +3341,16 @@
    "evidence": "olgu",
    "areas": [
     "pediatrik",
-    "plevra"
+    "plevra",
+    "genel_torasik"
    ],
    "areaLabel": "Pediyatrik Göğüs Cerrahisi",
    "areaLabels": [
+    "Pediyatrik Göğüs Cerrahisi",
+    "Plevra ve Mezotelyoma",
+    "Genel Torasik Cerrahi"
+   ],
+   "tags": [
     "Pediyatrik Göğüs Cerrahisi",
     "Plevra ve Mezotelyoma"
    ],
@@ -3192,6 +3387,10 @@
     "Trakea ve Hava Yolu",
     "Pediyatrik Göğüs Cerrahisi"
    ],
+   "tags": [
+    "Trakea ve Hava Yolu",
+    "Pediyatrik Göğüs Cerrahisi"
+   ],
    "approaches": [
     "bronkoskopi"
    ],
@@ -3221,15 +3420,17 @@
    "pubTypeLabel": "Olgu Sunumu / Küçük Seri",
    "evidence": "olgu",
    "areas": [
-    "plevra",
-    "trakea",
-    "nakil"
+    "perioperatif",
+    "plevra"
    ],
-   "areaLabel": "Plevra ve Mezotelyoma",
+   "areaLabel": "Perioperatif Bakım, Analjezi ve ERAS",
    "areaLabels": [
-    "Plevra ve Mezotelyoma",
-    "Trakea ve Hava Yolu",
-    "Akciğer Nakli ve ECMO/ECLS"
+    "Perioperatif Bakım, Analjezi ve ERAS",
+    "Plevra ve Mezotelyoma"
+   ],
+   "tags": [
+    "Perioperatif Bakım, Analjezi ve ERAS",
+    "Plevra ve Mezotelyoma"
    ],
    "approaches": [
     "vats",
@@ -3275,6 +3476,10 @@
     "Pediyatrik Göğüs Cerrahisi",
     "Trakea ve Hava Yolu",
     "Akciğer Kanseri ve Torasik Onkoloji"
+   ],
+   "tags": [
+    "Pediyatrik Göğüs Cerrahisi",
+    "Trakea ve Hava Yolu"
    ],
    "approaches": [],
    "approachLabels": [],
@@ -9902,11 +10107,17 @@
    "pubTypeLabel": "Gözlemsel / Kayıt Çalışması",
    "evidence": "ozgun",
    "areas": [
-    "gogus_duvari"
+    "gogus_duvari",
+    "perioperatif"
    ],
    "areaLabel": "Göğüs Duvarı, Deformite ve TOS",
    "areaLabels": [
-    "Göğüs Duvarı, Deformite ve TOS"
+    "Göğüs Duvarı, Deformite ve TOS",
+    "Perioperatif Bakım, Analjezi ve ERAS"
+   ],
+   "tags": [
+    "Göğüs Duvarı, Deformite ve TOS",
+    "Perioperatif Bakım, Analjezi ve ERAS"
    ],
    "approaches": [],
    "approachLabels": [],
@@ -9930,11 +10141,17 @@
    "pubTypeLabel": "Gözlemsel / Kayıt Çalışması",
    "evidence": "ozgun",
    "areas": [
-    "ozofagus"
+    "ozofagus",
+    "genel_torasik"
    ],
    "areaLabel": "Özofagus",
    "areaLabels": [
-    "Özofagus"
+    "Özofagus",
+    "Genel Torasik Cerrahi"
+   ],
+   "tags": [
+    "Özofagus",
+    "Genel Torasik Cerrahi"
    ],
    "approaches": [
     "vats"

@@ -18,7 +18,7 @@ Kart kapalıyken tarih, tür ve tasarım etiketi, "Türkiye'den" ve "Açık tam 
 
 Olgu, vaka bildirimi ve videolar akışın içinde; Türkçe başlık ve iki cümlelik tanıtım `pipeline/briefs.py` tarafından üretilir. Editöryal, yorum ve mektuplar "Yorum" etiketiyle ayrılır. Göğüs cerrahisi dışı olgu bildirimleri ve hayvan hastası olgular konu dışına atılır.
 
-Filtreler "Filtreler" düğmesinin arkasında: tarih (son 24 saat, son 7 gün, tümü, özel aralık), tür (dokuz tür, sayılarıyla), konu (on bir etiket), Türkiye'den ve açık tam metin onay kutuları, sıfırlama. Konu dışı türü varsayılan olarak kapalı.
+Filtreler "Filtreler" düğmesinin arkasında: tarih (son 24 saat, son 7 gün, tümü, özel aralık), tür (dokuz tür, sayılarıyla), konu (on üç alan etiketi), Türkiye'den ve açık tam metin onay kutuları, sıfırlama. Konu dışı türü varsayılan olarak kapalı.
 
 Arama, Türkçe ve İngilizce başlıkların karışık olduğu metinde harf eşleşmesini kaçırmamak için katlanmış metin üzerinde çalışır: büyük/küçük harf, Türkçe I/ı/İ/i ayrımı ve aksanlar eşitlenir; "gogus" araması "Göğüs" kaydını bulur. Sorgu boşlukla terimlere bölünür, tüm terimlerin geçmesi gerekir; tırnak içindeki ifade tek terim sayılır. Kart metni sayı yüklenirken bir kez katlanır (`composeSearchText`), sorgu da aynı katlamadan geçer; böylece tuş başına yeniden katlama yapılmaz. Arama başlık, özgün başlık, yazar, dergi, etiket, özet ve not alanlarını kapsar; girdi `useDeferredValue` ile ertelenir. Birim testleri: `pnpm test:search`.
 

@@ -250,6 +250,31 @@ class NodeBinaryTests(unittest.TestCase):
         self.assertEqual(llm.node_binary(), "/opt/node")
 
 
+class TaxonomyCoverageTests(unittest.TestCase):
+    """Her doğrudan kayıt en az bir alan etiketi almalı; perioperatif konular kapsanmalı."""
+
+    def _rec(self, title, abstract=""):
+        return {"title": title, "abstract": abstract, "pubtypes": []}
+
+    def test_analjezi_calishmasi_perioperatif(self):
+        rec = self._rec("Erector spinae plane block versus paravertebral block after thoracic surgery")
+        self.assertEqual(taxonomy.areas(rec, {})[0], "perioperatif")
+
+    def test_hidatik_kist_benign(self):
+        rec = self._rec("Preservation of the lung in surgery for pulmonary hydatid cyst")
+        self.assertEqual(taxonomy.areas(rec, {})[0], "benign_akciger")
+
+    def test_metastazektomi_akciger_kanseri(self):
+        rec = self._rec("Lung metastasectomy for recurrent cervical cancer")
+        self.assertEqual(taxonomy.areas(rec, {})[0], "akciger_kanseri")
+
+    def test_eslesmeyen_kayit_genel_torasik_alir(self):
+        rec = self._rec("A rare operative nuance in thoracic practice")
+        tax = taxonomy.describe(rec, {"interest": "dogrudan"})
+        self.assertEqual(tax["areas"], ["genel_torasik"])
+        self.assertTrue(tax["tags"])
+
+
 class EfetchChunkTests(unittest.TestCase):
     """Tek istekte yüzlerce PMID göndermek 414 veriyordu; efetch parçalamalı."""
 

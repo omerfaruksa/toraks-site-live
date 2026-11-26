@@ -29,7 +29,7 @@ Kurallar:
 
 1. Tarih: son 24 saat, son 7 gün, tümü, özel aralık. Başlangıç bitişi geçerse diğer uç eşitlenir.
 2. Tür: tümü ve dokuz tür; her çipte kayıt sayısı. Konu dışı varsayılan olarak kapalı.
-3. Konu: proje talimatındaki on bir etiket.
+3. Konu: on üç alan etiketi (dokuz anatomik alan, perioperatif bakım ve genel torasik cerrahi dahil).
 4. Türkiye'den ve açık tam metin onay kutuları, sıfırlama.
 
 Arama kutusu başlık, özgün başlık, yazar, dergi, etiket, özet ve not alanlarını kapsar; Türkçe karakter katlaması `src/search.ts` içinde. Girdi `useDeferredValue` ile ertelenir, yazma kilitlenmez.

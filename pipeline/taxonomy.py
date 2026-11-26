@@ -43,6 +43,10 @@ AREAS = {
     "travma": "Toraks Travması",
     "nakil": "Akciğer Nakli ve ECMO/ECLS",
     "pediatrik": "Pediyatrik Göğüs Cerrahisi",
+    # Anatomik bölgeye oturmayan ama doğrudan cerrahi pratiği ilgilendiren iki alan:
+    # analjezi, hava kaçağı, prehabilitasyon ve genel teknik/sonuç çalışmaları.
+    "perioperatif": "Perioperatif Bakım, Analjezi ve ERAS",
+    "genel_torasik": "Genel Torasik Cerrahi",
 }
 
 # Eksen 4: cerrahi yaklaşım ve teknoloji (çoklu, opsiyonel)
@@ -76,6 +80,7 @@ TAG_TO_AREA = {
     "Toraks travması": "travma",
     "Trakea ve hava yolu": "trakea",
     "Diyafram": "diyafram",
+    "Perioperatif bakım/ERAS": "perioperatif",
 }
 
 RE = re.compile
@@ -156,6 +161,11 @@ def areas(rec: dict, hit: dict) -> list[str]:
         ("nakil", r"transplant|ecmo|ecls|ex vivo lung perfusion|evlp|primary graft dysfunction"),
         ("akciger_kanseri", r"lung cancer|nsclc|sclc|carcinoma|nodule|metastas|segmentectomy|"
                             r"lobectomy|pneumonectomy|thoracic oncology"),
+        ("perioperatif", r"analgesi|analgesic|paravertebral|erector spinae|serratus|nerve block|"
+                         r"prehabilitation|enhanced recovery|\beras\b|chest tube|air leak|"
+                         r"postoperative pain|patient-controlled|opioid"),
+        ("genel_torasik", r"lung resection|thoracotomy|thoracoscop|\bvats\b|thoracic surgery|"
+                          r"lung surgery|surgical technique|complication|perioperative|outcome"),
     ]
     for code, pattern in rules:
         if len(out) >= limit:
@@ -233,6 +243,9 @@ def describe(rec: dict, hit: dict, pmc: bool = False, label: str = "") -> dict:
     if ptype == "editorial" and interest == "dogrudan":
         interest = "dolayli"
     area_codes = areas(rec, hit)
+    # Hiçbir kural eşleşmezse kayıt etiketsiz kalmasın: genel torasik cerrahi en alt kova.
+    if not area_codes:
+        area_codes = ["genel_torasik"]
     approach_codes = approaches(rec)
     theme_codes = themes(rec)
     return {
@@ -244,6 +257,9 @@ def describe(rec: dict, hit: dict, pmc: bool = False, label: str = "") -> dict:
         "areas": area_codes,
         "areaLabel": AREAS[area_codes[0]] if area_codes else "",
         "areaLabels": [AREAS[c] for c in area_codes],
+        # Kartta görünen konu etiketleri artık modelin serbest metnine değil,
+        # alan eksenine dayanır; böylece etiketsiz kart oluşmaz.
+        "tags": [AREAS[c] for c in area_codes[:2]],
         "approaches": approach_codes,
         "approachLabels": [APPROACHES[c] for c in approach_codes],
         "themes": theme_codes,
