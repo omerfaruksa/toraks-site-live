@@ -164,8 +164,6 @@ def areas(rec: dict, hit: dict) -> list[str]:
         ("perioperatif", r"analgesi|analgesic|paravertebral|erector spinae|serratus|nerve block|"
                          r"prehabilitation|enhanced recovery|\beras\b|chest tube|air leak|"
                          r"postoperative pain|patient-controlled|opioid"),
-        ("genel_torasik", r"lung resection|thoracotomy|thoracoscop|\bvats\b|thoracic surgery|"
-                          r"lung surgery|surgical technique|complication|perioperative|outcome"),
     ]
     for code, pattern in rules:
         if len(out) >= limit:
