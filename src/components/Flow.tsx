@@ -1,11 +1,11 @@
-import { useDeferredValue, useEffect, useMemo, useState } from 'react'
+import { useDeferredValue, useEffect, useMemo, useState, type ReactNode } from 'react'
 import { FLOW_KINDS, KIND_LABEL, KIND_ORDER, type Entry, type Kind } from '../entries'
-import { TAG_ORDER } from '../data'
+import { APPROACH_ORDER, AREA_ORDER, PUB_ORDER, THEME_ORDER } from '../data'
 import { matchesTokens, tokenize } from '../search'
 import EntryCard from './EntryCard'
 
 const PAGE_SIZE = 20
-/** Konu dışı varsayılan akışta yok; liste `entries.ts` içinde tek yerde tutulur. */
+/** Kardiyak ve konu dışı kayıtlar varsayılan akışta yok; arşivden seçilir. */
 const DEFAULT_KINDS = FLOW_KINDS
 
 type Range = 'recent' | 'week' | 'all' | 'custom'
@@ -23,12 +23,70 @@ function within(date: string, from: string, to: string): boolean {
   return true
 }
 
+interface ChipProps {
+  on: boolean
+  onClick: () => void
+  count?: number
+  children: ReactNode
+  extra?: string
+  title?: string
+}
+
+function Chip({ on, onClick, count, children, extra = '', title }: ChipProps) {
+  return (
+    <button
+      type="button"
+      className={`flow-chip${extra}${on ? ' is-on' : ''}`}
+      onClick={onClick}
+      title={title}
+      aria-pressed={on}
+    >
+      {children}
+      {typeof count === 'number' ? <span className="flow-chip-count">{count}</span> : null}
+    </button>
+  )
+}
+
+interface FacetProps {
+  label: string
+  allLabel: string
+  value: string
+  onChange: (next: string) => void
+  items: { key: string; label: string; count: number }[]
+}
+
+function Facet({ label, allLabel, value, onChange, items }: FacetProps) {
+  return (
+    <div className="flow-group">
+      <span className="flow-label">{label}</span>
+      <div className="flow-chips">
+        <Chip on={value === ''} onClick={() => onChange('')}>{allLabel}</Chip>
+        {items.filter((item) => item.count > 0 || item.key === value).map((item) => (
+          <Chip
+            key={item.key}
+            on={value === item.key}
+            count={item.count}
+            onClick={() => onChange(value === item.key ? '' : item.key)}
+          >
+            {item.label}
+          </Chip>
+        ))}
+      </div>
+    </div>
+  )
+}
+
 export default function Flow({ entries, issueDate, windowStart }: Props) {
   const [query, setQuery] = useState('')
   const [kinds, setKinds] = useState<Kind[]>(DEFAULT_KINDS)
-  const [tag, setTag] = useState('')
+  const [pubType, setPubType] = useState('')
+  const [area, setArea] = useState('')
+  const [approach, setApproach] = useState('')
+  const [theme, setTheme] = useState('')
   const [turkeyOnly, setTurkeyOnly] = useState(false)
   const [openOnly, setOpenOnly] = useState(false)
+  const [highOnly, setHighOnly] = useState(false)
+  const [videoOnly, setVideoOnly] = useState(false)
   const [range, setRange] = useState<Range>('recent')
   const [from, setFrom] = useState(issueDate)
   const [to, setTo] = useState(issueDate)
@@ -67,16 +125,22 @@ export default function Flow({ entries, issueDate, windowStart }: Props) {
     const picked = new Set(kinds)
     return entries.filter((entry) => {
       if (!picked.has(entry.kind)) return false
-      if (tag && !entry.tags.includes(tag)) return false
+      if (pubType && entry.pubType !== pubType) return false
+      if (area && !entry.areas.includes(area)) return false
+      if (approach && !entry.approaches.includes(approach)) return false
+      if (theme && !entry.themes.includes(theme)) return false
       if (turkeyOnly && !entry.turkey) return false
-      if (openOnly && entry.access !== 'open') return false
-      // Klinik araştırmalar on beş günde bir taranıyor: kayıt tarihleri son 24 saate düşmediği
+      if (openOnly && entry.access !== 'open' && entry.accessStatus !== 'tam') return false
+      if (highOnly && entry.evidence !== 'yuksek') return false
+      if (videoOnly && !entry.video) return false
+      // Klinik araştırmalar iki haftada bir taranıyor: kayıt tarihleri son 24 saate düşmediği
       // için tarih süzgeci onlara uygulanmaz, aksi hâlde akışta hiç görünmezlerdi.
       if (entry.kind !== 'arastirma' && (bounds.from || bounds.to)
         && !within(entry.date, bounds.from, bounds.to)) return false
       return matchesTokens(entry.search, tokens)
     })
-  }, [entries, kinds, tag, turkeyOnly, openOnly, bounds, tokens])
+  }, [entries, kinds, pubType, area, approach, theme, turkeyOnly, openOnly, highOnly, videoOnly,
+    bounds, tokens])
 
   const pages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE))
   const current = Math.min(page, pages)
@@ -87,11 +151,29 @@ export default function Flow({ entries, issueDate, windowStart }: Props) {
   }, [page, pages])
   const shown = filtered.slice((current - 1) * PAGE_SIZE, current * PAGE_SIZE)
 
+  // Eksen sayaçları tek geçişte hesaplanır; her çip için ayrı filtre çalıştırılmaz.
   const counts = useMemo(() => {
-    const map = new Map<Kind, number>()
-    for (const entry of entries) map.set(entry.kind, (map.get(entry.kind) || 0) + 1)
-    return map
-  }, [entries])
+    const picked = new Set(kinds)
+    const byKind = new Map<string, number>()
+    const byPub = new Map<string, number>()
+    const byArea = new Map<string, number>()
+    const byApproach = new Map<string, number>()
+    const byTheme = new Map<string, number>()
+    const bump = (map: Map<string, number>, key?: string) => {
+      if (key) map.set(key, (map.get(key) || 0) + 1)
+    }
+    // Sayaçlar seçili ilgi sınıflarına göre hesaplanır: arşivdeki 900 konu dışı
+    // kayıt, "Gözlemsel 457" gibi yanıltıcı sayılar üretiyordu.
+    for (const entry of entries) {
+      if (!picked.has(entry.kind)) continue
+      bump(byKind, entry.kind)
+      bump(byPub, entry.pubType)
+      entry.areas.forEach((name) => bump(byArea, name))
+      entry.approaches.forEach((name) => bump(byApproach, name))
+      entry.themes.forEach((name) => bump(byTheme, name))
+    }
+    return { byKind, byPub, byArea, byApproach, byTheme }
+  }, [entries, kinds])
 
   const toggleKind = (kind: Kind) => {
     setKinds((prev) => (prev.includes(kind) ? prev.filter((k) => k !== kind) : [...prev, kind]))
@@ -101,9 +183,14 @@ export default function Flow({ entries, issueDate, windowStart }: Props) {
   const reset = () => {
     setQuery('')
     setKinds(DEFAULT_KINDS)
-    setTag('')
+    setPubType('')
+    setArea('')
+    setApproach('')
+    setTheme('')
     setTurkeyOnly(false)
     setOpenOnly(false)
+    setHighOnly(false)
+    setVideoOnly(false)
     setRange('recent')
     setFrom(issueDate)
     setTo(issueDate)
@@ -112,13 +199,19 @@ export default function Flow({ entries, issueDate, windowStart }: Props) {
 
   // Uzunluk eşitliği yetmez: bir tür çıkıp başkası eklenirse küme değişmiş olur.
   const allKinds = DEFAULT_KINDS.every((kind) => kinds.includes(kind)) && kinds.length === DEFAULT_KINDS.length
-  const active = (query ? 1 : 0) + (tag ? 1 : 0) + (turkeyOnly ? 1 : 0) + (openOnly ? 1 : 0)
-    + (range === 'recent' ? 0 : 1) + (allKinds ? 0 : 1)
+  const active = (query ? 1 : 0) + (pubType ? 1 : 0) + (area ? 1 : 0) + (approach ? 1 : 0)
+    + (theme ? 1 : 0) + (turkeyOnly ? 1 : 0) + (openOnly ? 1 : 0) + (highOnly ? 1 : 0)
+    + (videoOnly ? 1 : 0) + (range === 'recent' ? 0 : 1) + (allKinds ? 0 : 1)
 
   const goto = (next: number) => {
     setPage(Math.min(Math.max(1, next), pages))
     document.getElementById('akis')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
   }
+
+  const pubItems = PUB_ORDER.map((item) => ({ key: item.key, label: item.label, count: counts.byPub.get(item.key) || 0 }))
+  const areaItems = AREA_ORDER.map((name) => ({ key: name, label: name, count: counts.byArea.get(name) || 0 }))
+  const approachItems = APPROACH_ORDER.map((name) => ({ key: name, label: name, count: counts.byApproach.get(name) || 0 }))
+  const themeItems = THEME_ORDER.map((name) => ({ key: name, label: name, count: counts.byTheme.get(name) || 0 }))
 
   return (
     <section className="flow" id="akis" aria-label="Çalışmalar">
@@ -153,15 +246,9 @@ export default function Flow({ entries, issueDate, windowStart }: Props) {
           <div className="flow-group">
             <span className="flow-label">Tarih</span>
             <div className="flow-chips">
-              <button type="button" className={`flow-chip${range === 'recent' ? ' is-on' : ''}`} onClick={() => { setRange('recent'); setPage(1) }}>
-                Son 24 saat
-              </button>
-              <button type="button" className={`flow-chip${range === 'week' ? ' is-on' : ''}`} onClick={() => { setRange('week'); setPage(1) }}>
-                Son 7 gün
-              </button>
-              <button type="button" className={`flow-chip${range === 'all' ? ' is-on' : ''}`} onClick={() => { setRange('all'); setPage(1) }}>
-                Tümü
-              </button>
+              <Chip on={range === 'recent'} onClick={() => { setRange('recent'); setPage(1) }}>Son 24 saat</Chip>
+              <Chip on={range === 'week'} onClick={() => { setRange('week'); setPage(1) }}>Son 7 gün</Chip>
+              <Chip on={range === 'all'} onClick={() => { setRange('all'); setPage(1) }}>Tümü</Chip>
               <label className={`flow-chip flow-chip--date${range === 'custom' ? ' is-on' : ''}`}>
                 <input
                   type="date"
@@ -194,48 +281,28 @@ export default function Flow({ entries, issueDate, windowStart }: Props) {
           </div>
 
           <div className="flow-group">
-            <span className="flow-label">Tür</span>
+            <span className="flow-label">İlgi</span>
             <div className="flow-chips">
-              <button
-                type="button"
-                className={`flow-chip${allKinds ? ' is-on' : ''}`}
-                onClick={() => { setKinds(DEFAULT_KINDS); setPage(1) }}
-              >
-                Tümü
-              </button>
+              <Chip on={allKinds} onClick={() => { setKinds(DEFAULT_KINDS); setPage(1) }}>Tümü</Chip>
               {KIND_ORDER.map((kind) => (
-                <button
+                <Chip
                   key={kind}
-                  type="button"
-                  className={`flow-chip kind-${kind}${kinds.includes(kind) ? ' is-on' : ''}`}
+                  on={kinds.includes(kind)}
+                  count={counts.byKind.get(kind) || 0}
+                  extra={` kind-${kind}`}
+                  title={kind === 'kardiyak' || kind === 'konu_disi' ? 'Arşiv: varsayılan akışta gizli' : undefined}
                   onClick={() => toggleKind(kind)}
-                  title={kind === 'arastirma' ? 'ClinicalTrials.gov son 15 gün' : undefined}
                 >
                   {KIND_LABEL[kind]}
-                  <span className="flow-chip-count">{counts.get(kind) || 0}</span>
-                </button>
+                </Chip>
               ))}
             </div>
           </div>
 
-          <div className="flow-group">
-            <span className="flow-label">Konu</span>
-            <div className="flow-chips">
-              <button type="button" className={`flow-chip${tag === '' ? ' is-on' : ''}`} onClick={() => { setTag(''); setPage(1) }}>
-                Tüm konular
-              </button>
-              {TAG_ORDER.map((name) => (
-                <button
-                  key={name}
-                  type="button"
-                  className={`flow-chip${tag === name ? ' is-on' : ''}`}
-                  onClick={() => { setTag(tag === name ? '' : name); setPage(1) }}
-                >
-                  {name}
-                </button>
-              ))}
-            </div>
-          </div>
+          <Facet label="Yayın türü" allLabel="Tüm türler" value={pubType} onChange={(v) => { setPubType(v); setPage(1) }} items={pubItems} />
+          <Facet label="Alan" allLabel="Tüm alanlar" value={area} onChange={(v) => { setArea(v); setPage(1) }} items={areaItems} />
+          <Facet label="Yaklaşım" allLabel="Tüm yaklaşımlar" value={approach} onChange={(v) => { setApproach(v); setPage(1) }} items={approachItems} />
+          <Facet label="Tema" allLabel="Tüm temalar" value={theme} onChange={(v) => { setTheme(v); setPage(1) }} items={themeItems} />
 
           <div className="flow-group flow-group--inline">
             <label className="flow-check">
@@ -245,6 +312,14 @@ export default function Flow({ entries, issueDate, windowStart }: Props) {
             <label className="flow-check">
               <input type="checkbox" checked={openOnly} onChange={(e) => { setOpenOnly(e.target.checked); setPage(1) }} />
               Açık tam metin
+            </label>
+            <label className="flow-check">
+              <input type="checkbox" checked={highOnly} onChange={(e) => { setHighOnly(e.target.checked); setPage(1) }} />
+              Yüksek kanıt
+            </label>
+            <label className="flow-check">
+              <input type="checkbox" checked={videoOnly} onChange={(e) => { setVideoOnly(e.target.checked); setPage(1) }} />
+              Video içerir
             </label>
             <button type="button" className="flow-reset" onClick={reset}>Sıfırla</button>
           </div>

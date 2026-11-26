@@ -1,42 +1,27 @@
-import { SHORT_DESIGN, TAG_ORDER } from './data'
+import { PUB_SHORT, SHORT_DESIGN } from './data'
 import { composeSearchText } from './search'
-import type { Design, Issue } from './types'
+import type { Design, Issue, Tax } from './types'
 
-/** Akıştaki kayıt türleri: bölüm başlığı yerine kart üstünde etiket olarak görünür. */
-export type Kind =
-  | 'dogrudan'
-  | 'dolayli'
-  | 'olgu'
-  | 'video'
-  | 'yorum'
-  | 'arastirma'
-  | 'kardiyak'
-  | 'dis'
-  | 'erisilemedi'
-  | 'konu_disi'
+/** Akıştaki kayıt türleri: ilgi ekseni ve iki kayıt türü (araştırma, erişilemedi). */
+export type Kind = 'dogrudan' | 'dolayli' | 'arastirma' | 'kardiyak' | 'erisilemedi' | 'konu_disi'
 
 export const KIND_LABEL: Record<Kind, string> = {
   dogrudan: 'Doğrudan',
   dolayli: 'Dolaylı',
-  erisilemedi: 'Erişilemedi',
-  olgu: 'Olgu',
-  video: 'Video',
-  yorum: 'Yorum',
   arastirma: 'Klinik araştırma',
   kardiyak: 'Kardiyak',
-  dis: 'Liste dışı',
+  erisilemedi: 'Erişilemedi',
   konu_disi: 'Konu dışı',
 }
 
-export const KIND_ORDER: Kind[] = ['dogrudan', 'olgu', 'video', 'yorum', 'arastirma', 'dolayli', 'dis', 'kardiyak',
-  'erisilemedi', 'konu_disi']
+export const KIND_ORDER: Kind[] = ['dogrudan', 'dolayli', 'arastirma', 'kardiyak', 'erisilemedi',
+  'konu_disi']
 
 /** Sıralama için tür dereceleri bir kez hesaplanır; karşılaştırmada indexOf çağrılmaz. */
 const KIND_RANK = new Map<Kind, number>(KIND_ORDER.map((kind, index) => [kind, index]))
 
-/** Varsayılan akışta konu dışı kayıtlar yok: 800 satırlık gürültü sayfayı boğuyor. */
-export const FLOW_KINDS: Kind[] = ['dogrudan', 'olgu', 'video', 'yorum', 'arastirma', 'dolayli', 'dis', 'kardiyak',
-  'erisilemedi']
+/** Varsayılan akış: kardiyak ve konu dışı arşivde kalır, gürültü sayfayı boğmaz. */
+export const FLOW_KINDS: Kind[] = ['dogrudan', 'dolayli', 'arastirma', 'erisilemedi']
 
 export interface Row {
   key: string
@@ -52,7 +37,15 @@ export interface Entry {
   titleOrig?: string
   journal: string
   url: string
-  tags: string[]
+  areas: string[]
+  approaches: string[]
+  themes: string[]
+  pubType?: string
+  pubTypeLabel?: string
+  pubShort?: string
+  evidence?: string
+  video?: boolean
+  accessStatus?: string
   authors?: string
   turkey?: boolean
   access?: 'open' | 'abstract'
@@ -62,10 +55,6 @@ export interface Entry {
   note?: string
   search: string
 }
-
-const TAGS = new Set(TAG_ORDER)
-/** Editöryal, yorum ve mektuplar olgu türünden ayrılır. */
-const COMMENT = /editör|yorum|mektup|düzeltme|comment|editorial|letter/i
 
 /** Model "belirtilmemiş" yazdığında alan boş sayılır; kartta yer tutmaz. */
 function text(value?: string): string {
@@ -85,7 +74,24 @@ function pack(rows: Array<Row | null>): Row[] {
 
 function searchOf(entry: Omit<Entry, 'search'>): string {
   return composeSearchText([entry.title, entry.titleOrig, entry.journal, entry.authors,
-    entry.tags.join(' '), entry.summary, entry.note, entry.rows.map((r) => r.value).join(' ')])
+    entry.areas.join(' '), entry.approaches.join(' '), entry.themes.join(' '), entry.pubTypeLabel,
+    entry.summary, entry.note, entry.rows.map((r) => r.value).join(' ')])
+}
+
+/** Taksonomi alanlarını karta taşır; eksik alanlar boş dizi olur. */
+function facets(item: Tax): Pick<Entry, 'areas' | 'approaches' | 'themes' | 'pubType' | 'pubTypeLabel'
+  | 'pubShort' | 'evidence' | 'video' | 'accessStatus'> {
+  return {
+    areas: item.areaLabels || [],
+    approaches: item.approachLabels || [],
+    themes: item.themeLabels || [],
+    pubType: item.pubType,
+    pubTypeLabel: item.pubTypeLabel,
+    pubShort: item.pubType ? (PUB_SHORT[item.pubType] || item.pubTypeLabel) : undefined,
+    evidence: item.evidence,
+    video: item.video,
+    accessStatus: item.accessStatus,
+  }
 }
 
 /** Sayı dosyasını tek, tarih sıralı akışa indirger; bölüm bilgisi tür etiketine dönüşür. */
@@ -101,7 +107,7 @@ export function buildEntries(issue: Issue): Entry[] {
       titleOrig: study.titleTr && study.titleOrig && study.titleTr !== study.titleOrig ? study.titleOrig : undefined,
       journal: study.journal,
       url: study.url,
-      tags: study.tags.filter((t) => TAGS.has(t)),
+      ...facets(study),
       authors: study.authors,
       turkey: study.turkey,
       access: study.access,
@@ -121,27 +127,11 @@ export function buildEntries(issue: Issue): Entry[] {
     out.push({ ...base, search: searchOf(base) })
   }
 
-  for (const item of issue.indirect) {
-    const base: Omit<Entry, 'search'> = {
-      id: `i-${item.id}`,
-      kind: 'dolayli',
-      date: item.entryDate || '',
-      title: item.title,
-      journal: item.journal,
-      url: item.url,
-      tags: item.tags.filter((t) => TAGS.has(t)),
-      authors: item.authors,
-      turkey: item.turkey,
-      summary: text(item.oneLiner),
-      rows: [],
-    }
-    out.push({ ...base, search: searchOf(base) })
-  }
-
+  // Olgu, video ve yorum kayıtları normal akışta yer alır: başlık çevrilir,
+  // özet yazılır, tür yalnızca etiket olarak kalır. İlgi ekseni editöryal
+  // kayıtları dolaylı katmana taşır.
   for (const item of issue.videoCase) {
-    const kind: Kind = item.kind === 'video'
-      ? 'video'
-      : COMMENT.test(item.designLabel || '') ? 'yorum' : 'olgu'
+    const kind: Kind = item.interest === 'dolayli' ? 'dolayli' : 'dogrudan'
     const base: Omit<Entry, 'search'> = {
       id: `v-${item.pmid || item.url}`,
       kind,
@@ -150,13 +140,31 @@ export function buildEntries(issue: Issue): Entry[] {
       titleOrig: item.titleTr && item.titleTr !== item.title ? item.title : undefined,
       journal: item.journal,
       url: item.url,
-      tags: [],
+      ...facets(item),
       authors: item.authors,
       turkey: item.turkey,
       design: item.designLabel,
       summary: text(item.summary),
-      rows: [],
+      rows: pack([row('design', 'Tanıtım', item.designLabel)]),
       note: item.note,
+    }
+    out.push({ ...base, search: searchOf(base) })
+  }
+
+  for (const item of issue.indirect) {
+    const base: Omit<Entry, 'search'> = {
+      id: `i-${item.id}`,
+      kind: 'dolayli',
+      date: item.entryDate || '',
+      title: item.titleTr || item.title,
+      titleOrig: item.titleTr && item.titleTr !== item.title ? item.title : undefined,
+      journal: item.journal,
+      url: item.url,
+      ...facets(item),
+      authors: item.authors,
+      turkey: item.turkey,
+      summary: text(item.oneLiner),
+      rows: [],
     }
     out.push({ ...base, search: searchOf(base) })
   }
@@ -166,35 +174,42 @@ export function buildEntries(issue: Issue): Entry[] {
       id: `t-${trial.nct}`,
       kind: 'arastirma',
       date: trial.date || '',
-      title: trial.title,
+      title: trial.titleTr || trial.title,
+      titleOrig: trial.titleTr && trial.titleTr !== trial.title ? trial.title : undefined,
       journal: 'ClinicalTrials.gov',
       url: `https://clinicaltrials.gov/study/${trial.nct}`,
-      tags: [],
+      areas: [],
+      approaches: [],
+      themes: [],
       rows: pack([
         row('phase', 'Faz', trial.phase),
         row('status', 'Durum', trial.status),
         row('enroll', 'Hedef kayıt', trial.enrollment),
         row('primary', 'Birincil sonlanım', trial.primary),
         row('sponsor', 'Sponsor', trial.sponsor),
+        row('period', 'Tarihler', trial.dates),
       ]),
     }
     out.push({ ...base, search: searchOf(base) })
   }
 
   for (const item of issue.external || []) {
+    const kind: Kind = item.interest === 'kardiyak' ? 'kardiyak'
+      : item.interest === 'dolayli' ? 'dolayli'
+        : item.interest === 'video_olgu' || item.interest === 'dogrudan' ? 'dogrudan' : 'konu_disi'
     const base: Omit<Entry, 'search'> = {
       id: `x-${item.doi || item.url}`,
-      kind: item.interest === 'kardiyak' ? 'kardiyak' : 'dis',
+      kind,
       date: item.date,
       title: item.titleTr || item.title,
       titleOrig: item.titleTr && item.titleTr !== item.title ? item.title : undefined,
       journal: item.journal,
       url: item.url,
-      tags: item.tags.filter((t) => TAGS.has(t)),
+      ...facets(item),
       authors: item.authors,
       turkey: item.turkey,
       summary: text(item.oneLiner),
-      rows: pack([row('interest', 'İlgi', item.interestLabel), row('source', 'Kaynak', item.source)]),
+      rows: pack([row('source', 'Kaynak', item.source)]),
       note: item.note,
     }
     out.push({ ...base, search: searchOf(base) })
@@ -208,7 +223,7 @@ export function buildEntries(issue: Issue): Entry[] {
       title: item.title,
       journal: item.journal,
       url: item.url,
-      tags: [],
+      ...facets(item),
       authors: item.authors,
       turkey: item.turkey,
       rows: [],
@@ -225,8 +240,9 @@ export function buildEntries(issue: Issue): Entry[] {
       title: item.title,
       journal: item.journal,
       url: item.url,
-      tags: [],
+      ...facets(item),
       authors: item.authors,
+      turkey: item.turkey,
       rows: [],
       note: item.note || 'Tam metne erişilemedi; kart yazılmadı.',
     }
@@ -241,7 +257,7 @@ export function buildEntries(issue: Issue): Entry[] {
       title: item.title,
       journal: item.journal,
       url: item.url,
-      tags: [],
+      ...facets(item),
       authors: item.authors,
       rows: [],
     }

@@ -26,15 +26,15 @@ LLM_CONC = int(os.environ.get("CONC", "6"))
 HTTP_WORKERS = int(os.environ.get("HTTP_WORKERS", "6"))
 
 # Günlük kadans: sayı her gün üretilir, pencere yine son 7 gündür (yuvarlanan
-# hafta). Böylece ana sayfa her gün tazelenir, kapsam proje talimatındaki gibi
-# kalır; tekrar eden kayıtlar LLM belleğinden (cls_memo/cards_memo) okunur.
+# hafta). Böylece ana sayfa her gün tazelenir; tekrar eden kayıtlar LLM
+# belleğinden (cls_memo/cards_memo) okunur.
 CADENCE_DAYS = {"daily": 7, "weekly": 7, "biweekly": 14, "monthly": 30}
 # Sayının kapsadığı pencere ile taranan pencere ayrıdır: günlük kadans her gün
 # yalnızca son 24 saati tarar, bulunanlar 7 günlük kayan pencereye eklenir.
 SCAN_DAYS = {"daily": 1, "weekly": 7, "biweekly": 14, "monthly": 30}
-# ClinicalTrials.gov her gün taranmaz: kayıt ve sonuç bildirimleri seyrek düşer,
-# on beş günlük pencere hem taze kalır hem de gereksiz istek üretmez.
-TRIALS_DAYS = int(os.environ.get("TRIALS_DAYS", "15"))
+# ClinicalTrials.gov iki haftada bir taranır: kayıt ve sonuç bildirimleri seyrek
+# düşer; on dört günlük pencere taze kalır, gereksiz istek üretmez.
+TRIALS_DAYS = int(os.environ.get("TRIALS_DAYS", "14"))
 DEFAULT_CADENCE = os.environ.get("CADENCE", "daily")
 CACHE_TTL = int(os.environ.get("CACHE_TTL", str(6 * 3600)))
 
@@ -48,8 +48,8 @@ def window(issue_date: date, days: int) -> tuple[str, str]:
 
 
 def issue_date_for(cadence: str = DEFAULT_CADENCE, today: date | None = None) -> date:
-    """Sayı tarihi: çalıştırma günü. Günlük görev her gün, haftalık rapor görevi
-    cumartesi koştuğu için tarihler kendiliğinden yerine oturur."""
+    """Sayı tarihi: çalıştırma günü. Günlük görev her gün koştuğu için tarihler
+    kendiliğinden yerine oturur; ayrı haftalık rapor görevi yoktur."""
     return today or date.today()
 
 

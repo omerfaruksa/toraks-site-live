@@ -2,7 +2,7 @@
 """Göğüs cerrahisi literatür hattı — tek giriş noktası.
 
 Örnekler:
-    python3 pipeline/run.py                      # haftalık sayı, tüm aşamalar
+    python3 pipeline/run.py                      # günlük sayı, tüm aşamalar
     python3 pipeline/run.py --date 2026-11-22    # belirli sayı
     python3 pipeline/run.py --from-cache --out /tmp/deneme.json   # ağ/LLM'siz montaj
     python3 pipeline/run.py --stages issue --report               # yalnızca montaj + rapor
@@ -24,7 +24,7 @@ import issue as issue_mod  # noqa: E402
 import memo_seed  # noqa: E402
 import report as report_mod  # noqa: E402
 
-STAGES = ["scan", "classify", "cards", "briefs", "external", "issue", "report"]
+STAGES = ["scan", "classify", "cards", "briefs", "external", "trials_tr", "issue", "report"]
 
 
 def log(message: str) -> None:
@@ -42,19 +42,12 @@ def main(argv=None) -> int:
     parser.add_argument("--from-cache", action="store_true", help="ağ ve LLM çağrısı yapma, .work kullan")
     parser.add_argument("--out", help="sayı JSON'u için farklı yol (dizin güncellenmez)")
     parser.add_argument("--report", action="store_true", help="Markdown raporu da üret")
-    parser.add_argument("--report-week", action="store_true",
-                        help="son günlük sayıları birleştirip haftalık raporu üret (tarama yapmaz)")
-    parser.add_argument("--weeks", type=int, default=7, help="haftalık raporda birleştirilecek sayı sayısı")
     args = parser.parse_args(argv)
 
     config.ensure_dirs()
     restored = memo_seed.restore()
     if restored:
         log(f"bellek geri yüklendi: {', '.join(restored)}")
-    if args.report_week:
-        path = report_mod.write_weekly(args.weeks)
-        log(f"haftalık rapor: {path}")
-        return 0
     issue_date = date.fromisoformat(args.date) if args.date else config.issue_date_for(args.cadence)
     days = args.window or config.CADENCE_DAYS[args.cadence]
     start, end = config.window(issue_date, days)
@@ -67,7 +60,7 @@ def main(argv=None) -> int:
         f" · aşamalar {', '.join(stages)}")
 
     if args.from_cache:
-        stages = [s for s in stages if s in ("issue", "report")]
+        stages = [s for s in stages if s in ("trials_tr", "issue", "report")]
 
     records = json.loads((config.WORK / "pubmed.json").read_text(encoding="utf-8")).get("records", []) \
         if (config.WORK / "pubmed.json").exists() else []
@@ -106,6 +99,12 @@ def main(argv=None) -> int:
         payload = json.loads((config.WORK / "external.json").read_text(encoding="utf-8"))
         external_mod.run(payload.get("records", []))
 
+    if "trials_tr" in stages:
+        import trial_titles
+        log("Klinik araştırma başlıkları")
+        rows = json.loads((config.WORK / "trials_raw.json").read_text(encoding="utf-8")) \
+            if (config.WORK / "trials_raw.json").exists() else []
+        trial_titles.run(rows)
     if "issue" in stages:
         log("Sayı montajı")
         issue = issue_mod.build(end, start, end, use_cache=args.from_cache,

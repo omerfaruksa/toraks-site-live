@@ -3,7 +3,27 @@ export type Design = 'rct' | 'meta' | 'cohort' | 'casecontrol' | 'caseseries' | 
 export type Access = 'open' | 'abstract'
 export type Scope = 'tek_merkezli' | 'cok_merkezli' | ''
 
-export interface Study {
+/** Beş eksenli taksonomi: ilgi, yayın türü, alan, yaklaşım, tema. */
+export type Interest = 'dogrudan' | 'dolayli' | 'inceleme' | 'kardiyak' | 'konu_disi'
+
+export interface Tax {
+  interest?: Interest | string
+  interestLabel?: string
+  pubType?: string
+  pubTypeLabel?: string
+  evidence?: string
+  areas?: string[]
+  areaLabel?: string
+  areaLabels?: string[]
+  approaches?: string[]
+  approachLabels?: string[]
+  themes?: string[]
+  themeLabels?: string[]
+  video?: boolean
+  accessStatus?: 'tam' | 'ozet' | 'ozet_eksik' | string
+}
+
+export interface Study extends Tax {
   id: string
   titleTr: string
   titleOrig: string
@@ -40,6 +60,7 @@ export interface Study {
 export interface Trial {
   nct: string
   title: string
+  titleTr?: string
   phase: string
   status: string
   dates: string
@@ -49,9 +70,10 @@ export interface Trial {
   date?: string
 }
 
-export interface Indirect {
+export interface Indirect extends Tax {
   id: string
   title: string
+  titleTr?: string
   journal: string
   entryDate?: string
   pmid: string
@@ -70,7 +92,7 @@ export interface Indirect {
   countries?: string[]
 }
 
-export interface TitleOnly {
+export interface TitleOnly extends Tax {
   title: string
   pmid?: string
   doi?: string
@@ -87,7 +109,7 @@ export interface TitleOnly {
   note?: string
 }
 
-export interface ExternalItem {
+export interface ExternalItem extends Tax {
   titleTr?: string
   title: string
   journal: string
@@ -141,6 +163,7 @@ export interface Issue {
   cadence?: string
   windowStart: string
   windowEnd: string
+  scanStart?: string
   periodLabel: string
   generatedAt?: string
   stats: IssueStats

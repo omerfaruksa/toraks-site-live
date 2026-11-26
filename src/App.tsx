@@ -8,26 +8,6 @@ import { THEME_NEXT, applyTheme, readTheme, type ThemePref } from './prefs'
 import { SITE } from './site'
 import type { Issue } from './types'
 
-function Stats({ issue }: { issue: Issue }) {
-  const items = [
-    { label: 'Taranan kayıt', value: issue.stats.scanned },
-    { label: 'Doğrudan', value: issue.stats.direct },
-    { label: 'Dolaylı', value: issue.stats.indirect },
-    { label: 'Olgu ve video', value: issue.videoCase.length },
-    { label: 'Klinik araştırma', value: issue.trials.length },
-  ]
-  return (
-    <ul className="overview">
-      {items.map((item) => (
-        <li key={item.label}>
-          <strong>{item.value}</strong>
-          <span>{item.label}</span>
-        </li>
-      ))}
-    </ul>
-  )
-}
-
 export default function App() {
   const [theme, setTheme] = useState<ThemePref>(readTheme)
   const [date, setDate] = useState(issueIndex[0]?.date ?? '')
@@ -80,18 +60,6 @@ export default function App() {
       />
 
       <main className="shell">
-        <div className="intro">
-          <h1 className="intro-title">Göğüs cerrahisi literatürü</h1>
-          <p className="intro-line">
-            {issue
-              ? `${formatDate(issue.windowStart)} – ${formatDate(issue.windowEnd)} arasında taranan yayınlar. Kayıtlar tarih sırasıyla listelenir; tür ve konu etiketleri kart üzerinde.`
-              : failed
-                ? 'Bu tarihe ait sayı bulunamadı.'
-                : 'Sayı yükleniyor'}
-          </p>
-          {issue ? <Stats issue={issue} /> : null}
-        </div>
-
         {failed ? (
           <p className="flow-empty">Bu tarihe ait sayı bulunamadı. Üstteki seçiciden başka bir gün seçin.</p>
         ) : issue ? (
@@ -116,9 +84,6 @@ export default function App() {
                 E-posta ile abone ol
               </a>
             ) : null}
-            <a className="footer-btn" href={SITE.repo} target="_blank" rel="noreferrer noopener">
-              Kaynak kod
-            </a>
           </div>
           {issue?.generatedAt ? (
             <p className="footer-stamp">Son üretim: {formatDate(issue.generatedAt.slice(0, 10))}</p>

@@ -61,9 +61,11 @@ export default function EntryCard({ entry, open, onToggle }: Props) {
       <div className="entry-top">
         <span className="entry-date">{shortDate(entry.date)}</span>
         <span className={`entry-kind kind-${entry.kind}`}>{KIND_LABEL[entry.kind]}</span>
-        {entry.design ? <span className="entry-design">{entry.design}</span> : null}
+        {entry.pubShort ? <span className="entry-design">{entry.pubShort}</span> : null}
         {entry.turkey ? <span className="entry-tr">Türkiye'den</span> : null}
-        {entry.access === 'open' ? <span className="entry-open">Açık tam metin</span> : null}
+        {entry.access === 'open' || entry.accessStatus === 'tam'
+          ? <span className="entry-open">Açık tam metin</span> : null}
+        {entry.video ? <span className="entry-open">Video</span> : null}
       </div>
 
       {hasDetail ? (
@@ -87,10 +89,21 @@ export default function EntryCard({ entry, open, onToggle }: Props) {
         {entry.authors ? <span className="entry-authors">{entry.authors}</span> : null}
       </p>
 
-      {entry.tags.length > 0 ? (
+      {entry.areas.length > 0 ? (
         <ul className="entry-tags">
-          {entry.tags.map((tag) => (
-            <li key={tag}>{tag}</li>
+          {entry.areas.map((name) => (
+            <li key={name}>{name}</li>
+          ))}
+        </ul>
+      ) : null}
+
+      {entry.approaches.length > 0 || entry.themes.length > 0 ? (
+        <ul className="entry-tags entry-tags--soft">
+          {entry.approaches.map((name) => (
+            <li key={`a-${name}`}>{name}</li>
+          ))}
+          {entry.themes.map((name) => (
+            <li key={`t-${name}`}>{name}</li>
           ))}
         </ul>
       ) : null}
@@ -126,7 +139,7 @@ export default function EntryCard({ entry, open, onToggle }: Props) {
         )}
         <span className="entry-links">
           <a className="entry-link" href={entry.url} target="_blank" rel="noreferrer noopener">
-            Makaleye git
+            {entry.kind === 'arastirma' ? 'Kayda git' : 'Makaleye git'}
           </a>
           <button type="button" className="entry-copy" onClick={copyDoi} title="Bağlantıyı kopyala">
             {copied ? 'Kopyalandı' : 'Bağlantı'}

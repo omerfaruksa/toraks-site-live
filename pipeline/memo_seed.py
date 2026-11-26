@@ -13,7 +13,7 @@ import shutil
 from config import CONTENT, WORK
 
 SEED = CONTENT / "memo"
-FILES = ("cls_memo.json", "cards_memo.json", "briefs_memo.json")
+FILES = ("cls_memo.json", "cards_memo.json", "briefs_memo.json", "trials_tr.json")
 
 
 def restore() -> list[str]:

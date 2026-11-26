@@ -362,37 +362,7 @@ mark {
 @media print {
   .issue-map, .side-rail, .to-top, .skip-link, .card-tools, .footer-actions { display: none; }}
 
-/* ---------- tek akış: giriş, süzgeç, kart, sayfalama ---------- */
-.intro { padding: 26px 0 14px; }
-.intro-title {
-  margin: 0 0 6px;
-  font-family: var(--serif);
-  font-size: clamp(1.5rem, 4.6vw, 2rem);
-  font-weight: 600;
-  letter-spacing: -0.01em;
-  line-height: 1.2;
-}
-.intro-line { margin: 0; max-width: 46rem; color: var(--ink-2); font-size: 0.93rem; }
-.overview {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin: 16px 0 0;
-  padding: 0;
-  list-style: none;
-}
-.overview li {
-  display: flex;
-  align-items: baseline;
-  gap: 6px;
-  padding: 5px 11px;
-  border: 1px solid var(--rule);
-  border-radius: 999px;
-  background: var(--surface);
-  font-size: 0.78rem;
-  color: var(--muted);
-}
-.overview strong { font-size: 0.95rem; color: var(--ink); font-variant-numeric: tabular-nums; }
+/* ---------- tek akış: süzgeç, kart, sayfalama ---------- */
 
 .flow { padding: 6px 0 40px; scroll-margin-top: calc(var(--header-h) + 12px); }
 .flow-bar {
@@ -534,9 +504,10 @@ mark {
   background: var(--paper-2);
 }
 .entry-kind.kind-dogrudan { background: var(--accent-wash); border-color: color-mix(in srgb, var(--accent) 40%, var(--rule)); color: var(--accent-ink); }
-.entry-kind.kind-olgu,
-.entry-kind.kind-video,
-.entry-kind.kind-yorum { background: var(--warn-wash); border-color: color-mix(in srgb, var(--warn) 35%, var(--rule)); color: var(--warn); }
+.entry-kind.kind-dolayli,
+.entry-kind.kind-erisilemedi { background: var(--warn-wash); border-color: color-mix(in srgb, var(--warn) 35%, var(--rule)); color: var(--warn); }
+.entry-kind.kind-kardiyak,
+.entry-kind.kind-konu_disi { color: var(--muted); }
 .entry-kind.kind-arastirma { background: var(--paper-2); border-color: var(--accent); color: var(--accent-ink); }
 .entry-tr { background: var(--accent-wash); color: var(--accent-ink); border-color: transparent; }
 .entry-open { border-color: transparent; background: transparent; color: var(--muted); }
@@ -567,6 +538,14 @@ mark {
   background: var(--chip);
   color: var(--chip-ink);
   font-size: 0.72rem;
+}
+.entry-tags--soft { margin-top: 5px; }
+.entry-tags--soft li {
+  padding: 1px 7px;
+  border: 1px solid var(--rule);
+  background: transparent;
+  color: var(--muted);
+  font-size: 0.7rem;
 }
 .entry-body { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--rule-soft); }
 .entry-summary { margin: 0 0 12px; font-size: 0.92rem; color: var(--ink-2); line-height: 1.62; }
@@ -632,7 +611,6 @@ mark {
 .pager-info { font-size: 0.82rem; color: var(--muted); font-variant-numeric: tabular-nums; }
 .footer-inner { display: grid; gap: 10px; }
 @media (max-width: 640px) {
-  .intro { padding-top: 18px; }
   .flow-bar { position: static; }
   .flow-actions { flex-basis: 100%; justify-content: stretch; }
   .flow-search { max-width: none; }

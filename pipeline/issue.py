@@ -16,6 +16,7 @@ import fetch
 import journals
 import net
 import rules
+import taxonomy
 from config import INDEX, ISSUES, WORK, period_label
 
 STATUS_TR = {
@@ -70,32 +71,33 @@ def build_lists(records: list[dict], cls: dict, cards: dict, pmc: dict,
         title = rules.clean(rec.get("title"))
         abstract = rules.clean(rec.get("abstract"))
         text = f"{title} {abstract}"
+        tax = taxonomy.describe(rec, hit, pmid in pmc)
         if hit["cardiac"]:
-            cardiac.append(_title_item(rec))
+            cardiac.append({**_title_item(rec), **taxonomy.compact(tax)})
             continue
         interest = hit["interest"]
 
         if interest == "dogrudan":
             card_row = cards.get(pmid)
             if not card_row or not abstract:
-                item = _title_item(rec)
+                item = {**_title_item(rec), **tax}
                 item["note"] = "Tam metne erişilemedi; kart yazılmadı."
                 unavailable.append(item)
                 continue
             listed = journals.name_of(rec) in listed_names
             group = journals.group_of(rec)
             if not rules.is_thoracic(text):
-                off_topic.append(_title_item(rec))
+                off_topic.append({**_title_item(rec), **taxonomy.compact(tax)})
                 continue
             if not listed and not rules.is_surgical(text):
-                off_topic.append(_title_item(rec))
+                off_topic.append({**_title_item(rec), **taxonomy.compact(tax)})
                 continue
             if group == "C" and not rules.is_thoracic(title):
-                off_topic.append(_title_item(rec))
+                off_topic.append({**_title_item(rec), **taxonomy.compact(tax)})
                 continue
             card = card_row["card"]
             if rules.is_protocol(title) and card.get("mainResult", "").startswith("belirtilmemiş"):
-                item = _title_item(rec)
+                item = {**_title_item(rec), **tax}
                 item["note"] = "Çalışma protokolü; sonuç bildirilmemiş."
                 unavailable.append(item)
                 continue
@@ -124,6 +126,7 @@ def build_lists(records: list[dict], cls: dict, cards: dict, pmc: dict,
                 "dataPeriod": card.get("dataPeriod", ""),
                 "verified": not card_row.get("mismatches"),
                 "note": "",
+                **tax,
             })
         elif interest == "dolayli":
             indirect.append({
@@ -136,20 +139,24 @@ def build_lists(records: list[dict], cls: dict, cards: dict, pmc: dict,
                 "url": f"https://pubmed.ncbi.nlm.nih.gov/{pmid}/",
                 "oneLiner": hit["one_liner"],
                 "tags": hit["tags"],
+                **tax,
             })
         elif interest == "video_olgu":
             # Olgu ve video kayıtları da göğüs cerrahisiyle ilgili olmalı: aksi hâlde
             # akışta başka branşların olgu bildirimleri birikiyor.
             if not rules.is_thoracic(text) or rules.is_animal_case(text):
-                off_topic.append(_title_item(rec))
+                off_topic.append({**_title_item(rec), **taxonomy.compact(tax)})
                 continue
-            item = _title_item(rec)
+            item = {**_title_item(rec), **tax}
             types = " ".join(rec.get("pubtypes") or [])
             name = item["journal"]
             item["kind"] = "video" if ("Video-Audio Media" in types or "MMCTS" in name
                                        or "Visualized Surgery" in name
                                        or "Video-Assisted Thoracic Surgery" in name) else "case"
             brief = briefs.get(pmid) or {}
+            # Tanıtım etiketi (olgu, video, editöryal) yayın türünü kesinleştirir.
+            tax = taxonomy.describe(rec, hit, pmid in pmc, brief.get("designLabel") or "")
+            item = {**_title_item(rec), **tax}
             title_tr = (brief.get("titleTr") or "").strip()
             if title_tr and not title_tr.lower().startswith("belirtilmemi"):
                 item["titleTr"] = title_tr
@@ -160,7 +167,7 @@ def build_lists(records: list[dict], cls: dict, cards: dict, pmc: dict,
                 item["designLabel"] = brief["designLabel"]
             video_case.append(item)
         else:
-            off_topic.append(_title_item(rec))
+            off_topic.append({**_title_item(rec), **taxonomy.compact(tax)})
 
     return {"direct": direct, "indirect": indirect, "videoCase": video_case,
             "offTopic": off_topic, "cardiac": cardiac, "unavailable": unavailable}
@@ -249,6 +256,7 @@ def merge_external(lists: dict, external_rows: list[dict]) -> list[dict]:
 
 
 def build_trials(rows: list[dict], limit: int = 18) -> list[dict]:
+    titles_tr = _load("trials_tr.json", {})
     relevant = [t for t in rows if t.get("nct") and fetch.trial_relevant(t)]
     relevant.sort(key=lambda t: (t.get("firstPost") or "", t.get("resultsPost") or ""), reverse=True)
     out = []
@@ -256,6 +264,7 @@ def build_trials(rows: list[dict], limit: int = 18) -> list[dict]:
         out.append({
             "nct": trial["nct"],
             "title": trial["title"],
+            "titleTr": titles_tr.get(trial["nct"], ""),
             "phase": PHASE_TR.get((trial.get("phase") or "").split(",")[0].strip(),
                                   trial.get("phase") or "belirtilmemiş"),
             "status": STATUS_TR.get(trial.get("status"), trial.get("status") or "belirtilmemiş"),
@@ -351,7 +360,7 @@ def check_lists(lists: dict, records: list[dict], cls: dict) -> list[str]:
 
 
 def build(issue_date: str, start: str, end: str, *, use_cache: bool = False,
-          cadence: str = 'weekly', scan_start: str = "", trials_start: str = "") -> dict:
+          cadence: str = 'daily', scan_start: str = "", trials_start: str = "") -> dict:
     records = _load("pubmed.json", {}).get("records", [])
     cls = _load("final_cls.json", {})
     card_rows = {r["id"]: r for r in _load("cards.jsonl", []) if not r.get("error") and r.get("card")}
@@ -410,6 +419,7 @@ def build(issue_date: str, start: str, end: str, *, use_cache: bool = False,
         "cadence": cadence,
         "windowStart": start,
         "windowEnd": end,
+        "scanStart": scan_start or start,
         "periodLabel": period_label(start, end),
         "generatedAt": datetime.now(timezone(timedelta(hours=3))).isoformat(timespec="seconds"),
         "stats": {

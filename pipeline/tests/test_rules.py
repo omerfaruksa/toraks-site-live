@@ -18,6 +18,7 @@ import memo_seed  # noqa: E402
 import report  # noqa: E402
 import rolling
 import rules  # noqa: E402
+import taxonomy  # noqa: E402
 
 
 class TestDates(unittest.TestCase):
@@ -109,36 +110,24 @@ class TestJournals(unittest.TestCase):
             self.assertTrue(journals.group_rule(row["group"]))
 
 
-class TestWeeklyMerge(unittest.TestCase):
-    def _issue(self, date, direct):
-        return {"date": date, "windowStart": "2026-11-15", "windowEnd": date,
-                "stats": {"scanned": 10, "journalsScanned": 58}, "direct": direct,
-                "indirect": [], "trials": [], "videoCase": [], "offTopic": [],
-                "cardiac": [], "unavailable": [], "external": []}
-
-    def test_same_pmid_counted_once(self):
-        merged = report.merge([
-            self._issue("2026-11-22", [{"pmid": "1", "title": "A", "turkey": True}]),
-            self._issue("2026-11-21", [{"pmid": "1", "title": "A"}, {"pmid": "2", "title": "B"}]),
-        ])
-        self.assertEqual([c["pmid"] for c in merged["direct"]], ["1", "2"])
-        self.assertEqual(merged["turkey"], 1)
-
-    def test_doi_used_when_pmid_missing(self):
-        merged = report.merge([
-            self._issue("2026-11-22", [{"doi": "10.1/x", "title": "A"}]),
-            self._issue("2026-11-21", [{"doi": "10.1/x", "title": "A"}]),
-        ])
-        self.assertEqual(len(merged["direct"]), 1)
-
-    def test_window_spans_all_issues(self):
-        merged = report.merge([
-            self._issue("2026-11-22", []), self._issue("2026-11-21", []),
-        ])
-        self.assertEqual(merged["issues"], ["2026-11-22", "2026-11-21"])
-        self.assertEqual(merged["scannedSum"], 20)
-
-
+class TestTaxonomy(unittest.TestCase):
+    """Beş eksenli taksonomi kuralları."""
+    def test_video_in_title_is_not_video_article(self):
+        rec = {"title": "Single-level versus two-level block after video-assisted thoracoscopic resection",
+               "pubtypes": ["Randomized Controlled Trial"]}
+        self.assertEqual(taxonomy.pub_type(rec, {"design": "rct"}), "rct")
+    def test_editorial_moves_to_indirect(self):
+        rec = {"title": "Comment on lung cancer surgery", "pubtypes": ["Editorial"]}
+        tax = taxonomy.describe(rec, {"interest": "dogrudan", "cardiac": False})
+        self.assertEqual(tax["interest"], "dolayli")
+    def test_case_label_sets_type(self):
+        rec = {"title": "Rare thoracic tumour", "pubtypes": []}
+        self.assertEqual(taxonomy.pub_type(rec, {"design": "other"}, "Olgu sunumu"), "olgu")
+    def test_areas_limited_when_tagged(self):
+        rec = {"title": "Thymectomy in myasthenia with pleural effusion", "abstract": ""}
+        codes = taxonomy.areas(rec, {"tags": ["Mediasten"]})
+        self.assertEqual(codes[0], "mediasten")
+        self.assertLessEqual(len(codes), 2)
 if __name__ == "__main__":
     unittest.main()
 
