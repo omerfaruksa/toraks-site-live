@@ -102,6 +102,8 @@ Koşu çıktısı `pipeline/.work/run.log` dosyasına da yazılır (2 MB üstün
 | `docs/kaynak-kapsama.md` | Erişilemeyen dergiler için RSS, TR Dizin, DergiPark ve Crossref ölçümleri |
 | `docs/llm-saglayici.md` | OpenAI, Gemini veya OpenAI uyumlu sunucuyla hattı çalıştırma; değişkenler, hata davranışı |
 | `docs/yayin.md` | GitHub Pages, Cloudflare Pages, Vercel karşılaştırması; kurulum ve günlük güncelleme akışı |
+| `docs/yol-haritasi.md` | Kısa, orta ve uzun vadeli işler; her madde için doğrulama ölçütü ve riskler |
+| `tools/paket.sh` | Sürüm zip'i üretir, dosya sayısı, boyut ve sha256 yazar |
 
 ## Geliştirme
 
