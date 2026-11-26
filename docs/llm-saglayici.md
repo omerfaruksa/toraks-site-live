@@ -10,8 +10,8 @@ Node 18 veya üstü gerekir; ek paket yoktur. Değişkenleri hattı çalıştır
 # OpenAI
 export LLM_PROVIDER=openai
 export OPENAI_API_KEY=sk-...
-export MODEL_FAST=gpt-4.1-mini        # triage, briefs, trials
-export MODEL_DEEP=gpt-4.1             # cards (üret ve doğrula)
+export MODEL_FAST=gpt-4.1-mini        # birinci geçiş sınıflandırma, tanıtım metni, klinik araştırma başlığı, liste dışı kayıtlar
+export MODEL_DEEP=gpt-4.1             # çalışma kartı (üret ve doğrula), ikinci geçiş sınıflandırma
 export LLM_REASONING=off              # akıl yürütme desteklemeyen modellerde
 
 # Gemini
@@ -28,7 +28,7 @@ export LLM_API_KEY=anahtar             # yerel sunucuda boş olabilir
 bash pipeline/run_daily.sh
 ```
 
-Model adları güncel liste için sağlayıcının belgesinden doğrulanmalıdır; bu dosyadaki adlar örnektir. `cards` modu çıkarma ve ikinci bir doğrulama çağrısı yapar, bu yüzden güçlü modelle çalıştırın.
+Model adları güncel liste için sağlayıcının belgesinden doğrulanmalıdır; bu dosyadaki adlar örnektir. `cards` modu çıkarma ve ikinci bir doğrulama çağrısı yapar, bu yüzden `MODEL_DEEP` için güçlü bir model seçin.
 
 ## Değişkenler
 
