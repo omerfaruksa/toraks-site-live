@@ -461,12 +461,17 @@ def write(issue: dict, *, update_index: bool = True) -> str:
         except Exception:
             index = []
         index = [x for x in index if x.get("date") != issue["date"]]
+        # Dizin sayıları akıştaki toplamı gösterir: olgu ve video kayıtları da
+        # ilgi eksenine göre doğrudan veya dolaylı sayılır.
+        cases = issue.get("videoCase") or []
+        direct_n = issue["stats"]["direct"] + sum(1 for c in cases if c.get("interest") == "dogrudan")
+        indirect_n = issue["stats"]["indirect"] + sum(1 for c in cases if c.get("interest") == "dolayli")
         index.append({
             "date": issue["date"],
             "cadence": issue.get("cadence"),
             "periodLabel": issue["periodLabel"],
-            "direct": issue["stats"]["direct"],
-            "indirect": issue["stats"]["indirect"],
+            "direct": direct_n,
+            "indirect": indirect_n,
             "scanned": issue["stats"]["scanned"],
             "trials": issue["stats"]["trials"],
         })
