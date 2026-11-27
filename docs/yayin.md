@@ -33,13 +33,15 @@ Yeni bir depoda sıfırdan kurmak gerekirse: depoyu herkese açık yapın, `main
 
 Workers & Pages > Create > Pages > Connect to Git > depoyu seçin. Build command: `pnpm build`; Build output directory: `dist`; ortam değişkeni `VITE_SITE_URL` = Pages adresiniz.
 
-## Günlük güncelleme akışı
+## İki yayın ayrı yürür
 
-Veri hattı (`pipeline/`) varsayılan olarak Manus çalışma ortamının LLM geçidini kullanır; kendi OpenAI veya Gemini anahtarınızla da çalışır (`docs/llm-saglayici.md`). Site derlemesinden bağımsızdır. Akış:
+Manus adresi ve GitHub Pages artık birbirine bağlı değil. Günlük planlı görev yalnız Manus tarafını günceller; GitHub deposuna dokunmaz. GitHub tarafı yalnız elle eşitlendiğinde yenilenir. Amaç iki yolu ayrı ayrı ölçmek: Manus tarafı günlük otomatik akışı, GitHub tarafı kendi derleme ve sürüm akışını temsil eder.
 
-1. Planlı görev her gün 12:00'de hattı çalıştırır (`pipeline/run_daily.sh`).
-2. Yeni `content/` dosyaları `main` dalına itilir.
-3. İtme, Pages iş akışını tetikler; site birkaç dakikada güncellenir.
+Manus akışı: planlı görev 12:00'de `pipeline/run_daily.sh` çalıştırır, sayıyı doğrular, `pnpm check` yapar, Manus deposuna iter ve `https://toraks.manus.space/` adresinde duman testi çalıştırır.
+
+GitHub akışı: `bash tools/github-yayin.sh` komutu işlenmiş hâli depoya gönderir. İtme, `Pages` iş akışını tetikler; iş akışı derler ve `gh-pages` dalına yazar, GitHub da siteyi yayımlar. Sürüm paketi bundan bağımsızdır, `Sürüm` iş akışıyla cuma günleri üretilir.
+
+GitHub tarafını da günlük otomatik çalıştırmak istenirse depoya `OPENAI_API_KEY` veya `GEMINI_API_KEY` gizli değişkeni eklenip hattı çalıştıran ayrı bir iş akışı yazılmalıdır; bu adım henüz kurulmadı, çünkü sağlayıcı kotası ve maliyeti ayrıca ölçülmeli.
 
 Hattı kendi bilgisayarınızda çalıştırmak için `docs/llm-saglayici.md` içindeki değişkenleri tanımlamanız yeterlidir.
 
