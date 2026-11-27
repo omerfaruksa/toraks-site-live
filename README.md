@@ -2,7 +2,7 @@
 
 Göğüs cerrahisi literatürünün günlük takibi için okuma odaklı, sade bir yayın sitesi. Her gün yeni bir "sayı" eklenir; sayı, tarama protokolünün çıktısını okunabilir bir düzene çevirir.
 
-Yayın adresleri: `https://toraks.manus.space/` (Manus, günlük otomatik) ve `https://omerfaruksa.github.io/toraks-site-live/` (GitHub Pages, elle eşitlenen kopya). İki taraf ayrı yürür; GitHub'a göndermek için `bash tools/github-yayin.sh`. Ayrıntı `docs/yayin.md`.
+Yayın adresleri: `https://toraks.manus.space/` (Manus) ve `https://omerfaruksa.github.io/toraks-site-live/` (GitHub Pages). GitHub Pages, `main` dalına her itmede GitHub Actions ile yayımlanır; Manus'tan üretilen içeriklerin GitHub'a otomatik aktarımı henüz kurulmamıştır. Manus API'deki son dosyaları güvenli biçimde yerelde listelemek için `MANUS_API_KEY` ortam değişkenini tanımlayıp `python3 tools/manus_artifacts.py` çalıştırın. Ayrıntı `docs/yayin.md`.
 
 ## Sayfa yapısı
 
@@ -103,6 +103,7 @@ Koşu çıktısı `pipeline/.work/run.log` dosyasına da yazılır (2 MB üstün
 | `docs/llm-saglayici.md` | OpenAI, Gemini veya OpenAI uyumlu sunucuyla hattı çalıştırma; değişkenler, hata davranışı |
 | `docs/yayin.md` | GitHub Pages, Cloudflare Pages, Vercel karşılaştırması; kurulum ve günlük güncelleme akışı |
 | `docs/yol-haritasi.md` | Kısa, orta ve uzun vadeli işler; her madde için doğrulama ölçütü ve riskler |
+| `tools/manus_artifacts.py` | Manus API'den son artifact listesini yerelde, indirme yapmadan gösterir |
 | `tools/paket.sh` | Sürüm zip'i üretir, dosya sayısı, boyut ve sha256 yazar |
 
 ## Geliştirme

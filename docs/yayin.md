@@ -41,7 +41,19 @@ Manus akışı: planlı görev 12:00'de `pipeline/run_daily.sh` çalıştırır,
 
 GitHub akışı: `bash tools/github-yayin.sh` komutu işlenmiş hâli depoya gönderir. İtme, `Pages` iş akışını tetikler; iş akışı derler ve `gh-pages` dalına yazar, GitHub da siteyi yayımlar. Sürüm paketi bundan bağımsızdır, `Sürüm` iş akışıyla cuma günleri üretilir.
 
-GitHub tarafını da günlük otomatik çalıştırmak istenirse depoya `OPENAI_API_KEY` veya `GEMINI_API_KEY` gizli değişkeni eklenip hattı çalıştıran ayrı bir iş akışı yazılmalıdır; bu adım henüz kurulmadı, çünkü sağlayıcı kotası ve maliyeti ayrıca ölçülmeli.
+## Manus içerik dosyalarını keşfetme
+
+GitHub Pages'e içerik aktarımı için Manus'taki üretilmiş dosyaların API üzerinden indirilebilir artifact olarak görünmesi gerekir. Manus API'nin `artifact.list` ucu son 20 artifact'i döndürür; bu uç yalnızca okuma yapar, Manus görevi başlatmaz ve model çalıştırmaz. API anahtarı tam hesap erişimi verdiğinden artifact listesi herkese açık GitHub Actions günlüklerine yazılmamalıdır.
+
+Artifact'leri güvenli biçimde yerelde listelemek için Manus API anahtarını `MANUS_API_KEY` ortam değişkeni olarak tanımlayın ve çalıştırın:
+
+```bash
+python3 tools/manus_artifacts.py
+```
+
+Betik dosya adını, görev başlığını, artifact/görev kimliğini ve indirme URL'si bulunup bulunmadığını gösterir; imzalı indirme URL'sinin kendisini yazdırmaz veya dosya indirmez. Anahtarı sohbete, repoya ya da komut geçmişine eklemeyin.
+
+Sonraki adım, listede günlük literatür görevinin JSON/ZIP çıktısı görünürse yalnız bu içeriği indiren, şemasını doğrulayan ve GitHub'a aktaran bir Actions işi kurmaktır. İçerik artifact'i yoksa Manus görevinin dosyaları dışa aktarma biçimi netleştirilmeden güvenilir senkronizasyon yapılamaz. GitHub Actions standart runner'ları bu herkese açık repoda ücretsizdir; Manus tarafında yeni görev çalıştırılırsa Manus kullanım/credit maliyeti ayrı değerlendirilir.
 
 Hattı kendi bilgisayarınızda çalıştırmak için `docs/llm-saglayici.md` içindeki değişkenleri tanımlamanız yeterlidir.
 

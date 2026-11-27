@@ -4,8 +4,8 @@ Bu belge, sitenin ve veri hattının bundan sonraki işlerini öncelik sırasıy
 
 ## Bugünkü durum
 
-- İki yayın adresi aynı derlemeyi gösteriyor: `https://omerfaruksa.github.io/toraks-site-live/` ve `https://toraks.manus.space/`.
-- Günlük planlı görev 12:00'de (Europe/Istanbul) hattı çalıştırıyor, sayıyı doğruluyor, iki depoya itiyor ve iki adreste duman testi yapıyor.
+- GitHub Pages `main` dalından ayrı derlenip yayımlanıyor; Manus adresindeki günlük içerikle aynı olup olmadığı garanti edilmiyor.
+- Manus günlük görevi 12:00'de (Europe/Istanbul) hattı çalıştırıyor; GitHub Pages ise `main` dalına itmelerden bağımsız olarak derlenip yayımlanıyor. Manus içeriğinin GitHub'a API üzerinden eşitlenmesi araştırılıyor.
 - Test: 39 Python testi, arama testleri, tip denetimi ve derleme `pnpm check` içinde.
 - Paket: `tools/paket.sh` tek komutla sürüm zip'i üretir, sha256 yazar.
 
